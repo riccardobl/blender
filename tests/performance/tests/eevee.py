@@ -16,7 +16,7 @@ class RecordStage(enum.Enum):
 WARMUP_SECONDS = 3
 WARMUP_FRAMES = 10
 SHADER_FALLBACK_SECONDS = 60
-RECORD_SECONDS = 10
+RECORD_PLAYBACK_ITER = 3
 LOG_KEY = "ANIMATION_PERFORMANCE: "
 
 
@@ -37,11 +37,14 @@ def frame_change_handler(scene):
     global start_time
     global start_record_time
     global start_warmup_time
-    global num_frames
+    global warmup_frame
     global stop_record_time
+    global playback_iteration
     
     if record_stage == RecordStage.INIT:
         screen = bpy.context.window_manager.windows[0].screen
+        bpy.context.scene.sync_mode = 'NONE'
+
         for area in screen.areas:
             if area.type == 'VIEW_3D':
                 space = area.spaces[0]
@@ -61,25 +64,31 @@ def frame_change_handler(scene):
         
         if shaders_compiled:
             start_warmup_time = time.perf_counter()
-            num_frames = 0
+            warmup_frame = 0
             record_stage = RecordStage.WARMUP
     
     elif record_stage == RecordStage.WARMUP:
-        num_frames += 1
-        if time.perf_counter() - start_warmup_time > WARMUP_SECONDS and num_frames > WARMUP_FRAMES:
+        warmup_frame += 1
+        if time.perf_counter() - start_warmup_time > WARMUP_SECONDS and warmup_frame > WARMUP_FRAMES:
             start_record_time = time.perf_counter()
-            num_frames = 0
+            playback_iteration = 0
+            scene = bpy.context.scene
+            scene.frame_set(scene.frame_start)
             record_stage = RecordStage.RECORD
     
     elif record_stage == RecordStage.RECORD:
         current_time = time.perf_counter()
-        num_frames += 1
-        if current_time - start_record_time > RECORD_SECONDS:
+        scene = bpy.context.scene
+        if scene.frame_current == scene.frame_end:
+            playback_iteration += 1
+        
+        if playback_iteration >= RECORD_PLAYBACK_ITER:
             stop_record_time = current_time
             record_stage = RecordStage.FINISHED
 
     elif record_stage == RecordStage.FINISHED:
         bpy.ops.screen.animation_cancel()
+        num_frames = RECORD_PLAYBACK_ITER * ((scene.frame_end - scene.frame_start) + 1)
         elapse_seconds = stop_record_time - start_record_time
         avg_frame_time = elapse_seconds / num_frames
         fps = 1.0 / avg_frame_time
@@ -111,7 +120,9 @@ else:
                     result_str = line[len(LOG_KEY):]
                     result = eval(result_str)
                     return result
-            return {'time': 'UNKNOWN'}
+
+            raise Exception("No playback performance result found in log.")
+
         
     def generate(env):
         filepaths = env.find_blend_files('eevee/*')
