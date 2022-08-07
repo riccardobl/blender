@@ -54,13 +54,15 @@ struct CryptomatteSession {
 CryptomatteSession::CryptomatteSession(const Main *bmain)
 {
   if (!BLI_listbase_is_empty(&bmain->objects)) {
-    blender::bke::cryptomatte::CryptomatteLayer &objects = add_layer("CryptoObject");
+    blender::bke::cryptomatte::CryptomatteLayer &objects = add_layer(
+        RE_PASSNAME_CRYPTOMATTE_OBJECT);
     LISTBASE_FOREACH (ID *, id, &bmain->objects) {
       objects.add_ID(*id);
     }
   }
   if (!BLI_listbase_is_empty(&bmain->materials)) {
-    blender::bke::cryptomatte::CryptomatteLayer &materials = add_layer("CryptoMaterial");
+    blender::bke::cryptomatte::CryptomatteLayer &materials = add_layer(
+        RE_PASSNAME_CRYPTOMATTE_MATERIAL);
     LISTBASE_FOREACH (ID *, id, &bmain->materials) {
       materials.add_ID(*id);
     }
@@ -93,13 +95,13 @@ CryptomatteSession::CryptomatteSession(const Scene *scene)
     }
 
     if (cryptoflags & VIEW_LAYER_CRYPTOMATTE_OBJECT) {
-      add_layer(blender::StringRefNull(view_layer->name) + ".CryptoObject");
+      add_layer(blender::StringRefNull(view_layer->name) + "." + RE_PASSNAME_CRYPTOMATTE_OBJECT);
     }
     if (cryptoflags & VIEW_LAYER_CRYPTOMATTE_ASSET) {
-      add_layer(blender::StringRefNull(view_layer->name) + ".CryptoAsset");
+      add_layer(blender::StringRefNull(view_layer->name) + "." + RE_PASSNAME_CRYPTOMATTE_ASSET);
     }
     if (cryptoflags & VIEW_LAYER_CRYPTOMATTE_MATERIAL) {
-      add_layer(blender::StringRefNull(view_layer->name) + ".CryptoMaterial");
+      add_layer(blender::StringRefNull(view_layer->name) + "." + RE_PASSNAME_CRYPTOMATTE_MATERIAL);
     }
   }
 }

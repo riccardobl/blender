@@ -48,6 +48,7 @@ void WorldPipeline::sync(GPUMaterial *gpumat)
   DRW_shgroup_uniform_image_ref(grp, "rp_specular_light_img", &rbufs.specular_light_tx);
   DRW_shgroup_uniform_image_ref(grp, "rp_specular_color_img", &rbufs.specular_color_tx);
   DRW_shgroup_uniform_image_ref(grp, "rp_emission_img", &rbufs.emission_tx);
+  DRW_shgroup_uniform_image_ref(grp, "rp_cryptomatte_img", &rbufs.cryptomatte_tx);
   /* To allow opaque pass rendering over it. */
   DRW_shgroup_barrier(grp, GPU_BARRIER_SHADER_IMAGE_ACCESS);
 }

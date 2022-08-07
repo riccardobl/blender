@@ -207,6 +207,12 @@ struct FilmData {
   /** Start of AOVs and number of aov. */
   int aov_color_id, aov_color_len;
   int aov_value_id, aov_value_len;
+  /** Start of cryptomatte per layer (-1 if pass is not enabled). */
+  int cryptomatte_object_id;
+  int cryptomatte_asset_id;
+  int cryptomatte_material_id;
+  /** Max number of samples stored per layer (is even number). */
+  int cryptomatte_samples_len;
   /** Settings to render mist pass */
   float mist_scale, mist_bias, mist_exponent;
   /** Scene exposure used for better noise reduction. */

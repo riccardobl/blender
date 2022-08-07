@@ -43,11 +43,16 @@ class Film {
   /** Incoming combined buffer with post FX applied (motion blur + depth of field). */
   GPUTexture *combined_final_tx_ = nullptr;
 
-  /** Main accumulation textures containing every render-pass except depth and combined. */
+  /**
+   * Main accumulation textures containing every render-pass except depth, cryptomatte and
+   * combined.
+   */
   Texture color_accum_tx_;
   Texture value_accum_tx_;
   /** Depth accumulation texture. Separated because using a different format. */
   Texture depth_tx_;
+  /** Cryptomatte texture. Separated because it requires full floats. */
+  Texture cryptomatte_tx_;
   /** Combined "Color" buffer. Double buffered to allow re-projection. */
   SwapChain<Texture, 2> combined_tx_;
   /** Weight buffers. Double buffered to allow updating it during accumulation. */
@@ -93,6 +98,7 @@ class Film {
   }
 
   eViewLayerEEVEEPassType enabled_passes_get() const;
+  int cryptomatte_layer_len_get() const;
 
   static bool pass_is_value(eViewLayerEEVEEPassType pass_type)
   {
@@ -154,8 +160,12 @@ class Film {
         return data_.shadow_id;
       case EEVEE_RENDER_PASS_AO:
         return data_.ambient_occlusion_id;
-      case EEVEE_RENDER_PASS_CRYPTOMATTE:
-        return -1; /* TODO */
+      case EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT:
+        return data_.cryptomatte_object_id;
+      case EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET:
+        return data_.cryptomatte_asset_id;
+      case EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL:
+        return data_.cryptomatte_material_id;
       case EEVEE_RENDER_PASS_VECTOR:
         return data_.vector_id;
       default:
@@ -192,9 +202,12 @@ class Film {
         return RE_PASSNAME_SHADOW;
       case EEVEE_RENDER_PASS_AO:
         return RE_PASSNAME_AO;
-      case EEVEE_RENDER_PASS_CRYPTOMATTE:
-        BLI_assert_msg(0, "Cryptomatte is not implemented yet.");
-        return ""; /* TODO */
+      case EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT:
+        return RE_PASSNAME_CRYPTOMATTE_OBJECT;
+      case EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET:
+        return RE_PASSNAME_CRYPTOMATTE_ASSET;
+      case EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL:
+        return RE_PASSNAME_CRYPTOMATTE_MATERIAL;
       case EEVEE_RENDER_PASS_VECTOR:
         return RE_PASSNAME_VECTOR;
       default:
