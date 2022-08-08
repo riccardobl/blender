@@ -131,6 +131,8 @@ void ShadingView::render()
   // inst_.lights.debug_draw(view_fb_);
   // inst_.shadows.debug_draw(view_fb_);
 
+  inst_.cryptomatte.render();
+
   GPUTexture *combined_final_tx = render_postfx(rbufs.combined_tx);
 
   inst_.film.accumulate(sub_view_, combined_final_tx);

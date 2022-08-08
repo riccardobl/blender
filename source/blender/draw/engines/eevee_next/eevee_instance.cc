@@ -63,6 +63,7 @@ void Instance::init(const int2 &output_res,
   velocity.init();
   depth_of_field.init();
   motion_blur.init();
+  cryptomatte.init();
   main_view.init();
 }
 
@@ -101,6 +102,7 @@ void Instance::begin_sync()
 
   depth_of_field.sync();
   motion_blur.sync();
+  cryptomatte.sync();
   pipelines.sync();
   main_view.sync();
   world.sync();
