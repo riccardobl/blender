@@ -17,6 +17,10 @@
 
 #include "eevee_shader_shared.hh"
 
+extern "C" {
+struct Material;
+}
+
 namespace blender::eevee {
 
 class Instance;
@@ -52,8 +56,14 @@ class Cryptomatte {
   void init();
 
   void sync();
-  void object_sync(Object *ob);
+  void sync_mesh(Object *ob);
+  void sync_curves(Object *object, ModifierData *modifier_data);
+  void sync_gpencil();  // TODO
   void render();
+
+ private:
+  void add_hash(const Object *object, float4 &r_hash) const;
+  void add_hash(const Material *material, float4 &r_hash) const;
 };
 
 /** \} */
