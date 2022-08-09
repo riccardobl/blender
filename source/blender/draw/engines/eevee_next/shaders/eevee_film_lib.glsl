@@ -8,6 +8,7 @@
 #pragma BLENDER_REQUIRE(eevee_camera_lib.glsl)
 #pragma BLENDER_REQUIRE(eevee_velocity_lib.glsl)
 #pragma BLENDER_REQUIRE(eevee_colorspace_lib.glsl)
+#pragma BLENDER_REQUIRE(eevee_cryptomatte_lib.glsl)
 
 /* Return scene linear Z depth from the camera or radial depth for panoramic cameras. */
 float film_depth_convert_to_scene(float depth)
@@ -686,5 +687,24 @@ void film_process_data(ivec2 texel_film, out vec4 out_color, out float out_depth
       film_sample_accum(src, aov, aov_value_tx, aov_accum);
     }
     film_store_value(dst, film_buf.aov_value_id + aov, aov_accum, out_color);
+  }
+
+  if (film_buf.cryptomatte_samples_len != 0) {
+    vec4 hashes = texelFetch(cryptomatte_tx, dst.texel, 0);
+    if (film_buf.cryptomatte_object_id != -1) {
+      float hash = hashes.x;
+      hashes = hashes.yzww;
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_object_id, hash);
+    } 
+    if (film_buf.cryptomatte_asset_id != -1) {
+      float hash = hashes.x;
+      hashes = hashes.yzww;
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_asset_id, hash);
+    } 
+    if (film_buf.cryptomatte_material_id != -1) {
+      float hash = hashes.x;
+      hashes = hashes.yzww;
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_material_id, hash);
+    } 
   }
 }
