@@ -434,7 +434,7 @@ static int uv_element_offset_from_face_get(
   if (!element || (doIslands && element->island != island_index)) {
     return -1;
   }
-  return element - map->buf;
+  return element - map->storage;
 }
 
 static uint uv_edge_hash(const void *key)
@@ -518,13 +518,7 @@ static UvSculptData *uv_sculpt_stroke_init(bContext *C, wmOperator *op, const wm
     /* Count 'unique' UV's */
     int unique_uvs = data->elementMap->total_unique_uvs;
     if (do_island_optimization) {
-      unique_uvs = 0;
-      for (int i = 0; i < data->elementMap->total_uvs; i++) {
-        if (data->elementMap->buf[i].separate &&
-            (data->elementMap->buf[i].island == island_index)) {
-          unique_uvs++;
-        }
-      }
+      unique_uvs = data->elementMap->island_total_unique_uvs[island_index];
     }
 
     /* Allocate the unique uv buffers */
@@ -549,7 +543,7 @@ static UvSculptData *uv_sculpt_stroke_init(bContext *C, wmOperator *op, const wm
     int counter = -1;
     /* initialize the unique UVs */
     for (int i = 0; i < bm->totvert; i++) {
-      UvElement *element = data->elementMap->vert[i];
+      UvElement *element = data->elementMap->vertex[i];
       for (; element; element = element->next) {
         if (element->separate) {
           if (do_island_optimization && (element->island != island_index)) {
@@ -569,9 +563,10 @@ static UvSculptData *uv_sculpt_stroke_init(bContext *C, wmOperator *op, const wm
           data->uv[counter].uv = luv->uv;
         }
         /* Pointer arithmetic to the rescue, as always :). */
-        uniqueUv[element - data->elementMap->buf] = counter;
+        uniqueUv[element - data->elementMap->storage] = counter;
       }
     }
+    BLI_assert(counter + 1 == unique_uvs);
 
     /* Now, on to generate our uv connectivity data */
     counter = 0;
@@ -629,11 +624,13 @@ static UvSculptData *uv_sculpt_stroke_init(bContext *C, wmOperator *op, const wm
     }
 
     /* fill the edges with data */
-    int i = 0;
-    GHASH_ITER (gh_iter, edgeHash) {
-      data->uvedges[i++] = *((UvEdge *)BLI_ghashIterator_getKey(&gh_iter));
+    {
+      int i = 0;
+      GHASH_ITER (gh_iter, edgeHash) {
+        data->uvedges[i++] = *((UvEdge *)BLI_ghashIterator_getKey(&gh_iter));
+      }
+      data->totalUvEdges = BLI_ghash_len(edgeHash);
     }
-    data->totalUvEdges = BLI_ghash_len(edgeHash);
 
     /* cleanup temporary stuff */
     BLI_ghash_free(edgeHash, NULL, NULL);
