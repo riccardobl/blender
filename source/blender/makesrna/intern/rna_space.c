@@ -455,6 +455,9 @@ static const EnumPropertyItem rna_enum_view3dshading_render_pass_type_items[] = 
     RNA_ENUM_ITEM_HEADING("Data", NULL),
     {EEVEE_RENDER_PASS_NORMAL, "NORMAL", 0, "Normal", ""},
     {EEVEE_RENDER_PASS_MIST, "MIST", 0, "Mist", ""},
+    {EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT, "CryptoObject", 0, "CryptoObject", ""},
+    {EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET, "CryptoAsset", 0, "CryptoAsset", ""},
+    {EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL, "CryptoMaterial", 0, "CryptoMaterial", ""},
 
     RNA_ENUM_ITEM_HEADING("Shader AOV", NULL),
     {EEVEE_RENDER_PASS_AOV, "AOV", 0, "AOV", ""},

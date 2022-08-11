@@ -29,8 +29,8 @@ void Cryptomatte::sync()
   cryptomatte_ps_ = DRW_pass_create("Cryptomatte", DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_EQUAL);
   GPUShader *sh_mesh = inst_.shaders.static_shader_get(CRYPTOMATTE_MESH);
   mesh_grp_ = DRW_shgroup_create(sh_mesh, cryptomatte_ps_);
-  GPUShader *sh_curves = inst_.shaders.static_shader_get(CRYPTOMATTE_CURVES);
-  hair_grp_ = DRW_shgroup_create(sh_curves, cryptomatte_ps_);
+  //GPUShader *sh_curves = inst_.shaders.static_shader_get(CRYPTOMATTE_CURVES);
+  //hair_grp_ = DRW_shgroup_create(sh_curves, cryptomatte_ps_);
 }
 
 static float hash_id(const ID *id)

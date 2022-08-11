@@ -1,25 +1,38 @@
 /** Storing/merging and sorting cryptomatte samples. */
 
+bool can_merge_cryptomatte_sample(vec2 cryptomatte_sample, float hash) {
+    if (cryptomatte_sample == vec2(0.0, 0.0)) {
+        return true;
+    }
+    if (cryptomatte_sample.x == hash) {
+        return true;
+    }
+}
+
+vec2 merge_cryptomatte_sample(vec2 cryptomatte_sample, float hash, float weight) {
+    return vec2(hash, cryptomatte_sample.y + weight);
+}
+
 void film_store_cryptomatte_sample(FilmSample dst, int cryptomatte_layer_id, float hash){
     float weight = dst.weight;
-    /*
-        first need to detect the operation.
-        - when hash exists it should be updated and can optionally be reinserted into a new position.
-        - when hash doesn't exist we should find an insertion point. only samples to a null sample (hash 0, weight 0) should be moved. When no null sample exist it will remove the lowest weight.
 
-        Second option would be to find the place to fit the sample. Doing the sorting in a separate shader
-        pro is that the performance when adding samples. Sorting only happens once during
-        final rendering. When using the viewport compositor this shader could be called
-        as a post process for active layers. 
-
-        perhaps in the viewport the first option would fit better. The second option
-        is better for final rendering, but at that time performance is secondary.
-        Technically the order of the samples don't matter that much, But it depends on how many
-        cryptomatte nodes are used to make sorting more efficient.
-        Would need some feedback from Beau/Andy on this subject.
-          
-    */
-    int operation = 0;
-
-    
+    for (int i = 0; i < film_buf.cryptomatte_samples_len/2; i ++) {
+        ivec3 img_co = ivec3(dst.texel, i);
+        vec4 sample_pair = imageLoad(cryptomatte_img, img_co);
+        if (can_merge_cryptomatte_sample(sample_pair.xy, hash)) {
+            sample_pair.xy = merge_cryptomatte_sample(sample_pair.xy, hash, weight);
+        }
+        else if (can_merge_cryptomatte_sample(sample_pair.zw, hash)) {
+            sample_pair.zw = merge_cryptomatte_sample(sample_pair.zw, hash, weight);
+        }
+        else if (i == film_buf.cryptomatte_samples_len / 2 -1) {
+            // TODO: new hash, no space, we should compare/overwrite lowest sample.
+            continue;
+        }
+        else {
+            continue;
+        }
+        imageStore(cryptomatte_img, img_co, sample_pair);
+        break;
+    }   
 }
