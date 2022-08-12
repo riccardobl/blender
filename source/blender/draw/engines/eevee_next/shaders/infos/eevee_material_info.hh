@@ -80,6 +80,11 @@ GPU_SHADER_CREATE_INFO(eevee_aov_out)
     .image_array_out(7, Qualifier::WRITE, GPU_R16F, "aov_value_img")
     .storage_buf(7, Qualifier::READ, "AOVsInfoData", "aov_buf");
 
+GPU_SHADER_CREATE_INFO(eevee_cryptomatte_out)
+    .push_constant(Type::FLOAT, "cryptomatte_object_hash")
+    .push_constant(Type::FLOAT, "cryptomatte_asset_hash")
+    .image_out(8, Qualifier::WRITE, GPU_RGBA32F, "rp_cryptomatte_img");
+
 GPU_SHADER_CREATE_INFO(eevee_surf_deferred)
     .vertex_out(eevee_surf_iface)
     /* NOTE: This removes the possibility of using gl_FragDepth. */
@@ -116,7 +121,7 @@ GPU_SHADER_CREATE_INFO(eevee_surf_forward)
     .image_out(3, Qualifier::READ_WRITE, GPU_RGBA16F, "rp_specular_light_img")
     .image_out(4, Qualifier::READ_WRITE, GPU_RGBA16F, "rp_specular_color_img")
     .image_out(5, Qualifier::READ_WRITE, GPU_RGBA16F, "rp_emission_img")
-    .additional_info("eevee_aov_out"
+    .additional_info("eevee_aov_out", "eevee_cryptomatte_out"
                      //  "eevee_sampling_data",
                      //  "eevee_lightprobe_data",
                      /* Optionally added depending on the material. */
@@ -144,7 +149,7 @@ GPU_SHADER_CREATE_INFO(eevee_surf_world)
     .push_constant(Type::FLOAT, "world_opacity_fade")
     .fragment_out(0, Type::VEC4, "out_background")
     .fragment_source("eevee_surf_world_frag.glsl")
-    .additional_info("eevee_aov_out"
+    .additional_info("eevee_aov_out", "eevee_cryptomatte_out"
                      //"eevee_utility_texture"
     );
 

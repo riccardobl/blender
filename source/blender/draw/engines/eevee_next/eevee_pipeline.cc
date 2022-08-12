@@ -126,6 +126,7 @@ DRWShadingGroup *ForwardPipeline::material_opaque_add(::Material *blender_mat, G
   DRW_shgroup_uniform_image_ref(grp, "rp_specular_light_img", &rbufs.specular_light_tx);
   DRW_shgroup_uniform_image_ref(grp, "rp_specular_color_img", &rbufs.specular_color_tx);
   DRW_shgroup_uniform_image_ref(grp, "rp_emission_img", &rbufs.emission_tx);
+  DRW_shgroup_uniform_image_ref(grp, "rp_cryptomatte_img", &rbufs.cryptomatte_tx);
 
   /* TODO(fclem): Make this only needed if material uses it ... somehow. */
   // if (true) {
@@ -208,6 +209,7 @@ DRWShadingGroup *ForwardPipeline::material_transparent_add(::Material *blender_m
     DRW_shgroup_uniform_image_ref(grp, "rp_specular_light_img", &rbufs.specular_light_tx);
     DRW_shgroup_uniform_image_ref(grp, "rp_specular_color_img", &rbufs.specular_color_tx);
     DRW_shgroup_uniform_image_ref(grp, "rp_emission_img", &rbufs.emission_tx);
+    DRW_shgroup_uniform_image_ref(grp, "rp_cryptomatte_img", &rbufs.cryptomatte_tx);
   }
 
   DRWState state_disable = DRW_STATE_WRITE_DEPTH;
