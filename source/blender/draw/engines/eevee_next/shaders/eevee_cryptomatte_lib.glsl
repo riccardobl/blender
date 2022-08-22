@@ -42,6 +42,9 @@ void film_store_cryptomatte_sample(FilmSample dst, int cryptomatte_layer_id, flo
 
 vec4 cryptomatte_false_color(float hash)
 {
-  /* TODO(jbakker): implement this (see CryptomatteOperationm::execute_pixel). */
-  return vec4(hash, 0.0, 0.0, 1.0);
+#define UINT32_MAX (4294967295U)
+
+  uint m3hash = floatBitsToUint(hash);
+  return vec4(
+      hash, float(m3hash << 8) / float(UINT32_MAX), float(m3hash << 16) / float(UINT32_MAX), 1.0);
 }

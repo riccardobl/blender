@@ -50,9 +50,7 @@ class Cryptomatte {
 
   void init();
 
- private:
-  void add_hash(const Object *object, float4 &r_hash) const;
-  void add_hash(const Material *material, float4 &r_hash) const;
+  float hash(const ID &id) const;
 };
 
 /** \} */

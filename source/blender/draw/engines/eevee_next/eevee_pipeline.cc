@@ -127,6 +127,8 @@ DRWShadingGroup *ForwardPipeline::material_opaque_add(::Material *blender_mat, G
   DRW_shgroup_uniform_image_ref(grp, "rp_specular_color_img", &rbufs.specular_color_tx);
   DRW_shgroup_uniform_image_ref(grp, "rp_emission_img", &rbufs.emission_tx);
   DRW_shgroup_uniform_image_ref(grp, "rp_cryptomatte_img", &rbufs.cryptomatte_tx);
+  float material_hash = inst_.cryptomatte.hash(blender_mat->id);
+  DRW_shgroup_uniform_float_copy(grp, "cryptomatte_material_hash", material_hash);
 
   /* TODO(fclem): Make this only needed if material uses it ... somehow. */
   // if (true) {
