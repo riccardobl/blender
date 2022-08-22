@@ -86,6 +86,10 @@ const char *ShaderModule::static_shader_create_info_name_get(eShaderType shader_
       return "eevee_cryptomatte_curves";
     case CRYPTOMATTE_MESH:
       return "eevee_cryptomatte_mesh";
+    case HIZ_DEBUG:
+      return "eevee_hiz_debug";
+    case HIZ_UPDATE:
+      return "eevee_hiz_update";
     case MOTION_BLUR_GATHER:
       return "eevee_motion_blur_gather";
     case MOTION_BLUR_TILE_DILATE:
