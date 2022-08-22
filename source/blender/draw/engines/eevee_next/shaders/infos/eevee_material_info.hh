@@ -83,9 +83,7 @@ GPU_SHADER_CREATE_INFO(eevee_aov_out)
     .storage_buf(7, Qualifier::READ, "AOVsInfoData", "aov_buf");
 
 GPU_SHADER_CREATE_INFO(eevee_cryptomatte_out)
-    .push_constant(Type::FLOAT, "cryptomatte_object_hash")
-    .push_constant(Type::FLOAT, "cryptomatte_asset_hash")
-    .image_out(8, Qualifier::WRITE, GPU_RGBA32F, "rp_cryptomatte_img");
+    .image_out(7, Qualifier::WRITE, GPU_RGBA32F, "rp_cryptomatte_img");
 
 GPU_SHADER_CREATE_INFO(eevee_surf_deferred)
     .vertex_out(eevee_surf_iface)

@@ -642,7 +642,7 @@ float *Film::read_pass(eViewLayerEEVEEPassType pass_type)
   bool is_value = pass_is_value(pass_type);
   Texture &accum_tx = (pass_type == EEVEE_RENDER_PASS_COMBINED) ?
                           combined_tx_.current() :
-                          (pass_type == EEVEE_RENDER_PASS_Z) ?
+                      (pass_type == EEVEE_RENDER_PASS_Z) ?
                           depth_tx_ :
                           (is_value ? value_accum_tx_ : color_accum_tx_);
 

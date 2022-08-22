@@ -44,22 +44,11 @@ class Cryptomatte {
   /** Number of enabled cryptomatte layers. */
   int layer_len_;
 
-  DRWPass *cryptomatte_ps_ = nullptr;
-  Framebuffer cryptomatte_fb_ = {"cryptomatte"};
-  DRWShadingGroup *mesh_grp_;
-  DRWShadingGroup *hair_grp_;
-
  public:
   Cryptomatte(Instance &inst) : inst_(inst){};
   ~Cryptomatte(){};
 
   void init();
-
-  void sync();
-  void sync_mesh(Object *ob);
-  void sync_curves(Object *object, ModifierData *modifier_data);
-  void sync_gpencil();  // TODO
-  void render();
 
  private:
   void add_hash(const Object *object, float4 &r_hash) const;

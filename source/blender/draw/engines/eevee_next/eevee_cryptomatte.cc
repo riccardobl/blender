@@ -20,19 +20,6 @@ void Cryptomatte::init()
                  "Cryptomatte and film mismatch");
 }
 
-void Cryptomatte::sync()
-{
-  if (layer_len_ == 0) {
-    return;
-  }
-
-  cryptomatte_ps_ = DRW_pass_create("Cryptomatte", DRW_STATE_WRITE_COLOR | DRW_STATE_DEPTH_EQUAL);
-  GPUShader *sh_mesh = inst_.shaders.static_shader_get(CRYPTOMATTE_MESH);
-  mesh_grp_ = DRW_shgroup_create(sh_mesh, cryptomatte_ps_);
-  //GPUShader *sh_curves = inst_.shaders.static_shader_get(CRYPTOMATTE_CURVES);
-  //hair_grp_ = DRW_shgroup_create(sh_curves, cryptomatte_ps_);
-}
-
 static float hash_id(const ID *id)
 {
   const char *name = &id->name[2];
@@ -63,6 +50,8 @@ void Cryptomatte::add_hash(const ::Material *mat, float4 &r_hash) const
   }
 }
 
+#if 0
+Find API that works from the material shader. (fill object info and material data. with hashes if those layers are enabled?)
 void Cryptomatte::sync_mesh(Object *ob)
 {
   if (layer_len_ == 0) {
@@ -109,25 +98,6 @@ void Cryptomatte::sync_mesh(Object *ob)
     }
   }
 }
-
-void Cryptomatte::sync_curves(Object *ob, ModifierData *modifier_data)
-{
-  if (layer_len_ == 0) {
-    return;
-  }
-  BLI_assert_msg(false, "Not implemented yet");
-}
-
-void Cryptomatte::render()
-{
-  if (layer_len_ == 0) {
-    return;
-  }
-  const RenderBuffers &rbufs = inst_.render_buffers;
-  cryptomatte_fb_.ensure(GPU_ATTACHMENT_TEXTURE(rbufs.depth_tx),
-                         GPU_ATTACHMENT_TEXTURE(rbufs.combined_tx));
-  GPU_framebuffer_bind(cryptomatte_fb_);
-  DRW_draw_pass(cryptomatte_ps_);
-}
+#endif
 
 }  // namespace blender::eevee

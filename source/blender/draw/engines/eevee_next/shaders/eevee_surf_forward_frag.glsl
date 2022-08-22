@@ -106,7 +106,7 @@ void main()
   imageStore(rp_diffuse_color_img, out_texel, vec4(g_diffuse_data.color, 1.0));
   imageStore(rp_specular_color_img, out_texel, vec4(specular_color, 1.0));
   imageStore(rp_emission_img, out_texel, vec4(g_emission, 1.0));
-  imageStore(rp_cryptomatte_img, out_texel, vec4(cryptomatte_object_hash, cryptomatte_asset_hash, 0.0, 1.0));
+  imageStore(rp_cryptomatte_img, out_texel, vec4(1.0, 0.5, 0.25, 1.0));
 
   out_radiance.rgb *= 1.0 - g_holdout;
 

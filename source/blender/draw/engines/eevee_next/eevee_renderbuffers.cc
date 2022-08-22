@@ -81,7 +81,11 @@ void RenderBuffers::acquire(int2 extent)
   else if (cryptomatte_layer_len == 3) {
     cryptomatte_format = GPU_RGBA32F;
   }
-  cryptomatte_tx.acquire(pass_extent(EEVEE_RENDER_PASS_CRYPTOMATTE), cryptomatte_format);
+  cryptomatte_tx.acquire(
+      pass_extent(static_cast<eViewLayerEEVEEPassType>(EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT |
+                                                       EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET |
+                                                       EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL)),
+      cryptomatte_format);
 }
 
 void RenderBuffers::release()

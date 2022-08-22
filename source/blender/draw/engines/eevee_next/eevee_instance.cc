@@ -107,7 +107,6 @@ void Instance::begin_sync()
 
   depth_of_field.sync();
   motion_blur.sync();
-  cryptomatte.sync();
   hiz_buffer.sync();
   pipelines.sync();
   main_view.sync();
