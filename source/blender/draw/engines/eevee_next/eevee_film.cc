@@ -275,7 +275,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     /* Set pass offsets.  */
 
     data_.display_id = aovs_info.display_id;
-    data_.display_is_value = aovs_info.display_is_value;
+    data_.display_mode = aovs_info.display_is_value ? DISPLAY_MODE_VALUE : DISPLAY_MODE_COLOR;
 
     /* Combined is in a separate buffer. */
     data_.combined_id = (enabled_passes_ & EEVEE_RENDER_PASS_COMBINED) ? 0 : -1;
@@ -286,13 +286,13 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     data_.value_len = 0;
 
     auto pass_index_get = [&](eViewLayerEEVEEPassType pass_type) {
-      bool is_value = pass_is_value(pass_type);
+      eDisplayMode display_mode = pass_display_mode(pass_type);
       int index = (enabled_passes_ & pass_type) ?
-                      (is_value ? data_.value_len : data_.color_len)++ :
+                      (display_mode == DISPLAY_MODE_VALUE ? data_.value_len : data_.color_len)++ :
                       -1;
       if (inst_.is_viewport() && inst_.v3d->shading.render_pass == pass_type) {
         data_.display_id = index;
-        data_.display_is_value = is_value;
+        data_.display_mode = display_mode;
       }
       return index;
     };
@@ -324,13 +324,28 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     if (enabled_passes_ & EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) {
       data_.cryptomatte_object_id = cryptomatte_id;
       cryptomatte_id += data_.cryptomatte_samples_len / 2;
+      if (inst_.is_viewport() &&
+          inst_.v3d->shading.render_pass == EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) {
+        data_.display_id = data_.cryptomatte_object_id;
+        data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
+      }
     }
     if (enabled_passes_ & EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET) {
       data_.cryptomatte_asset_id = cryptomatte_id;
       cryptomatte_id += data_.cryptomatte_samples_len / 2;
+      if (inst_.is_viewport() &&
+          inst_.v3d->shading.render_pass == EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET) {
+        data_.display_id = data_.cryptomatte_asset_id;
+        data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
+      }
     }
     if (enabled_passes_ & EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) {
       data_.cryptomatte_material_id = cryptomatte_id;
+      if (inst_.is_viewport() &&
+          inst_.v3d->shading.render_pass == EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) {
+        data_.display_id = data_.cryptomatte_material_id;
+        data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
+      }
     }
   }
   {
@@ -638,8 +653,8 @@ void Film::display()
 
 float *Film::read_pass(eViewLayerEEVEEPassType pass_type)
 {
-
-  bool is_value = pass_is_value(pass_type);
+  // TODO(jbakker): readback cryptomatte?
+  bool is_value = pass_display_mode(pass_type) == DISPLAY_MODE_VALUE;
   Texture &accum_tx = (pass_type == EEVEE_RENDER_PASS_COMBINED) ?
                           combined_tx_.current() :
                       (pass_type == EEVEE_RENDER_PASS_Z) ?

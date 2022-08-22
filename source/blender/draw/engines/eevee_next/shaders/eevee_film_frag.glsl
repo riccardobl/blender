@@ -13,12 +13,16 @@ void main()
     if (film_buf.display_id == -1) {
       out_color = texelFetch(in_combined_tx, texel_film, 0);
     }
-    else if (film_buf.display_is_value) {
+    else if (film_buf.display_mode == DISPLAY_MODE_VALUE) {
       out_color.rgb = imageLoad(value_accum_img, ivec3(texel_film, film_buf.display_id)).rrr;
       out_color.a = 1.0;
     }
-    else {
+    else if (film_buf.display_mode == DISPLAY_MODE_COLOR) {
       out_color = imageLoad(color_accum_img, ivec3(texel_film, film_buf.display_id));
+    }
+    else /* DISPLAY_MODE_CRYPTOMATTE */ {
+      out_color = cryptomatte_false_color(
+          imageLoad(cryptomatte_img, ivec3(texel_film, film_buf.display_id)).r);
     }
   }
   else {

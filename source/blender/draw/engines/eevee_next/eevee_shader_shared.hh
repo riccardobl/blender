@@ -194,6 +194,12 @@ BLI_STATIC_ASSERT_ALIGN(CameraData, 16)
 
 #define FILM_PRECOMP_SAMPLE_MAX 16
 
+enum eDisplayMode : uint32_t {
+  DISPLAY_MODE_COLOR = 0u,
+  DISPLAY_MODE_VALUE = 1u,
+  DISPLAY_MODE_CRYPTOMATTE = 2u,
+};
+
 struct FilmSample {
   int2 texel;
   float weight;
@@ -251,7 +257,7 @@ struct FilmData {
   /** Id of the render-pass to be displayed. -1 for combined. */
   int display_id;
   /** True if the render-pass to be displayed is from the value accum buffer. */
-  bool1 display_is_value;
+  int display_mode;
   /** True if we bypass the accumulation and directly output the accumulation buffer. */
   bool1 display_only;
   /** Start of AOVs and number of aov. */
