@@ -15,7 +15,19 @@ vec2 merge_cryptomatte_sample(vec2 cryptomatte_sample, float hash, float weight)
   return vec2(hash, cryptomatte_sample.y + weight);
 }
 
-void film_store_cryptomatte_sample(FilmSample dst, int cryptomatte_layer_id, float hash)
+vec4 cryptomatte_false_color(float hash)
+{
+#define UINT32_MAX (4294967295U)
+
+  uint m3hash = floatBitsToUint(hash);
+  return vec4(
+      hash, float(m3hash << 8) / float(UINT32_MAX), float(m3hash << 16) / float(UINT32_MAX), 1.0);
+}
+
+void film_store_cryptomatte_sample(FilmSample dst,
+                                   int cryptomatte_layer_id,
+                                   float hash,
+                                   out vec4 out_color)
 {
   float weight = dst.weight;
 
@@ -24,6 +36,9 @@ void film_store_cryptomatte_sample(FilmSample dst, int cryptomatte_layer_id, flo
     vec4 sample_pair = imageLoad(cryptomatte_img, img_co);
     if (can_merge_cryptomatte_sample(sample_pair.xy, hash)) {
       sample_pair.xy = merge_cryptomatte_sample(sample_pair.xy, hash, weight);
+      if (i == 0) {
+        out_color = cryptomatte_false_color(sample_pair.x);
+      }
     }
     else if (can_merge_cryptomatte_sample(sample_pair.zw, hash)) {
       sample_pair.zw = merge_cryptomatte_sample(sample_pair.zw, hash, weight);
@@ -36,15 +51,8 @@ void film_store_cryptomatte_sample(FilmSample dst, int cryptomatte_layer_id, flo
       continue;
     }
     imageStore(cryptomatte_img, img_co, sample_pair);
+    if (i == 0) {
+    }
     break;
   }
-}
-
-vec4 cryptomatte_false_color(float hash)
-{
-#define UINT32_MAX (4294967295U)
-
-  uint m3hash = floatBitsToUint(hash);
-  return vec4(
-      hash, float(m3hash << 8) / float(UINT32_MAX), float(m3hash << 16) / float(UINT32_MAX), 1.0);
 }

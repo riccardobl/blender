@@ -708,17 +708,17 @@ void film_process_data(ivec2 texel_film, out vec4 out_color, out float out_depth
     if (film_buf.cryptomatte_object_id != -1) {
       float hash = hashes.x;
       hashes = hashes.yzww;
-      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_object_id, hash);
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_object_id, hash, out_color);
     } 
     if (film_buf.cryptomatte_asset_id != -1) {
       float hash = hashes.x;
       hashes = hashes.yzww;
-      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_asset_id, hash);
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_asset_id, hash, out_color);
     } 
     if (film_buf.cryptomatte_material_id != -1) {
       float hash = hashes.x;
       hashes = hashes.yzww;
-      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_material_id, hash);
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_material_id, hash, out_color);
     } 
   }
 }
