@@ -131,6 +131,7 @@ void SyncModule::sync_mesh(Object *ob, ObjectHandle &ob_handle)
     is_alpha_blend = is_alpha_blend || material->is_alpha_blend_transparent;
   }
 
+  inst_.cryptomatte.sync_object(ob);
   // shadows.sync_object(ob, ob_handle, is_shadow_caster, is_alpha_blend);
 }
 
@@ -317,6 +318,7 @@ void SyncModule::sync_curves(Object *ob, ObjectHandle &ob_handle, ModifierData *
   shgroup_curves_call(material.prepass, ob, part_sys, modifier_data);
   shgroup_curves_call(material.shadow, ob, part_sys, modifier_data);
 
+  inst_.cryptomatte.sync_object(ob);
   /* TODO(fclem) Hair velocity. */
   // shading_passes.velocity.gpencil_add(ob, ob_handle);
 

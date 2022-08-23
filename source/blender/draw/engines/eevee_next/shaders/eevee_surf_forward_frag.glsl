@@ -106,11 +106,9 @@ void main()
   imageStore(rp_diffuse_color_img, out_texel, vec4(g_diffuse_data.color, 1.0));
   imageStore(rp_specular_color_img, out_texel, vec4(specular_color, 1.0));
   imageStore(rp_emission_img, out_texel, vec4(g_emission, 1.0));
-  /* TODO(jbakker): read object and asset hash from object data? */
-  imageStore(
-      rp_cryptomatte_img,
-      out_texel,
-      vec4(cryptomatte_material_hash, cryptomatte_material_hash, cryptomatte_material_hash, 1.0));
+  imageStore(rp_cryptomatte_img,
+             out_texel,
+             vec4(cryptomatte_object_buf[resource_id], cryptomatte_material_hash, 0.0));
 
   out_radiance.rgb *= 1.0 - g_holdout;
 

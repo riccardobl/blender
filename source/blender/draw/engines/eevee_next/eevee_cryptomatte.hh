@@ -44,11 +44,18 @@ class Cryptomatte {
   /** Number of enabled cryptomatte layers. */
   int layer_len_;
 
+  CryptomatteObjectBuf cryptomatte_object_buf;
+
  public:
   Cryptomatte(Instance &inst) : inst_(inst){};
   ~Cryptomatte(){};
 
   void init();
+  void begin_sync();
+  void sync_object(Object *ob);
+  void end_sync();
+
+  void bind_resources(DRWShadingGroup *grp);
 
   float hash(const ID &id) const;
 };

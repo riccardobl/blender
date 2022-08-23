@@ -74,7 +74,7 @@ void RenderBuffers::acquire(int2 extent)
       float_format, (aovs.value_len > 0) ? extent : int2(1), max_ii(1, aovs.value_len));
 
   eGPUTextureFormat cryptomatte_format = GPU_R32F;
-  const int cryptomatte_layer_len = inst_.film.cryptomatte_layer_len_get();
+  const int cryptomatte_layer_len = inst_.film.cryptomatte_layer_max_get();
   if (cryptomatte_layer_len == 2) {
     cryptomatte_format = GPU_RG32F;
   }

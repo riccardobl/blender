@@ -102,6 +102,7 @@ void Instance::begin_sync()
   materials.begin_sync();
   velocity.begin_sync(); /* NOTE: Also syncs camera. */
   lights.begin_sync();
+  cryptomatte.begin_sync();
 
   gpencil_engine_enabled = false;
 
@@ -178,6 +179,7 @@ void Instance::end_sync()
   lights.end_sync();
   sampling.end_sync();
   film.end_sync();
+  cryptomatte.end_sync();
 }
 
 void Instance::render_sync()

@@ -98,6 +98,7 @@ class Film {
   }
 
   eViewLayerEEVEEPassType enabled_passes_get() const;
+  int cryptomatte_layer_max_get() const;
   int cryptomatte_layer_len_get() const;
 
   static eDisplayMode pass_display_mode(eViewLayerEEVEEPassType pass_type)

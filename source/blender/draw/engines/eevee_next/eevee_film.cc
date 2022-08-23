@@ -517,6 +517,20 @@ int Film::cryptomatte_layer_len_get() const
   return result;
 }
 
+int Film::cryptomatte_layer_max_get() const
+{
+  if (data_.cryptomatte_material_id != -1) {
+    return 3;
+  }
+  if (data_.cryptomatte_asset_id != -1) {
+    return 2;
+  }
+  if (data_.cryptomatte_object_id != -1) {
+    return 1;
+  }
+  return 0;
+}
+
 void Film::update_sample_table()
 {
   data_.subpixel_offset = pixel_jitter_get();
