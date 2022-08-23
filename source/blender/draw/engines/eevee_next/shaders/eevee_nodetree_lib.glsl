@@ -253,11 +253,6 @@ void output_aov(vec4 color, float value, uint hash)
 #endif
 }
 
-void output_cryptomatte(float object_hash, float asset_hash, float material_hash) {
-#if defined(GPU_FRAGMENT_SHADER)
-#endif
-}
-
 #ifdef EEVEE_MATERIAL_STUBS
 #  define attrib_load()
 #  define nodetree_displacement() vec3(0.0)
