@@ -11,12 +11,12 @@ namespace blender::eevee {
 void Cryptomatte::init()
 {
   eViewLayerEEVEEPassType enabled_passes = inst_.film.enabled_passes_get();
-  layer_len_ = 0;
-  object_offset_ = (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) ? layer_len_++ : -1;
-  asset_offset_ = (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET) ? layer_len_++ : -1;
-  material_offset_ = (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) ? layer_len_++ : -1;
+  int layer_len = 0;
+  object_offset_ = (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) ? layer_len++ : -1;
+  asset_offset_ = (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET) ? layer_len++ : -1;
+  material_offset_ = (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) ? layer_len++ : -1;
 
-  BLI_assert_msg(layer_len_ == inst_.film.cryptomatte_layer_len_get(),
+  BLI_assert_msg(layer_len == inst_.film.cryptomatte_layer_len_get(),
                  "Cryptomatte and film mismatch");
 }
 

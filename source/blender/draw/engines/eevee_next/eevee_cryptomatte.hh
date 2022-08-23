@@ -41,9 +41,6 @@ class Cryptomatte {
   int asset_offset_;
   int material_offset_;
 
-  /** Number of enabled cryptomatte layers. */
-  int layer_len_;
-
   CryptomatteObjectBuf cryptomatte_object_buf;
 
  public:
