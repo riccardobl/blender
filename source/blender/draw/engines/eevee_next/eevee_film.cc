@@ -318,34 +318,23 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     data_.color_len += data_.aov_color_len;
     data_.value_len += data_.aov_value_len;
 
-    data_.cryptomatte_object_id = data_.cryptomatte_asset_id = data_.cryptomatte_material_id = -1;
     int cryptomatte_id = 0;
-    if (enabled_passes_ & EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) {
-      data_.cryptomatte_object_id = cryptomatte_id;
-      cryptomatte_id += data_.cryptomatte_samples_len / 2;
-      if (inst_.is_viewport() &&
-          inst_.v3d->shading.render_pass == EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) {
-        data_.display_id = data_.cryptomatte_object_id;
-        data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
+    auto cryptomatte_index_get = [&](eViewLayerEEVEEPassType pass_type) {
+      int index = -1;
+      if (enabled_passes_ & pass_type) {
+        index = cryptomatte_id;
+        cryptomatte_id += data_.cryptomatte_samples_len / 2;
+
+        if (inst_.is_viewport() && inst_.v3d->shading.render_pass == pass_type) {
+          data_.display_id = index;
+          data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
+        }
       }
-    }
-    if (enabled_passes_ & EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET) {
-      data_.cryptomatte_asset_id = cryptomatte_id;
-      cryptomatte_id += data_.cryptomatte_samples_len / 2;
-      if (inst_.is_viewport() &&
-          inst_.v3d->shading.render_pass == EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET) {
-        data_.display_id = data_.cryptomatte_asset_id;
-        data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
-      }
-    }
-    if (enabled_passes_ & EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) {
-      data_.cryptomatte_material_id = cryptomatte_id;
-      if (inst_.is_viewport() &&
-          inst_.v3d->shading.render_pass == EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) {
-        data_.display_id = data_.cryptomatte_material_id;
-        data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
-      }
-    }
+      return index;
+    };
+    data_.cryptomatte_object_id = cryptomatte_index_get(EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT);
+    data_.cryptomatte_asset_id = cryptomatte_index_get(EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET);
+    data_.cryptomatte_material_id = cryptomatte_index_get(EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL);
   }
   {
     /* TODO(@fclem): Over-scans. */
