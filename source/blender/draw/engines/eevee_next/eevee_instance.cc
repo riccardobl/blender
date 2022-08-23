@@ -238,8 +238,6 @@ void Instance::render_read_result(RenderLayer *render_layer, const char *view_na
     RenderPass *rp = RE_pass_find_by_name(render_layer, pass_name, view_name);
     if (rp) {
       float *result = film.read_pass(pass_type);
-      /* TODO(jbakker): Cryptomatte result can contain multiple textures and should be stored in
-       * multiple RenderPasses. This code needs to be tweaked a bit... */
       if (result) {
         BLI_mutex_lock(&render->update_render_passes_mutex);
         /* WORKAROUND: We use texture read to avoid using a framebuffer to get the render result.
