@@ -210,7 +210,6 @@ void Film::init(const int2 &extent, const rcti *output_rect)
 
 #undef ENABLE_FROM_LEGACY
     }
-    // TODO(jbakker): unsure if cryptomatte passes are passed along.
 
     /* Filter obsolete passes. */
     render_passes &= ~(EEVEE_RENDER_PASS_UNUSED_8 | EEVEE_RENDER_PASS_BLOOM);
