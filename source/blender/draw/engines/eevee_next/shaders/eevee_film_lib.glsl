@@ -706,16 +706,13 @@ void film_process_data(ivec2 texel_film, out vec4 out_color, out float out_depth
   if (film_buf.cryptomatte_samples_len != 0) {
     vec4 hashes = texelFetch(cryptomatte_tx, dst.texel, 0);
     if (film_buf.cryptomatte_object_id != -1) {
-      float hash = hashes.x;
-      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_object_id, hash, out_color);
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_object_id, hashes.x, out_color);
     }
     if (film_buf.cryptomatte_asset_id != -1) {
-      float hash = hashes.y;
-      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_asset_id, hash, out_color);
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_asset_id, hashes.y, out_color);
     }
     if (film_buf.cryptomatte_material_id != -1) {
-      float hash = hashes.z;
-      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_material_id, hash, out_color);
+      film_store_cryptomatte_sample(dst, film_buf.cryptomatte_material_id, hashes.z, out_color);
     }
   }
 }
