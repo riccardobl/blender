@@ -162,6 +162,45 @@ inline bool operator!=(const FilmData &a, const FilmData &b)
 /** \name Film
  * \{ */
 
+static eViewLayerEEVEEPassType enabled_passes(const ViewLayer *view_layer)
+{
+  eViewLayerEEVEEPassType result = eViewLayerEEVEEPassType(view_layer->eevee.render_passes);
+
+#define ENABLE_FROM_LEGACY(name_legacy, name_eevee) \
+  SET_FLAG_FROM_TEST(result, \
+                     (view_layer->passflag & SCE_PASS_##name_legacy) != 0, \
+                     EEVEE_RENDER_PASS_##name_eevee);
+
+  ENABLE_FROM_LEGACY(COMBINED, COMBINED)
+  ENABLE_FROM_LEGACY(Z, Z)
+  ENABLE_FROM_LEGACY(MIST, MIST)
+  ENABLE_FROM_LEGACY(NORMAL, NORMAL)
+  ENABLE_FROM_LEGACY(SHADOW, SHADOW)
+  ENABLE_FROM_LEGACY(AO, AO)
+  ENABLE_FROM_LEGACY(EMIT, EMIT)
+  ENABLE_FROM_LEGACY(ENVIRONMENT, ENVIRONMENT)
+  ENABLE_FROM_LEGACY(DIFFUSE_COLOR, DIFFUSE_COLOR)
+  ENABLE_FROM_LEGACY(GLOSSY_COLOR, SPECULAR_COLOR)
+  ENABLE_FROM_LEGACY(DIFFUSE_DIRECT, DIFFUSE_LIGHT)
+  ENABLE_FROM_LEGACY(GLOSSY_DIRECT, SPECULAR_LIGHT)
+  ENABLE_FROM_LEGACY(ENVIRONMENT, ENVIRONMENT)
+  ENABLE_FROM_LEGACY(VECTOR, VECTOR)
+
+#undef ENABLE_FROM_LEGACY
+
+  SET_FLAG_FROM_TEST(result,
+                     view_layer->cryptomatte_flag & VIEW_LAYER_CRYPTOMATTE_OBJECT,
+                     EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT);
+  SET_FLAG_FROM_TEST(result,
+                     view_layer->cryptomatte_flag & VIEW_LAYER_CRYPTOMATTE_ASSET,
+                     EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET);
+  SET_FLAG_FROM_TEST(result,
+                     view_layer->cryptomatte_flag & VIEW_LAYER_CRYPTOMATTE_MATERIAL,
+                     EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL);
+
+  return result;
+}
+
 void Film::init(const int2 &extent, const rcti *output_rect)
 {
   Sampling &sampling = inst_.sampling;
@@ -186,29 +225,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     }
     else {
       /* Render Case. */
-      render_passes = eViewLayerEEVEEPassType(inst_.view_layer->eevee.render_passes);
-
-#define ENABLE_FROM_LEGACY(name_legacy, name_eevee) \
-  SET_FLAG_FROM_TEST(render_passes, \
-                     (inst_.view_layer->passflag & SCE_PASS_##name_legacy) != 0, \
-                     EEVEE_RENDER_PASS_##name_eevee);
-
-      ENABLE_FROM_LEGACY(COMBINED, COMBINED)
-      ENABLE_FROM_LEGACY(Z, Z)
-      ENABLE_FROM_LEGACY(MIST, MIST)
-      ENABLE_FROM_LEGACY(NORMAL, NORMAL)
-      ENABLE_FROM_LEGACY(SHADOW, SHADOW)
-      ENABLE_FROM_LEGACY(AO, AO)
-      ENABLE_FROM_LEGACY(EMIT, EMIT)
-      ENABLE_FROM_LEGACY(ENVIRONMENT, ENVIRONMENT)
-      ENABLE_FROM_LEGACY(DIFFUSE_COLOR, DIFFUSE_COLOR)
-      ENABLE_FROM_LEGACY(GLOSSY_COLOR, SPECULAR_COLOR)
-      ENABLE_FROM_LEGACY(DIFFUSE_DIRECT, DIFFUSE_LIGHT)
-      ENABLE_FROM_LEGACY(GLOSSY_DIRECT, SPECULAR_LIGHT)
-      ENABLE_FROM_LEGACY(ENVIRONMENT, ENVIRONMENT)
-      ENABLE_FROM_LEGACY(VECTOR, VECTOR)
-
-#undef ENABLE_FROM_LEGACY
+      render_passes = enabled_passes(inst_.view_layer);
     }
 
     /* Filter obsolete passes. */
@@ -656,12 +673,16 @@ void Film::display()
 float *Film::read_pass(eViewLayerEEVEEPassType pass_type)
 {
   // TODO(jbakker): readback cryptomatte?
-  bool is_value = pass_display_mode(pass_type) == DISPLAY_MODE_VALUE;
+  eDisplayMode pass_mode = pass_display_mode(pass_type);
+  const bool is_value = pass_mode == DISPLAY_MODE_VALUE;
+  const bool is_cryptomatte = pass_mode == DISPLAY_MODE_CRYPTOMATTE;
+
   Texture &accum_tx = (pass_type == EEVEE_RENDER_PASS_COMBINED) ?
                           combined_tx_.current() :
                       (pass_type == EEVEE_RENDER_PASS_Z) ?
                           depth_tx_ :
-                          (is_value ? value_accum_tx_ : color_accum_tx_);
+                          (is_cryptomatte ? cryptomatte_tx_ :
+                                            (is_value ? value_accum_tx_ : color_accum_tx_));
 
   accum_tx.ensure_layer_views();
 
