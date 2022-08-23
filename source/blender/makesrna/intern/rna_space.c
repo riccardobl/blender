@@ -1426,6 +1426,7 @@ static const EnumPropertyItem *rna_3DViewShading_render_pass_itemf(bContext *C,
 
   const bool bloom_enabled = scene->eevee.flag & SCE_EEVEE_BLOOM_ENABLED;
   const bool aov_available = BKE_view_layer_has_valid_aov(view_layer);
+  const bool eevee_next_active = STREQ(scene->r.engine, "BLENDER_EEVEE_NEXT");
 
   int totitem = 0;
   EnumPropertyItem *result = NULL;
@@ -1445,6 +1446,12 @@ static const EnumPropertyItem *rna_3DViewShading_render_pass_itemf(bContext *C,
         RNA_enum_item_add(&result, &totitem, &aov_template);
         aov_template.value++;
       }
+    }
+    else if (ELEM(item->value,
+                  EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT,
+                  EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET,
+                  EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) &&
+             !eevee_next_active) {
     }
     else if (!((!bloom_enabled &&
                 (item->value == EEVEE_RENDER_PASS_BLOOM || STREQ(item->name, "Effects"))) ||
