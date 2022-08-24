@@ -29,6 +29,8 @@ enum eShaderType {
   FILM_FRAG = 0,
   FILM_COMP,
 
+  CRYPTOMATTE_POST,
+
   DOF_BOKEH_LUT,
   DOF_DOWNSAMPLE,
   DOF_FILTER,
