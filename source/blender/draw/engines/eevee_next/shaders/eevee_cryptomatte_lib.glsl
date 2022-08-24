@@ -8,6 +8,7 @@ bool can_merge_cryptomatte_sample(vec2 cryptomatte_sample, float hash)
   if (cryptomatte_sample.x == hash) {
     return true;
   }
+  return false;
 }
 
 vec2 merge_cryptomatte_sample(vec2 cryptomatte_sample, float hash, float weight)
@@ -44,7 +45,8 @@ void film_store_cryptomatte_sample(FilmSample dst,
       sample_pair.zw = merge_cryptomatte_sample(sample_pair.zw, hash, weight);
     }
     else if (i == film_buf.cryptomatte_samples_len / 2 - 1) {
-      // TODO: new hash, no space, we should compare/overwrite lowest sample.
+      // TODO(jbakker): New hash detected, but there is no space left to store it. Currently we
+      // will ignore this sample, but ideally we could replace a sample with a lowest weight.
       continue;
     }
     else {
