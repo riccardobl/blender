@@ -670,7 +670,7 @@ void Film::display()
   /* IMPORTANT: Do not swap! No accumulation has happened. */
 }
 
-float *Film::read_pass(eViewLayerEEVEEPassType pass_type)
+float *Film::read_pass(eViewLayerEEVEEPassType pass_type, int layer_offset)
 {
   // TODO(jbakker): readback cryptomatte?
   eDisplayMode pass_mode = pass_display_mode(pass_type);
@@ -687,7 +687,7 @@ float *Film::read_pass(eViewLayerEEVEEPassType pass_type)
   accum_tx.ensure_layer_views();
 
   int index = pass_id_get(pass_type);
-  GPUTexture *pass_tx = accum_tx.layer_view(index);
+  GPUTexture *pass_tx = accum_tx.layer_view(index + layer_offset);
 
   GPU_memory_barrier(GPU_BARRIER_TEXTURE_UPDATE);
 

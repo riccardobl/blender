@@ -122,6 +122,8 @@ class Instance {
 
   void draw_viewport(DefaultFramebufferList *dfbl);
 
+  static void update_passes(RenderEngine *engine, Scene *scene, ViewLayer *view_layer);
+
   bool is_viewport() const
   {
     return render == nullptr;

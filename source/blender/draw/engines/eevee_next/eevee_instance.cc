@@ -234,10 +234,15 @@ void Instance::render_read_result(RenderLayer *render_layer, const char *view_na
       continue;
     }
 
-    const char *pass_name = Film::pass_to_render_pass_name(pass_type);
-    RenderPass *rp = RE_pass_find_by_name(render_layer, pass_name, view_name);
-    if (rp) {
-      float *result = film.read_pass(pass_type);
+    Vector<std::string> pass_names = Film::pass_to_render_pass_names(pass_type, view_layer);
+    for (int64_t pass_offset : IndexRange(pass_names.size())) {
+      RenderPass *rp = RE_pass_find_by_name(
+          render_layer, pass_names[pass_offset].c_str(), view_name);
+      if (!rp) {
+        continue;
+      }
+      float *result = film.read_pass(pass_type, pass_offset);
+
       if (result) {
         BLI_mutex_lock(&render->update_render_passes_mutex);
         /* WORKAROUND: We use texture read to avoid using a framebuffer to get the render result.
@@ -253,10 +258,13 @@ void Instance::render_read_result(RenderLayer *render_layer, const char *view_na
 
   /* The vector pass is initialized to weird values. Set it to neutral value if not rendered. */
   if ((pass_bits & EEVEE_RENDER_PASS_VECTOR) == 0) {
-    const char *vector_pass_name = Film::pass_to_render_pass_name(EEVEE_RENDER_PASS_VECTOR);
-    RenderPass *vector_rp = RE_pass_find_by_name(render_layer, vector_pass_name, view_name);
-    if (vector_rp) {
-      memset(vector_rp->rect, 0, sizeof(float) * 4 * vector_rp->rectx * vector_rp->recty);
+    for (std::string vector_pass_name :
+         Film::pass_to_render_pass_names(EEVEE_RENDER_PASS_VECTOR, view_layer)) {
+      RenderPass *vector_rp = RE_pass_find_by_name(
+          render_layer, vector_pass_name.c_str(), view_name);
+      if (vector_rp) {
+        memset(vector_rp->rect, 0, sizeof(float) * 4 * vector_rp->rectx * vector_rp->recty);
+      }
     }
   }
 }
@@ -309,6 +317,23 @@ void Instance::draw_viewport(DefaultFramebufferList *dfbl)
     ss << "Compiling Shaders " << materials.queued_shaders_count;
     info = ss.str();
   }
+}
+
+void Instance::update_passes(RenderEngine *engine, Scene *scene, ViewLayer *view_layer)
+{
+  auto register_cryptomatte_passes = [&](eViewLayerCryptomatteFlags cryptomatte_layer,
+                                         eViewLayerEEVEEPassType eevee_pass) {
+    if (view_layer->cryptomatte_flag & cryptomatte_layer) {
+      for (std::string pass_name : Film::pass_to_render_pass_names(eevee_pass, view_layer)) {
+        RE_engine_register_pass(
+            engine, scene, view_layer, pass_name.c_str(), 4, "RGBA", SOCK_RGBA);
+      }
+    }
+  };
+  register_cryptomatte_passes(VIEW_LAYER_CRYPTOMATTE_OBJECT, EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT);
+  register_cryptomatte_passes(VIEW_LAYER_CRYPTOMATTE_ASSET, EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET);
+  register_cryptomatte_passes(VIEW_LAYER_CRYPTOMATTE_MATERIAL,
+                              EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL);
 }
 
 /** \} */

@@ -81,7 +81,7 @@ class Film {
   /** Blit to display. No rendered sample needed. */
   void display();
 
-  float *read_pass(eViewLayerEEVEEPassType pass_type);
+  float *read_pass(eViewLayerEEVEEPassType pass_type, int layer_offset);
   float *read_aov(ViewLayerAOV *aov);
 
   /** Returns shading views internal resolution. */
@@ -178,47 +178,80 @@ class Film {
     }
   }
 
-  static const char *pass_to_render_pass_name(eViewLayerEEVEEPassType pass_type)
+  static const Vector<std::string> pass_to_render_pass_names(eViewLayerEEVEEPassType pass_type,
+                                                             const ViewLayer *view_layer)
   {
+    Vector<std::string> result;
+
+    auto build_cryptomatte_passes = [&](const char *pass_name) {
+      const int num_cryptomatte_passes = (view_layer->cryptomatte_levels + 1) / 2;
+      for (int pass = 0; pass < num_cryptomatte_passes; pass++) {
+        std::stringstream ss;
+        ss.fill('0');
+        ss << pass_name;
+        ss.width(2);
+        ss << pass;
+        result.append(ss.str());
+      }
+    };
+
     switch (pass_type) {
       case EEVEE_RENDER_PASS_COMBINED:
-        return RE_PASSNAME_COMBINED;
+        result.append(RE_PASSNAME_COMBINED);
+        break;
       case EEVEE_RENDER_PASS_Z:
-        return RE_PASSNAME_Z;
+        result.append(RE_PASSNAME_Z);
+        break;
       case EEVEE_RENDER_PASS_MIST:
-        return RE_PASSNAME_MIST;
+        result.append(RE_PASSNAME_MIST);
+        break;
       case EEVEE_RENDER_PASS_NORMAL:
-        return RE_PASSNAME_NORMAL;
+        result.append(RE_PASSNAME_NORMAL);
+        break;
       case EEVEE_RENDER_PASS_DIFFUSE_LIGHT:
-        return RE_PASSNAME_DIFFUSE_DIRECT;
+        result.append(RE_PASSNAME_DIFFUSE_DIRECT);
+        break;
       case EEVEE_RENDER_PASS_DIFFUSE_COLOR:
-        return RE_PASSNAME_DIFFUSE_COLOR;
+        result.append(RE_PASSNAME_DIFFUSE_COLOR);
+        break;
       case EEVEE_RENDER_PASS_SPECULAR_LIGHT:
-        return RE_PASSNAME_GLOSSY_DIRECT;
+        result.append(RE_PASSNAME_GLOSSY_DIRECT);
+        break;
       case EEVEE_RENDER_PASS_SPECULAR_COLOR:
-        return RE_PASSNAME_GLOSSY_COLOR;
+        result.append(RE_PASSNAME_GLOSSY_COLOR);
+        break;
       case EEVEE_RENDER_PASS_VOLUME_LIGHT:
-        return RE_PASSNAME_VOLUME_LIGHT;
+        result.append(RE_PASSNAME_VOLUME_LIGHT);
+        break;
       case EEVEE_RENDER_PASS_EMIT:
-        return RE_PASSNAME_EMIT;
+        result.append(RE_PASSNAME_EMIT);
+        break;
       case EEVEE_RENDER_PASS_ENVIRONMENT:
-        return RE_PASSNAME_ENVIRONMENT;
+        result.append(RE_PASSNAME_ENVIRONMENT);
+        break;
       case EEVEE_RENDER_PASS_SHADOW:
-        return RE_PASSNAME_SHADOW;
+        result.append(RE_PASSNAME_SHADOW);
+        break;
       case EEVEE_RENDER_PASS_AO:
-        return RE_PASSNAME_AO;
+        result.append(RE_PASSNAME_AO);
+        break;
       case EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT:
-        return RE_PASSNAME_CRYPTOMATTE_OBJECT;
+        build_cryptomatte_passes(RE_PASSNAME_CRYPTOMATTE_OBJECT);
+        break;
       case EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET:
-        return RE_PASSNAME_CRYPTOMATTE_ASSET;
+        build_cryptomatte_passes(RE_PASSNAME_CRYPTOMATTE_ASSET);
+        break;
       case EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL:
-        return RE_PASSNAME_CRYPTOMATTE_MATERIAL;
+        build_cryptomatte_passes(RE_PASSNAME_CRYPTOMATTE_MATERIAL);
+        break;
       case EEVEE_RENDER_PASS_VECTOR:
-        return RE_PASSNAME_VECTOR;
+        result.append(RE_PASSNAME_VECTOR);
+        break;
       default:
         BLI_assert(0);
-        return "";
+        break;
     }
+    return result;
   }
 
  private:

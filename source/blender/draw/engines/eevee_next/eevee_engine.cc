@@ -172,7 +172,7 @@ static void eevee_render_update_passes(RenderEngine *engine, Scene *scene, ViewL
   if (!GPU_shader_storage_buffer_objects_support()) {
     return;
   }
-  UNUSED_VARS(engine, scene, view_layer);
+  eevee::Instance::update_passes(engine, scene, view_layer);
 }
 
 static const DrawEngineDataSize eevee_data_size = DRW_VIEWPORT_DATA_SIZE(EEVEE_Data);
