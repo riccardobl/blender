@@ -32,7 +32,7 @@ void film_store_cryptomatte_sample(FilmSample dst,
 {
   float weight = dst.weight;
 
-  if (!film_buf.use_history) {
+  if (!film_buf.use_history || film_buf.use_reprojection) {
     for (int i = 0; i < film_buf.cryptomatte_samples_len / 2; i++) {
       ivec3 img_co = ivec3(dst.texel, cryptomatte_layer_id + i);
       imageStore(cryptomatte_img, img_co, vec4(0.0));
