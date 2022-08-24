@@ -1,11 +1,10 @@
 #define CRYPTOMATTE_LEVELS_MAX 16
 
-void cryptomatte_sort_layer(ivec2 texel, int layer)
+void cryptomatte_load_samples(ivec2 texel, int layer, out vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
   int pass_len = (cryptomatte_levels + 1) / 2;
   int layer_id = layer * pass_len;
 
-  vec2 samples[CRYPTOMATTE_LEVELS_MAX];
   /* Read all samples from the cryptomatte layer. */
   for (int p = 0; p < pass_len; p++) {
     vec4 pass_sample = imageLoad(cryptomatte_img, ivec3(texel, p + layer_id));
@@ -15,9 +14,12 @@ void cryptomatte_sort_layer(ivec2 texel, int layer)
   for (int i = pass_len * 2; i < CRYPTOMATTE_LEVELS_MAX; i++) {
     samples[i] = vec2(0.0);
   }
+}
 
+bool cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
+{
   /* Sort samples. Lame implementation, can be replaced with a more efficient algorithm. */
-  bool samples_changed = false;
+  bool changed = false;
   for (int i = 0; i < cryptomatte_levels - 1 && samples[i].y != 0.0; i++) {
     int highest_index = i;
     float highest_weight = samples[i].y;
@@ -32,18 +34,23 @@ void cryptomatte_sort_layer(ivec2 texel, int layer)
       vec2 tmp = samples[i];
       samples[i] = samples[highest_index];
       samples[highest_index] = tmp;
-      samples_changed = true;
+      changed = true;
     }
   }
+  return changed;
+}
+
+void cryptomatte_store_samples(ivec2 texel, int layer, in vec2 samples[CRYPTOMATTE_LEVELS_MAX])
+{
+  int pass_len = (cryptomatte_levels + 1) / 2;
+  int layer_id = layer * pass_len;
 
   /* Store samples back to the cryptomatte layer. */
-  if (samples_changed) {
-    for (int p = 0; p < pass_len; p++) {
-      vec4 pass_sample;
-      pass_sample.xy = samples[p * 2];
-      pass_sample.zw = samples[p * 2 + 1];
-      imageStore(cryptomatte_img, ivec3(texel, p + layer_id), pass_sample);
-    }
+  for (int p = 0; p < pass_len; p++) {
+    vec4 pass_sample;
+    pass_sample.xy = samples[p * 2];
+    pass_sample.zw = samples[p * 2 + 1];
+    imageStore(cryptomatte_img, ivec3(texel, p + layer_id), pass_sample);
   }
 }
 
@@ -51,6 +58,12 @@ void main()
 {
   ivec2 texel = ivec2(gl_GlobalInvocationID.xy);
   for (int layer = 0; layer < cryptomatte_layer_len; layer++) {
-    cryptomatte_sort_layer(texel, layer);
+    vec2 samples[CRYPTOMATTE_LEVELS_MAX];
+    cryptomatte_load_samples(texel, layer, samples);
+    bool changed = cryptomatte_sort_samples(samples);
+    /* TODO(jbakker): Normalize the weights based on the film pixel weight. */
+    if (changed) {
+      cryptomatte_store_samples(texel, layer, samples);
+    }
   }
 }
