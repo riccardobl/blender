@@ -31,6 +31,7 @@
 #include "BKE_fcurve.h"
 #include "BKE_global.h"
 #include "BKE_gpencil.h"
+#include "BKE_layer.h"
 #include "BKE_lib_id.h"
 #include "BKE_mask.h"
 #include "BKE_nla.h"
@@ -2971,11 +2972,9 @@ static int click_select_channel_object(bContext *C,
     }
   }
   else {
-    Base *b;
-
     /* deselect all */
     /* TODO: should this deselect all other types of channels too? */
-    for (b = view_layer->object_bases.first; b; b = b->next) {
+    LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       ED_object_base_select(b, BA_DESELECT);
       if (b->object->adt) {
         b->object->adt->flag &= ~(ADT_UI_SELECTED | ADT_UI_ACTIVE);

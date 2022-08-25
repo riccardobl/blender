@@ -1847,7 +1847,6 @@ static size_t animdata_filter_gpencil(bAnimContext *ac,
   size_t items = 0;
 
   ViewLayer *view_layer = (ViewLayer *)ac->view_layer;
-  Base *base;
 
   /* Include all annotation datablocks. */
   if (((ads->filterflag & ADS_FILTER_ONLYSEL) == 0) ||
@@ -1859,7 +1858,7 @@ static size_t animdata_filter_gpencil(bAnimContext *ac,
     }
   }
   /* Objects in the scene */
-  for (base = view_layer->object_bases.first; base; base = base->next) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     /* Only consider this object if it has got some GP data (saving on all the other tests) */
     if (base->object && (base->object->type == OB_GPENCIL)) {
       Object *ob = base->object;
@@ -3174,11 +3173,11 @@ static Base **animdata_filter_ds_sorted_bases(bDopeSheet *ads,
                                               size_t *r_usable_bases)
 {
   /* Create an array with space for all the bases, but only containing the usable ones */
-  size_t tot_bases = BLI_listbase_count(&view_layer->object_bases);
+  size_t tot_bases = BLI_listbase_count(BKE_view_layer_object_bases_get(view_layer, __func__));
   size_t num_bases = 0;
 
   Base **sorted_bases = MEM_mallocN(sizeof(Base *) * tot_bases, "Dopesheet Usable Sorted Bases");
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (animdata_filter_base_is_ok(ads, base, OB_MODE_OBJECT, filter_mode)) {
       sorted_bases[num_bases++] = base;
     }
@@ -3248,6 +3247,7 @@ static size_t animdata_filter_dopesheet(bAnimContext *ac,
    * - Don't do this if this behavior has been turned off (i.e. due to it being too slow)
    * - Don't do this if there's just a single object
    */
+  // TODO: Use BKE_view_layer_object_bases_get?
   if ((filter_mode & ANIMFILTER_LIST_CHANNELS) && !(ads->flag & ADS_FLAG_NO_DB_SORT) &&
       (view_layer->object_bases.first != view_layer->object_bases.last)) {
     /* Filter list of bases (i.e. objects), sort them, then add their contents normally... */
@@ -3274,7 +3274,7 @@ static size_t animdata_filter_dopesheet(bAnimContext *ac,
      */
     Object *obact = BKE_view_layer_active_object_get(view_layer);
     const eObjectMode object_mode = obact ? obact->mode : OB_MODE_OBJECT;
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if (animdata_filter_base_is_ok(ads, base, object_mode, filter_mode)) {
         /* since we're still here, this object should be usable */
         items += animdata_filter_dopesheet_ob(ac, anim_data, ads, base, filter_mode);

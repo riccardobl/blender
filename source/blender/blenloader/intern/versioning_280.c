@@ -517,7 +517,7 @@ static void do_version_layers_to_collections(Main *bmain, Scene *scene)
       view_layer->basact = BKE_view_layer_base_find(view_layer, scene->basact->object);
     }
 
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if ((base->flag & BASE_SELECTABLE) && (base->object->flag & SELECT)) {
         base->flag |= BASE_SELECTED;
       }
@@ -543,7 +543,7 @@ static void do_version_layers_to_collections(Main *bmain, Scene *scene)
     }
 
     /* convert selected bases */
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if ((base->flag & BASE_SELECTABLE) && (base->object->flag & SELECT)) {
         base->flag |= BASE_SELECTED;
       }

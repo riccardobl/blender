@@ -208,6 +208,19 @@ struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(ViewLayer 
   return BKE_view_layer_array_from_objects_in_mode_params(view_layer, v3d, r_len, &params);
 }
 
+struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer,
+                                                 const char *UNUSED(name))
+{
+  // TODO: BLI_assert_msg(view_layer->flags & ..., name);
+  return &view_layer->object_bases;
+}
+const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
+                                                             const char *UNUSED(name))
+{
+  // TODO: BLI_assert_msg(view_layer->flags & ..., name);
+  return &view_layer->object_bases;
+}
+
 /** \} */
 
 /* -------------------------------------------------------------------- */

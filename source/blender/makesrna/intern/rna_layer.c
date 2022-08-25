@@ -196,8 +196,9 @@ static PointerRNA rna_ViewLayer_depsgraph_get(PointerRNA *ptr)
 static void rna_LayerObjects_selected_begin(CollectionPropertyIterator *iter, PointerRNA *ptr)
 {
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
-  rna_iterator_listbase_begin(
-      iter, &view_layer->object_bases, rna_ViewLayer_objects_selected_skip);
+  rna_iterator_listbase_begin(iter,
+                              BKE_view_layer_object_bases_get(view_layer, __func__),
+                              rna_ViewLayer_objects_selected_skip);
 }
 
 static void rna_ViewLayer_update_tagged(ID *id_ptr,
@@ -560,6 +561,7 @@ void RNA_def_view_layer(BlenderRNA *brna)
   prop = RNA_def_property(srna, "objects", PROP_COLLECTION, PROP_NONE);
   RNA_def_property_collection_sdna(prop, NULL, "object_bases", NULL);
   RNA_def_property_struct_type(prop, "Object");
+  // TODO: Use BKE_view_layer_object_bases_get?
   RNA_def_property_collection_funcs(
       prop, NULL, NULL, NULL, "rna_ViewLayer_objects_get", NULL, NULL, NULL, NULL);
   RNA_def_property_ui_text(prop, "Objects", "All the objects in this layer");

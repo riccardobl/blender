@@ -1572,7 +1572,7 @@ static int outliner_unhide_all_exec(bContext *C, wmOperator *UNUSED(op))
   }
 
   /* Unhide all objects. */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->flag &= ~BASE_HIDDEN;
   }
 

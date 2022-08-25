@@ -22,6 +22,7 @@
 #include "BKE_armature.h"
 #include "BKE_editmesh.h"
 #include "BKE_lattice.h"
+#include "BKE_layer.h"
 #include "BKE_object.h"
 #include "BKE_scene.h"
 
@@ -179,7 +180,7 @@ void ED_object_xform_skip_child_container_item_ensure_from_array(
     BLI_gset_add(objects_in_transdata, ob);
   }
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if (ob->parent != NULL) {
       if (!BLI_gset_haskey(objects_in_transdata, ob)) {
@@ -209,7 +210,7 @@ void ED_object_xform_skip_child_container_item_ensure_from_array(
     }
   }
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
 
     if (BLI_gset_haskey(objects_in_transdata, ob)) {

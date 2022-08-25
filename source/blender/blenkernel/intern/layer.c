@@ -245,7 +245,7 @@ void BKE_view_layer_free_ex(ViewLayer *view_layer, const bool do_id_user)
 {
   view_layer->basact = NULL;
 
-  BLI_freelistN(&view_layer->object_bases);
+  BLI_freelistN(BKE_view_layer_object_bases_get(view_layer, __func__));
 
   if (view_layer->object_bases_hash) {
     BLI_ghash_free(view_layer->object_bases_hash, NULL, NULL);
@@ -285,7 +285,7 @@ void BKE_view_layer_free_ex(ViewLayer *view_layer, const bool do_id_user)
 
 void BKE_view_layer_selected_objects_tag(ViewLayer *view_layer, const int tag)
 {
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if ((base->flag & BASE_SELECTED) != 0) {
       base->object->flag |= tag;
     }
@@ -310,7 +310,7 @@ static bool find_scene_collection_in_scene_collections(ListBase *lb, const Layer
 
 Object *BKE_view_layer_camera_find(ViewLayer *view_layer)
 {
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->object->type == OB_CAMERA) {
       return base->object;
     }
@@ -342,7 +342,8 @@ static void view_layer_bases_hash_create(ViewLayer *view_layer, const bool do_ba
     if (view_layer->object_bases_hash == NULL) {
       GHash *hash = BLI_ghash_new(BLI_ghashutil_ptrhash, BLI_ghashutil_ptrcmp, __func__);
 
-      LISTBASE_FOREACH_MUTABLE (Base *, base, &view_layer->object_bases) {
+      LISTBASE_FOREACH_MUTABLE (
+          Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (base->object) {
           void **val_pp;
           if (!BLI_ghash_ensure_p(hash, base->object, &val_pp)) {
@@ -358,7 +359,7 @@ static void view_layer_bases_hash_create(ViewLayer *view_layer, const bool do_ba
             if (view_layer->basact == base) {
               view_layer->basact = NULL;
             }
-            BLI_freelinkN(&view_layer->object_bases, base);
+            BLI_freelinkN(BKE_view_layer_object_bases_get(view_layer, __func__), base);
           }
           else {
             CLOG_FATAL(&LOG,
@@ -387,9 +388,7 @@ Base *BKE_view_layer_base_find(ViewLayer *view_layer, Object *ob)
 
 void BKE_view_layer_base_deselect_all(ViewLayer *view_layer)
 {
-  Base *base;
-
-  for (base = view_layer->object_bases.first; base; base = base->next) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->flag &= ~BASE_SELECTED;
   }
 }
@@ -495,13 +494,15 @@ void BKE_view_layer_copy_data(Scene *scene_dst,
 
   /* Clear temporary data. */
   BLI_listbase_clear(&view_layer_dst->drawdata);
+  // TODO: BKE_view_layer_object_bases_get should we set tag the view_layer_dst here for rebuild.
   view_layer_dst->object_bases_array = NULL;
   view_layer_dst->object_bases_hash = NULL;
 
   /* Copy layer collections and object bases. */
   /* Inline 'BLI_duplicatelist' and update the active base. */
   BLI_listbase_clear(&view_layer_dst->object_bases);
-  LISTBASE_FOREACH (Base *, base_src, &view_layer_src->object_bases) {
+  LISTBASE_FOREACH (
+      const Base *, base_src, BKE_view_layer_object_bases_get_const(view_layer_src, __func__)) {
     Base *base_dst = MEM_dupallocN(base_src);
     BLI_addtail(&view_layer_dst->object_bases, base_dst);
     if (view_layer_src->basact == base_src) {
@@ -985,7 +986,7 @@ static void layer_collection_objects_sync(ViewLayer *view_layer,
        * case also works. */
       base = *base_p;
       if (!ELEM(base, r_lb_new_object_bases->first, r_lb_new_object_bases->last)) {
-        BLI_remlink(&view_layer->object_bases, base);
+        BLI_remlink(BKE_view_layer_object_bases_get(view_layer, __func__), base);
         BLI_addtail(r_lb_new_object_bases, base);
       }
     }
@@ -1269,7 +1270,7 @@ void BKE_layer_collection_sync(const Scene *scene, ViewLayer *view_layer)
   }
 
   /* Clear visible and selectable flags to be reset. */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->flag &= ~g_base_collection_flags;
     base->flag_from_collection &= ~g_base_collection_flags;
   }
@@ -1298,7 +1299,7 @@ void BKE_layer_collection_sync(const Scene *scene, ViewLayer *view_layer)
   master_layer_resync = NULL;
 
   /* Any remaining object bases are to be removed. */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (view_layer->basact == base) {
       view_layer->basact = NULL;
     }
@@ -1319,7 +1320,7 @@ void BKE_layer_collection_sync(const Scene *scene, ViewLayer *view_layer)
 
   view_layer_objects_base_cache_validate(view_layer, NULL);
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     BKE_base_eval_flags(base);
   }
 
@@ -1492,7 +1493,7 @@ void BKE_base_set_visible(Scene *scene, ViewLayer *view_layer, Base *base, bool 
 {
   if (!extend) {
     /* Make only one base visible. */
-    LISTBASE_FOREACH (Base *, other, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, other, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       other->flag |= BASE_HIDDEN;
     }
 
@@ -1684,7 +1685,7 @@ void BKE_layer_collection_local_sync(ViewLayer *view_layer, const View3D *v3d)
   const unsigned short local_collections_uuid = v3d->local_collections_uuid;
 
   /* Reset flags and set the bases visible by default. */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->local_collections_bits &= ~local_collections_uuid;
   }
 
@@ -1934,7 +1935,7 @@ static void object_bases_iterator_begin(BLI_Iterator *iter, void *data_in_v, con
   ObjectsVisibleIteratorData *data_in = data_in_v;
   ViewLayer *view_layer = data_in->view_layer;
   const View3D *v3d = data_in->v3d;
-  Base *base = view_layer->object_bases.first;
+  Base *base = BKE_view_layer_object_bases_get(view_layer, __func__)->first;
 
   /* when there are no objects */
   if (base == NULL) {
@@ -2166,6 +2167,8 @@ void BKE_view_layer_bases_in_mode_iterator_next(BLI_Iterator *iter)
 
   if (base == data->base_active) {
     /* first step */
+    // TODO: We should assure that the object_bases are valid. Adding
+    // BKE_view_layer_object_bases_get here seems not correct. this should happen by the caller.
     base = data->view_layer->object_bases.first;
     if ((base == data->base_active) && BKE_base_is_visible(data->v3d, base)) {
       base = base->next;
@@ -2235,12 +2238,13 @@ static void layer_eval_view_layer(struct Depsgraph *depsgraph,
   DEG_debug_print_eval(depsgraph, __func__, view_layer->name, view_layer);
 
   /* Create array of bases, for fast index-based lookup. */
-  const int num_object_bases = BLI_listbase_count(&view_layer->object_bases);
+  const int num_object_bases = BLI_listbase_count(
+      BKE_view_layer_object_bases_get(view_layer, __func__));
   MEM_SAFE_FREE(view_layer->object_bases_array);
   view_layer->object_bases_array = MEM_malloc_arrayN(
       num_object_bases, sizeof(Base *), "view_layer->object_bases_array");
   int base_index = 0;
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     view_layer->object_bases_array[base_index++] = base;
   }
 }
@@ -2273,7 +2277,7 @@ static void write_layer_collections(BlendWriter *writer, ListBase *lb)
 void BKE_view_layer_blend_write(BlendWriter *writer, ViewLayer *view_layer)
 {
   BLO_write_struct(writer, ViewLayer, view_layer);
-  BLO_write_struct_list(writer, Base, &view_layer->object_bases);
+  BLO_write_struct_list(writer, Base, BKE_view_layer_object_bases_get(view_layer, __func__));
 
   if (view_layer->id_properties) {
     IDP_BlendWrite(writer, view_layer->id_properties);
@@ -2315,7 +2319,7 @@ static void direct_link_layer_collections(BlendDataReader *reader, ListBase *lb,
 void BKE_view_layer_blend_read_data(BlendDataReader *reader, ViewLayer *view_layer)
 {
   view_layer->stats = NULL;
-  BLO_read_list(reader, &view_layer->object_bases);
+  BLO_read_list(reader, BKE_view_layer_object_bases_get(view_layer, __func__));
   BLO_read_data_address(reader, &view_layer->basact);
 
   direct_link_layer_collections(reader, &view_layer->layer_collections, true);
@@ -2365,13 +2369,13 @@ void BKE_view_layer_blend_read_lib(BlendLibReader *reader, Library *lib, ViewLay
     BLO_read_id_address(reader, lib, &fls->group);
   }
 
-  LISTBASE_FOREACH_MUTABLE (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH_MUTABLE (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     /* we only bump the use count for the collection objects */
     BLO_read_id_address(reader, lib, &base->object);
 
     if (base->object == NULL) {
       /* Free in case linked object got lost. */
-      BLI_freelinkN(&view_layer->object_bases, base);
+      BLI_freelinkN(BKE_view_layer_object_bases_get(view_layer, __func__), base);
       if (view_layer->basact == base) {
         view_layer->basact = NULL;
       }

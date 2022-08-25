@@ -131,7 +131,7 @@ static eContextResult screen_ctx_visible_objects(const bContext *C, bContextData
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_VISIBLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -145,7 +145,7 @@ static eContextResult screen_ctx_selectable_objects(const bContext *C, bContextD
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTABLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -159,7 +159,7 @@ static eContextResult screen_ctx_selected_objects(const bContext *C, bContextDat
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTED(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -174,7 +174,7 @@ static eContextResult screen_ctx_selected_editable_objects(const bContext *C,
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTED_EDITABLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -189,7 +189,7 @@ static eContextResult screen_ctx_editable_objects(const bContext *C, bContextDat
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
 
   /* Visible + Editable, but not necessarily selected */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_EDITABLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }

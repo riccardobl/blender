@@ -547,7 +547,7 @@ static void iter_snap_objects(SnapObjectContext *sctx,
   const eSnapTargetSelect snap_target_select = params->snap_target_select;
   Base *base_act = view_layer->basact;
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (!snap_object_is_snappable(sctx, snap_target_select, base_act, base)) {
       continue;
     }

@@ -29,6 +29,7 @@
 #include "BKE_deform.h"
 #include "BKE_gpencil.h"
 #include "BKE_gpencil_modifier.h"
+#include "BKE_layer.h"
 #include "BKE_main.h"
 #include "BKE_object_deform.h"
 #include "BKE_report.h"
@@ -536,7 +537,7 @@ static bool gpencil_generate_weights_poll(bContext *C)
   }
 
   /* need some armature in the view layer */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->object->type == OB_ARMATURE) {
       return true;
     }
@@ -566,7 +567,7 @@ static int gpencil_generate_weights_exec(bContext *C, wmOperator *op)
   /* get armature */
   const int arm_idx = RNA_enum_get(op->ptr, "armature");
   if (arm_idx > 0) {
-    Base *base = BLI_findlink(&view_layer->object_bases, arm_idx - 1);
+    Base *base = BLI_findlink(BKE_view_layer_object_bases_get(view_layer, __func__), arm_idx - 1);
     ob_arm = base->object;
   }
   else {
@@ -623,7 +624,7 @@ static const EnumPropertyItem *gpencil_armatures_enum_itemf(bContext *C,
   RNA_enum_item_add(&item, &totitem, &item_tmp);
   i++;
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if (ob->type == OB_ARMATURE) {
       item_tmp.identifier = item_tmp.name = ob->id.name + 2;

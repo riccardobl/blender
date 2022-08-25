@@ -425,7 +425,8 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
   { \
     Object *_instance; \
     Base *_base; \
-    for (_base = (Base *)(view_layer)->object_bases.first; _base; _base = _base->next) { \
+    for (_base = (Base *)BKE_view_layer_object_bases_get(view_layer, __func__)->first; _base; \
+         _base = _base->next) { \
       _instance = _base->object;
 
 #define FOREACH_OBJECT_END \
@@ -545,6 +546,11 @@ struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(struct Vie
                                                                       eObjectMode mode);
 struct Object *BKE_view_layer_active_object_get(const struct ViewLayer *view_layer);
 struct Object *BKE_view_layer_edit_object_get(const struct ViewLayer *view_layer);
+
+struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer, const char *name);
+// This should not exist in the final solution.
+const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
+                                                             const char *name);
 
 struct ViewLayerAOV *BKE_view_layer_add_aov(struct ViewLayer *view_layer);
 void BKE_view_layer_remove_aov(struct ViewLayer *view_layer, struct ViewLayerAOV *aov);

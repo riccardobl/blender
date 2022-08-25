@@ -2115,7 +2115,9 @@ static Base *outliner_batch_delete_hierarchy(
   }
 
   object = base->object;
-  for (child_base = static_cast<Base *>(view_layer->object_bases.first); child_base;
+  for (child_base =
+           static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);
+       child_base;
        child_base = base_next) {
     base_next = child_base->next;
     for (parent = child_base->object->parent; parent && (parent != object);

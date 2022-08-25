@@ -863,7 +863,7 @@ static int undo_editmode_objects_from_view_layer_prepare(ViewLayer *view_layer, 
 {
   const short object_type = obact->type;
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if ((ob->type == object_type) && (ob->mode & OB_MODE_EDIT)) {
       ID *id = ob->data;
@@ -872,7 +872,7 @@ static int undo_editmode_objects_from_view_layer_prepare(ViewLayer *view_layer, 
   }
 
   int len = 0;
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if ((ob->type == object_type) && (ob->mode & OB_MODE_EDIT)) {
       ID *id = ob->data;

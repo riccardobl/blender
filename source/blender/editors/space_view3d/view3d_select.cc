@@ -143,7 +143,7 @@ void ED_view3d_viewcontext_init_object(ViewContext *vc, Object *obact)
 static bool object_deselect_all_visible(ViewLayer *view_layer, View3D *v3d)
 {
   bool changed = false;
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->flag & BASE_SELECTED) {
       if (BASE_SELECTABLE(v3d, base)) {
         ED_object_base_select(base, BA_DESELECT);
@@ -158,7 +158,7 @@ static bool object_deselect_all_visible(ViewLayer *view_layer, View3D *v3d)
 static bool object_deselect_all_except(ViewLayer *view_layer, Base *b)
 {
   bool changed = false;
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->flag & BASE_SELECTED) {
       if (b != base) {
         ED_object_base_select(base, BA_DESELECT);
@@ -559,14 +559,13 @@ static bool do_lasso_select_objects(ViewContext *vc,
                                     const eSelectOp sel_op)
 {
   View3D *v3d = vc->v3d;
-  Base *base;
 
   bool changed = false;
   if (SEL_OP_USE_PRE_DESELECT(sel_op)) {
     changed |= object_deselect_all_visible(vc->view_layer, vc->v3d);
   }
 
-  for (base = static_cast<Base *>(vc->view_layer->object_bases.first); base; base = base->next) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer, __func__)) {
     if (BASE_SELECTABLE(v3d, base)) { /* Use this to avoid unnecessary lasso look-ups. */
       const bool is_select = base->flag & BASE_SELECTED;
       const bool is_inside = ((ED_view3d_project_base(vc->region, base) == V3D_PROJ_RET_OK) &&
@@ -3638,7 +3637,7 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
   const int hits = view3d_opengl_select(
       vc, buffer, (totobj + MAXPICKELEMS), rect, VIEW3D_SELECT_ALL, select_filter);
 
-  LISTBASE_FOREACH (Base *, base, &vc->view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer, __func__)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
 
@@ -3649,11 +3648,12 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
     changed |= object_deselect_all_visible(vc->view_layer, vc->v3d);
   }
 
+  ListBase *object_bases = BKE_view_layer_object_bases_get(vc->view_layer, __func__);
   if ((hits == -1) && !SEL_OP_USE_OUTSIDE(sel_op)) {
     goto finally;
   }
 
-  LISTBASE_FOREACH (Base *, base, &vc->view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, object_bases) {
     if (BASE_SELECTABLE(v3d, base)) {
       if ((base->object->runtime.select_id & 0x0000FFFF) != 0) {
         bases.append(base);
@@ -3674,8 +3674,7 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
     }
   }
 
-  for (Base *base = static_cast<Base *>(vc->view_layer->object_bases.first); base && hits;
-       base = base->next) {
+  for (Base *base = static_cast<Base *>(object_bases->first); base && hits; base = base->next) {
     if (BASE_SELECTABLE(v3d, base)) {
       const bool is_select = base->flag & BASE_SELECTED;
       const bool is_inside = base->object->id.tag & LIB_TAG_DOIT;

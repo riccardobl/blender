@@ -307,7 +307,7 @@ static void switch_preview_floor_visibility(Main *pr_main,
                                             const ePreviewRenderMethod pr_method)
 {
   /* Hide floor for icon renders. */
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (STREQ(base->object->id.name + 2, "Floor")) {
       base->object->visibility_flag &= ~OB_HIDE_RENDER;
       if (pr_method == PR_ICON_RENDER) {
@@ -534,7 +534,7 @@ static Scene *preview_prepare_scene(
         sce->display.render_aa = SCE_DISPLAY_AA_OFF;
       }
 
-      LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+      LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (base->object->id.name[2] == 'p') {
           /* copy over object color, in case material uses it */
           copy_v4_v4(base->object->color, sp->color);
@@ -586,7 +586,7 @@ static Scene *preview_prepare_scene(
         sce->world->horb = 0.0f;
       }
 
-      LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+      LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (base->object->id.name[2] == 'p') {
           if (base->object->type == OB_LAMP) {
             base->object->data = la;

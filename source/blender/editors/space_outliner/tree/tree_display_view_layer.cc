@@ -96,7 +96,7 @@ void TreeDisplayViewLayer::add_view_layer(Scene &scene, ListBase &tree, TreeElem
 
   if (space_outliner_.filter & SO_FILTER_NO_COLLECTION) {
     /* Show objects in the view layer. */
-    for (Base *base : List<Base>(view_layer_->object_bases)) {
+    for (Base *base : List<Base>(*BKE_view_layer_object_bases_get(view_layer_, __func__))) {
       TreeElement *te_object = outliner_add_element(
           &space_outliner_, &tree, base->object, parent, TSE_SOME_ID, 0);
       te_object->directdata = base;

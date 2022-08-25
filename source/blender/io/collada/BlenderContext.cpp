@@ -9,7 +9,10 @@
 #include "BlenderContext.h"
 #include "ExportSettings.h"
 
+#include "BKE_layer.h"
 #include "BKE_scene.h"
+
+#include "BLI_listbase.h"
 
 bool bc_is_base_node(LinkNode *export_set, Object *ob, ViewLayer *view_layer)
 {
@@ -33,8 +36,7 @@ Object *bc_get_highest_exported_ancestor_or_self(LinkNode *export_set,
 
 void bc_get_children(std::vector<Object *> &child_set, Object *ob, ViewLayer *view_layer)
 {
-  Base *base;
-  for (base = (Base *)view_layer->object_bases.first; base; base = base->next) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *cob = base->object;
     if (cob->parent == ob) {
       switch (ob->type) {

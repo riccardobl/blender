@@ -802,7 +802,7 @@ static void scene_foreach_id(ID *id, LibraryForeachIDData *data)
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
     BKE_LIB_FOREACHID_PROCESS_IDSUPER(data, view_layer->mat_override, IDWALK_CB_USER);
 
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       BKE_LIB_FOREACHID_PROCESS_IDSUPER(
           data, base->object, IDWALK_CB_NOP | IDWALK_CB_OVERRIDE_LIBRARY_NOT_OVERRIDABLE);
     }
@@ -2048,7 +2048,8 @@ Scene *BKE_scene_add(Main *bmain, const char *name)
 bool BKE_scene_object_find(Scene *scene, Object *ob)
 {
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
-    if (BLI_findptr(&view_layer->object_bases, ob, offsetof(Base, object))) {
+    if (BLI_findptr(
+            BKE_view_layer_object_bases_get(view_layer, __func__), ob, offsetof(Base, object))) {
       return true;
     }
   }
@@ -2058,7 +2059,7 @@ bool BKE_scene_object_find(Scene *scene, Object *ob)
 Object *BKE_scene_object_find_by_name(const Scene *scene, const char *name)
 {
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if (STREQ(base->object->id.name + 2, name)) {
         return base->object;
       }
@@ -2079,7 +2080,7 @@ void BKE_scene_set_background(Main *bmain, Scene *scene)
 
   /* copy layers and flags from bases to objects */
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       /* collection patch... */
       BKE_scene_object_base_flag_sync_from_base(base);
     }
@@ -2122,7 +2123,7 @@ int BKE_scene_base_iter_next(
       if (iter->phase == F_START) {
         ViewLayer *view_layer = (depsgraph) ? DEG_get_evaluated_view_layer(depsgraph) :
                                               BKE_view_layer_context_active_PLACEHOLDER(*scene);
-        *base = static_cast<Base *>(view_layer->object_bases.first);
+        *base = static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);
         if (*base) {
           *ob = (*base)->object;
           iter->phase = F_SCENE;
@@ -2132,8 +2133,9 @@ int BKE_scene_base_iter_next(
           while ((*scene)->set) {
             (*scene) = (*scene)->set;
             ViewLayer *view_layer_set = BKE_view_layer_default_render(*scene);
-            if (view_layer_set->object_bases.first) {
-              *base = static_cast<Base *>(view_layer_set->object_bases.first);
+            ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer_set, __func__);
+            if (object_bases->first) {
+              *base = static_cast<Base *>(object_bases->first);
               *ob = (*base)->object;
               iter->phase = F_SCENE;
               break;
@@ -2153,8 +2155,9 @@ int BKE_scene_base_iter_next(
               while ((*scene)->set) {
                 (*scene) = (*scene)->set;
                 ViewLayer *view_layer_set = BKE_view_layer_default_render(*scene);
-                if (view_layer_set->object_bases.first) {
-                  *base = static_cast<Base *>(view_layer_set->object_bases.first);
+                ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer_set, __func__);
+                if (object_bases->first) {
+                  *base = static_cast<Base *>(object_bases->first);
                   *ob = (*base)->object;
                   break;
                 }
@@ -2808,8 +2811,9 @@ Base *_setlooper_base_step(Scene **sce_iter, ViewLayer *view_layer, Base *base)
   if ((base == nullptr) && (view_layer != nullptr)) {
     /* First time looping, return the scenes first base. */
     /* For the first loop we should get the layer from workspace when available. */
-    if (view_layer->object_bases.first) {
-      return (Base *)view_layer->object_bases.first;
+    ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
+    if (object_bases->first) {
+      return static_cast<Base *>(object_bases->first);
     }
     /* No base on this scene layer. */
     goto next_set;
@@ -2819,7 +2823,7 @@ Base *_setlooper_base_step(Scene **sce_iter, ViewLayer *view_layer, Base *base)
     /* Reached the end, get the next base in the set. */
     while ((*sce_iter = (*sce_iter)->set)) {
       ViewLayer *view_layer_set = BKE_view_layer_default_render(*sce_iter);
-      base = (Base *)view_layer_set->object_bases.first;
+      base = (Base *)BKE_view_layer_object_bases_get(view_layer_set, __func__)->first;
 
       if (base) {
         return base;
@@ -2880,11 +2884,8 @@ bool BKE_scene_uses_cycles_experimental_features(Scene *scene)
 
 void BKE_scene_base_flag_to_objects(ViewLayer *view_layer)
 {
-  Base *base = static_cast<Base *>(view_layer->object_bases.first);
-
-  while (base) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     BKE_scene_object_base_flag_sync_from_base(base);
-    base = base->next;
   }
 }
 

@@ -752,7 +752,7 @@ static int view3d_all_exec(bContext *C, wmOperator *op)
   Scene *scene = CTX_data_scene(C);
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
-  Base *base_eval;
+
   const bool use_all_regions = RNA_boolean_get(op->ptr, "use_all_regions");
   const bool skip_camera = (ED_view3d_camera_lock_check(v3d, region->regiondata) ||
                             /* any one of the regions may be locked */
@@ -777,7 +777,8 @@ static int view3d_all_exec(bContext *C, wmOperator *op)
     INIT_MINMAX(min, max);
   }
 
-  for (base_eval = view_layer_eval->object_bases.first; base_eval; base_eval = base_eval->next) {
+  LISTBASE_FOREACH (
+      Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
     if (BASE_VISIBLE(v3d, base_eval)) {
       bool only_center = false;
       Object *ob = DEG_get_original_object(base_eval->object);
@@ -886,7 +887,8 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     /* this is weak code this way, we should make a generic
      * active/selection callback interface once... */
     Base *base_eval;
-    for (base_eval = view_layer_eval->object_bases.first; base_eval; base_eval = base_eval->next) {
+    for (base_eval = BKE_view_layer_object_bases_get(view_layer_eval, __func__)->first; base_eval;
+         base_eval = base_eval->next) {
       if (BASE_SELECTED_EDITABLE(v3d, base_eval)) {
         if (base_eval->object->type == OB_ARMATURE) {
           if (base_eval->object->mode & OB_MODE_POSE) {
