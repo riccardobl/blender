@@ -897,7 +897,9 @@ Object **ED_undo_editmode_objects_from_view_layer(ViewLayer *view_layer, uint *r
   Object **objects = MEM_malloc_arrayN(len, sizeof(*objects), __func__);
   /* Base iteration, starting with the active-base to ensure it's the first item in the array.
    * Looping over the active-base twice is OK as the tag check prevents it being handled twice. */
-  for (Base *base = baseact, *base_next = view_layer->object_bases.first; base;
+  for (Base *base = baseact,
+            *base_next = BKE_view_layer_object_bases_get(view_layer, __func__)->first;
+       base;
        base = base_next, base_next = base_next ? base_next->next : NULL) {
     Object *ob = base->object;
     if ((ob->type == object_type) && (ob->mode & OB_MODE_EDIT)) {
@@ -926,7 +928,9 @@ Base **ED_undo_editmode_bases_from_view_layer(ViewLayer *view_layer, uint *r_len
   Base **base_array = MEM_malloc_arrayN(len, sizeof(*base_array), __func__);
   /* Base iteration, starting with the active-base to ensure it's the first item in the array.
    * Looping over the active-base twice is OK as the tag check prevents it being handled twice. */
-  for (Base *base = view_layer->basact, *base_next = view_layer->object_bases.first; base;
+  for (Base *base = view_layer->basact,
+            *base_next = BKE_view_layer_object_bases_get(view_layer, __func__)->first;
+       base;
        base = base_next, base_next = base_next ? base_next->next : NULL) {
     Object *ob = base->object;
     if ((ob->type == object_type) && (ob->mode & OB_MODE_EDIT)) {

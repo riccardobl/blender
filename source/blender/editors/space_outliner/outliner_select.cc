@@ -237,7 +237,7 @@ static void do_outliner_object_select_recursive(ViewLayer *view_layer,
                                                 Object *ob_parent,
                                                 bool select)
 {
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if ((((base->flag & BASE_VISIBLE_DEPSGRAPH) != 0) &&
          BKE_object_is_child_recursive(ob_parent, ob))) {

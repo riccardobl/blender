@@ -27,6 +27,7 @@
 #include "BKE_effect.h"
 #include "BKE_fluid.h"
 #include "BKE_global.h"
+#include "BKE_layer.h"
 #include "BKE_lib_id.h"
 #include "BKE_modifier.h"
 #include "BKE_pointcache.h"
@@ -558,7 +559,7 @@ static int get_light(ViewLayer *view_layer, float *light)
   int found_light = 0;
 
   /* Try to find a lamp, preferably local. */
-  LISTBASE_FOREACH (Base *, base_tmp, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base_tmp, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base_tmp->object->type == OB_LAMP) {
       Light *la = base_tmp->object->data;
 

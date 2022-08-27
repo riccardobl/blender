@@ -2188,7 +2188,7 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
 
   Base *basact = nullptr;
   if (found) {
-    LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if (has_bones ? BASE_VISIBLE(v3d, base) : BASE_SELECTABLE(v3d, base)) {
         if (base->object->runtime.select_id == select_id) {
           basact = base;
@@ -2239,7 +2239,7 @@ static Base *mouse_select_object_center(ViewContext *vc, Base *startbase, const 
     base = base->next;
 
     if (base == nullptr) {
-      base = static_cast<Base *>(view_layer->object_bases.first);
+      base = static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);
     }
     if (base == startbase) {
       break;
@@ -2530,7 +2530,8 @@ static bool ed_object_select_pick(bContext *C,
   /* Always start list from `basact` when cycling the selection. */
   Base *startbase = (oldbasact && oldbasact->next) ?
                         oldbasact->next :
-                        static_cast<Base *>(view_layer->object_bases.first);
+                        static_cast<Base *>(
+                            BKE_view_layer_object_bases_get(view_layer, __func__)->first);
 
   /* The next object's base to make active. */
   Base *basact = nullptr;
@@ -4611,7 +4612,7 @@ static bool object_circle_select(ViewContext *vc,
   const bool select = (sel_op != SEL_OP_SUB);
   const int select_flag = select ? BASE_SELECTED : 0;
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTABLE(v3d, base) && ((base->flag & BASE_SELECTED) != select_flag)) {
       float screen_co[2];
       if (ED_view3d_project_float_global(

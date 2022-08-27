@@ -853,7 +853,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
   else {
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     if (obedit) {
-      LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+      LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         base->local_view_bits &= ~local_view_bit;
       }
       FOREACH_BASE_IN_EDIT_MODE_BEGIN (view_layer, v3d, base_iter) {
@@ -864,7 +864,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
       FOREACH_BASE_IN_EDIT_MODE_END;
     }
     else {
-      LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+      LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (BASE_SELECTED(v3d, base)) {
           BKE_object_minmax(base->object, min, max, false);
           base->local_view_bits |= local_view_bit;
@@ -966,7 +966,7 @@ static void view3d_localview_exit(const Depsgraph *depsgraph,
     return;
   }
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->local_view_bits & v3d->local_view_uuid) {
       base->local_view_bits &= ~v3d->local_view_uuid;
     }
@@ -1093,7 +1093,7 @@ static int localview_remove_from_exec(bContext *C, wmOperator *op)
   ViewLayer *view_layer = CTX_data_view_layer(C);
   bool changed = false;
 
-  LISTBASE_FOREACH (Base *, base, &view_layer->object_bases) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTED(v3d, base)) {
       base->local_view_bits &= ~v3d->local_view_uuid;
       ED_object_base_select(base, BA_DESELECT);
