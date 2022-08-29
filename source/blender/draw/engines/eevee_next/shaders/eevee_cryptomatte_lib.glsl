@@ -52,8 +52,8 @@ void cryptomatte_store_film_sample(FilmSample dst,
       sample_pair.zw = cryptomatte_merge_sample(sample_pair.zw, hash, weight);
     }
     else if (i == film_buf.cryptomatte_samples_len / 2 - 1) {
-      // TODO(jbakker): New hash detected, but there is no space left to store it. Currently we
-      // will ignore this sample, but ideally we could replace a sample with a lowest weight.
+      /* TODO(jbakker): New hash detected, but there is no space left to store it. Currently we
+       * will ignore this sample, but ideally we could replace a sample with a lowest weight. */
       continue;
     }
     else {

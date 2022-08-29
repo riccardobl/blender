@@ -82,11 +82,9 @@ GPU_SHADER_CREATE_INFO(eevee_aov_out)
     .image_array_out(6, Qualifier::WRITE, GPU_R16F, "aov_value_img")
     .storage_buf(7, Qualifier::READ, "AOVsInfoData", "aov_buf");
 
-GPU_SHADER_CREATE_INFO(eevee_cryptomatte_in)
-    .push_constant(Type::FLOAT, "cryptomatte_material_hash")
-    .storage_buf(8, Qualifier::READ, "vec2", "cryptomatte_object_buf[]", Frequency::PASS);
-
 GPU_SHADER_CREATE_INFO(eevee_cryptomatte_out)
+    .push_constant(Type::FLOAT, "cryptomatte_material_hash")
+    .storage_buf(8, Qualifier::READ, "vec2", "cryptomatte_object_buf[]", Frequency::PASS)
     .image_out(7, Qualifier::WRITE, GPU_RGBA32F, "rp_cryptomatte_img");
 
 GPU_SHADER_CREATE_INFO(eevee_surf_deferred)
@@ -125,7 +123,6 @@ GPU_SHADER_CREATE_INFO(eevee_surf_forward)
     .image_out(3, Qualifier::READ_WRITE, GPU_RGBA16F, "rp_specular_color_img")
     .image_out(4, Qualifier::READ_WRITE, GPU_RGBA16F, "rp_emission_img")
     .additional_info("eevee_aov_out",
-                     "eevee_cryptomatte_in",
                      "eevee_cryptomatte_out",
                      "eevee_light_data",
                      "eevee_utility_texture",
