@@ -93,7 +93,6 @@ void Cryptomatte::bind_resources(DRWShadingGroup *grp)
 void Cryptomatte::sort()
 {
   if (post_ps_) {
-    printf("%s\n", __func__);
     DRW_draw_pass(post_ps_);
   }
 }
