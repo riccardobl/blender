@@ -60,8 +60,6 @@ void cryptomatte_store_film_sample(FilmSample dst,
       continue;
     }
     imageStore(cryptomatte_img, img_co, sample_pair);
-    if (i == 0) {
-    }
     break;
   }
 }
