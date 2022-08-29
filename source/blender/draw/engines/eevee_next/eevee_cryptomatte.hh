@@ -42,6 +42,7 @@ class Cryptomatte {
   int material_offset_;
   int layer_len_;
 
+  /** Contains per object hashes (object and asset hash). Indexed by resource ID. */
   CryptomatteObjectBuf cryptomatte_object_buf;
 
   DRWPass *post_ps_ = nullptr;
