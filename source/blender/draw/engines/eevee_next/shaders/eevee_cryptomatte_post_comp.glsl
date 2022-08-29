@@ -1,8 +1,10 @@
+#pragma BLENDER_REQUIRE(common_math_lib.glsl)
+
 #define CRYPTOMATTE_LEVELS_MAX 16
 
 void cryptomatte_load_samples(ivec2 texel, int layer, out vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
-  int pass_len = (cryptomatte_levels + 1) / 2;
+  int pass_len = divide_ceil(cryptomatte_levels, 2);
   int layer_id = layer * pass_len;
 
   /* Read all samples from the cryptomatte layer. */
@@ -42,7 +44,7 @@ bool cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 
 void cryptomatte_store_samples(ivec2 texel, int layer, in vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
-  int pass_len = (cryptomatte_levels + 1) / 2;
+  int pass_len = divide_ceil(cryptomatte_levels, 2);
   int layer_id = layer * pass_len;
 
   /* Store samples back to the cryptomatte layer. */
