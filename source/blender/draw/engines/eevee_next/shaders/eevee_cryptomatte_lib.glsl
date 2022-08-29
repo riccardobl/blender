@@ -18,11 +18,11 @@ vec2 cryptomatte_merge_sample(vec2 cryptomatte_sample, float hash, float weight)
 
 vec4 cryptomatte_false_color(float hash)
 {
-#define UINT32_MAX (4294967295U)
-
   uint m3hash = floatBitsToUint(hash);
-  return vec4(
-      hash, float(m3hash << 8) / float(UINT32_MAX), float(m3hash << 16) / float(UINT32_MAX), 1.0);
+  return vec4(hash,
+              float(m3hash << 8) / float(0xFFFFFFFFu),
+              float(m3hash << 16) / float(0xFFFFFFFFu),
+              1.0);
 }
 
 void cryptomatte_store_film_sample(FilmSample dst,
