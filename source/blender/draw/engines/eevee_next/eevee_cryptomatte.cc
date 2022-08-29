@@ -43,7 +43,8 @@ void Cryptomatte::begin_sync()
   Texture &cryptomatte_tx = inst_.film.cryptomatte_tx_get();
   DRW_shgroup_uniform_image_ref(grp, "cryptomatte_img", &cryptomatte_tx);
   DRW_shgroup_uniform_int_copy(grp, "cryptomatte_layer_len", layer_len_);
-  DRW_shgroup_uniform_int_copy(grp, "cryptomatte_levels", inst_.view_layer->cryptomatte_levels);
+  DRW_shgroup_uniform_int_copy(
+      grp, "cryptomatte_samples_per_layer", inst_.view_layer->cryptomatte_levels);
   int3 dispatch_size = math::divide_ceil(cryptomatte_tx.size(), int3(FILM_GROUP_SIZE));
   DRW_shgroup_call_compute(grp, UNPACK2(dispatch_size), 1);
 }

@@ -4,7 +4,7 @@
 
 void cryptomatte_load_samples(ivec2 texel, int layer, out vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
-  int pass_len = divide_ceil(cryptomatte_levels, 2);
+  int pass_len = divide_ceil(cryptomatte_samples_per_layer, 2);
   int layer_id = layer * pass_len;
 
   /* Read all samples from the cryptomatte layer. */
@@ -22,10 +22,10 @@ bool cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
   /* Sort samples. Lame implementation, can be replaced with a more efficient algorithm. */
   bool changed = false;
-  for (int i = 0; i < cryptomatte_levels - 1 && samples[i].y != 0.0; i++) {
+  for (int i = 0; i < cryptomatte_samples_per_layer - 1 && samples[i].y != 0.0; i++) {
     int highest_index = i;
     float highest_weight = samples[i].y;
-    for (int j = i + 1; j < cryptomatte_levels && samples[j].y != 0.0; j++) {
+    for (int j = i + 1; j < cryptomatte_samples_per_layer && samples[j].y != 0.0; j++) {
       if (samples[j].y > highest_weight) {
         highest_index = j;
         highest_weight = samples[j].y;
@@ -44,7 +44,7 @@ bool cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 
 void cryptomatte_store_samples(ivec2 texel, int layer, in vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
-  int pass_len = divide_ceil(cryptomatte_levels, 2);
+  int pass_len = divide_ceil(cryptomatte_samples_per_layer, 2);
   int layer_id = layer * pass_len;
 
   /* Store samples back to the cryptomatte layer. */
