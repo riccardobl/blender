@@ -466,6 +466,25 @@ void Film::sync()
   else {
     DRW_shgroup_call_procedural_triangles(grp, nullptr, 1);
   }
+
+  const int cryptomatte_layer_count = cryptomatte_layer_len_get();
+  const bool is_cryptomatte_pass_enabled = cryptomatte_layer_count > 0;
+  const bool do_cryptomatte_sorting = inst_.is_viewport() == false;
+  if (is_cryptomatte_pass_enabled && do_cryptomatte_sorting) {
+    cryptomatte_post_ps_ = DRW_pass_create("Film.Cryptomatte.Post", DRW_STATE_NO_DRAW);
+    GPUShader *sh = inst_.shaders.static_shader_get(FILM_CRYPTOMATTE_POST);
+    DRWShadingGroup *grp = DRW_shgroup_create(sh, cryptomatte_post_ps_);
+    Texture &cryptomatte_tx = inst_.film.cryptomatte_tx_get();
+    DRW_shgroup_uniform_image_ref(grp, "cryptomatte_img", &cryptomatte_tx);
+    DRW_shgroup_uniform_int_copy(grp, "cryptomatte_layer_len", cryptomatte_layer_count);
+    DRW_shgroup_uniform_int_copy(
+        grp, "cryptomatte_samples_per_layer", inst_.view_layer->cryptomatte_levels);
+    int3 dispatch_size = math::divide_ceil(cryptomatte_tx.size(), int3(FILM_GROUP_SIZE));
+    DRW_shgroup_call_compute(grp, UNPACK2(dispatch_size), 1);
+  }
+  else {
+    cryptomatte_post_ps_ = nullptr;
+  }
 }
 
 void Film::end_sync()
@@ -668,6 +687,13 @@ void Film::display()
   inst_.render_buffers.release();
 
   /* IMPORTANT: Do not swap! No accumulation has happened. */
+}
+
+void Film::cryptomatte_sort()
+{
+  if (cryptomatte_post_ps_) {
+    DRW_draw_pass(cryptomatte_post_ps_);
+  }
 }
 
 float *Film::read_pass(eViewLayerEEVEEPassType pass_type, int layer_offset)

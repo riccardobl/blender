@@ -296,7 +296,7 @@ void Instance::render_frame(RenderLayer *render_layer, const char *view_name)
 #endif
   }
 
-  cryptomatte.sort();
+  this->film.cryptomatte_sort();
 
   this->render_read_result(render_layer, view_name);
 }

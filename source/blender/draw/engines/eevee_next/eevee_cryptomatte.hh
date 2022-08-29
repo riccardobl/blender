@@ -45,8 +45,6 @@ class Cryptomatte {
   /** Contains per object hashes (object and asset hash). Indexed by resource ID. */
   CryptomatteObjectBuf cryptomatte_object_buf;
 
-  DRWPass *post_ps_ = nullptr;
-
  public:
   Cryptomatte(Instance &inst) : inst_(inst){};
   ~Cryptomatte(){};
@@ -57,7 +55,6 @@ class Cryptomatte {
   void end_sync();
 
   void bind_resources(DRWShadingGroup *grp);
-  void sort();
 
   float hash(const ID &id) const;
 };

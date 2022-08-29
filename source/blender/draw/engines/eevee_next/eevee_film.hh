@@ -61,6 +61,7 @@ class Film {
   bool force_disable_reprojection_ = false;
 
   DRWPass *accumulate_ps_ = nullptr;
+  DRWPass *cryptomatte_post_ps_ = nullptr;
 
   FilmDataBuf data_;
 
@@ -77,6 +78,9 @@ class Film {
 
   /** Accumulate the newly rendered sample contained in #RenderBuffers and blit to display. */
   void accumulate(const DRWView *view, GPUTexture *combined_final_tx);
+
+  /** Sort and normalize cryptomatte samples. */
+  void cryptomatte_sort();
 
   /** Blit to display. No rendered sample needed. */
   void display();

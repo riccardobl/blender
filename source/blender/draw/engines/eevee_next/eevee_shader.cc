@@ -82,8 +82,8 @@ const char *ShaderModule::static_shader_create_info_name_get(eShaderType shader_
       return "eevee_film_frag";
     case FILM_COMP:
       return "eevee_film_comp";
-    case CRYPTOMATTE_POST:
-      return "eevee_cryptomatte_post";
+    case FILM_CRYPTOMATTE_POST:
+      return "eevee_film_cryptomatte_post";
     case HIZ_DEBUG:
       return "eevee_hiz_debug";
     case HIZ_UPDATE:
