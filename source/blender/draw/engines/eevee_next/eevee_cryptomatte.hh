@@ -33,15 +33,6 @@ class Cryptomatte {
  private:
   class Instance &inst_;
 
-  /**
-   * Offsets of cryptomatte layers inside the components of a color. (-1 means the layer isn't
-   * enabled.)
-   */
-  int object_offset_;
-  int asset_offset_;
-  int material_offset_;
-  int layer_len_;
-
   /** Contains per object hashes (object and asset hash). Indexed by resource ID. */
   CryptomatteObjectBuf cryptomatte_object_buf;
 
@@ -49,7 +40,6 @@ class Cryptomatte {
   Cryptomatte(Instance &inst) : inst_(inst){};
   ~Cryptomatte(){};
 
-  void init();
   void begin_sync();
   void sync_object(Object *ob);
   void end_sync();
