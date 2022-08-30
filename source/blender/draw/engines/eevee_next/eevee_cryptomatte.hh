@@ -7,10 +7,10 @@
  *
  * Cryptomatte.
  *
- * Cryptomatte stores the output during rendering in a single texture.
- * Inside the film the output is extracted per enabled cryptomatte layer.
- * Each cryptomatte layer can hold N samples. These are stored in multiple
- * sequentially bound textures. The samples are sorted and merged.
+ * During rasterization, cryptomatte hashes are stored into a single array texture.
+ * The film pass then resamples this texture using pixel filter weighting.
+ * Each cryptomatte layer can hold N samples. These are stored in sequential layers
+ * of the array texture. The samples are sorted and merged only for final rendering.
  */
 
 #pragma once
