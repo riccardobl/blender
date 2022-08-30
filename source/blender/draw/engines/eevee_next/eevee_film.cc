@@ -698,7 +698,6 @@ void Film::cryptomatte_sort()
 
 float *Film::read_pass(eViewLayerEEVEEPassType pass_type, int layer_offset)
 {
-  // TODO(jbakker): readback cryptomatte?
   eDisplayMode pass_mode = pass_display_mode(pass_type);
   const bool is_value = pass_mode == DISPLAY_MODE_VALUE;
   const bool is_cryptomatte = pass_mode == DISPLAY_MODE_CRYPTOMATTE;
