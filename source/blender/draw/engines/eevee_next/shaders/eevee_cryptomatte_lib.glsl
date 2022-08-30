@@ -44,7 +44,10 @@ void cryptomatte_store_film_sample(FilmSample dst,
     vec4 sample_pair = imageLoad(cryptomatte_img, img_co);
     if (cryptomatte_can_merge_sample(sample_pair.xy, hash)) {
       sample_pair.xy = cryptomatte_merge_sample(sample_pair.xy, hash, weight);
-      if (i == 0) {
+      /* In viewport only one layer is active. */
+      /* TODO(jbakker):  we are displaying the first sample, but we should display the highest
+       * weighted one. */
+      if (cryptomatte_layer_id + i == 0) {
         out_color = cryptomatte_false_color(sample_pair.x);
       }
     }
