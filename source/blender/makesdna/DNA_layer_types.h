@@ -34,8 +34,11 @@ typedef enum eViewLayerEEVEEPassType {
   EEVEE_RENDER_PASS_AO = (1 << 13),
   EEVEE_RENDER_PASS_BLOOM = (1 << 14),
   EEVEE_RENDER_PASS_AOV = (1 << 15),
-  /* Confliting bits. EEVEE_RENDER_PASS_CRYPTOMATTE is for eevee, EEVEE_RENDER_PASS_CRYTPOMATTE_*
-   * is for eevee_next. */
+  /*
+   * TODO(jbakker): Clean up confliting bits after EEVEE has been removed.
+   * EEVEE_RENDER_PASS_CRYPTOMATTE is for EEVEE, EEVEE_RENDER_PASS_CRYTPOMATTE_* are for
+   * EEVEE-Next.
+   */
   EEVEE_RENDER_PASS_CRYPTOMATTE = (1 << 16),
   EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT = (1 << 16),
   EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET = (1 << 17),
