@@ -320,6 +320,11 @@ void Instance::draw_viewport(DefaultFramebufferList *dfbl)
   }
 }
 
+void Instance::store_metadata(RenderResult *render_result)
+{
+  cryptomatte.store_metadata(render_result);
+}
+
 void Instance::update_passes(RenderEngine *engine, Scene *scene, ViewLayer *view_layer)
 {
   RE_engine_register_pass(engine, scene, view_layer, RE_PASSNAME_COMBINED, 4, "RGBA", SOCK_RGBA);

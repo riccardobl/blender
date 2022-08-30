@@ -107,6 +107,8 @@ struct CryptomatteStampDataCallbackData {
 
 const blender::Vector<std::string> &BKE_cryptomatte_layer_names_get(
     const CryptomatteSession &session);
+CryptomatteLayer *BKE_cryptomatte_layer_get(CryptomatteSession &session,
+                                            const StringRef layer_name);
 
 struct CryptomatteSessionDeleter {
   void operator()(CryptomatteSession *session)

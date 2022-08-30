@@ -131,7 +131,8 @@ DRWShadingGroup *ForwardPipeline::material_opaque_add(::Material *blender_mat, G
   DRW_shgroup_uniform_image_ref(grp, "rp_cryptomatte_img", &rbufs.cryptomatte_tx);
   float material_hash = (inst_.film.enabled_passes_get() &
                          EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) ?
-                            inst_.cryptomatte.hash(blender_mat->id) :
+                            inst_.cryptomatte.register_id(EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL,
+                                                          blender_mat->id) :
                             0.0f;
   DRW_shgroup_uniform_float_copy(grp, "cryptomatte_material_hash", material_hash);
 

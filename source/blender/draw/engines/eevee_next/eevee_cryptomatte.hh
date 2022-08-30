@@ -17,8 +17,11 @@
 
 #include "eevee_shader_shared.hh"
 
+#include "BKE_cryptomatte.hh"
+
 extern "C" {
 struct Material;
+struct CryptomatteSession;
 }
 
 namespace blender::eevee {
@@ -33,20 +36,29 @@ class Cryptomatte {
  private:
   class Instance &inst_;
 
+  bke::cryptomatte::CryptomatteSessionPtr session_;
+
+  /* Cached pointer to the cryptomatte layer instances. */
+  bke::cryptomatte::CryptomatteLayer *object_layer_ = nullptr;
+  bke::cryptomatte::CryptomatteLayer *asset_layer_ = nullptr;
+  bke::cryptomatte::CryptomatteLayer *material_layer_ = nullptr;
+
   /** Contains per object hashes (object and asset hash). Indexed by resource ID. */
   CryptomatteObjectBuf cryptomatte_object_buf;
 
  public:
   Cryptomatte(Instance &inst) : inst_(inst){};
-  ~Cryptomatte(){};
 
   void begin_sync();
   void sync_object(Object *ob);
   void end_sync();
 
+  void store_metadata(RenderResult *render_result);
+
   void bind_resources(DRWShadingGroup *grp);
 
-  float hash(const ID &id) const;
+  /* Register ID to use inside cryptomatte layer and returns associated hash as float. */
+  float register_id(const eViewLayerEEVEEPassType layer, const ID &id) const;
 };
 
 /** \} */
