@@ -484,11 +484,12 @@ static bool hook_op_edit_poll(bContext *C)
   return false;
 }
 
-static Object *add_hook_object_new(Main *bmain, ViewLayer *view_layer, View3D *v3d, Object *obedit)
+static Object *add_hook_object_new(
+    Main *bmain, Scene *scene, ViewLayer *view_layer, View3D *v3d, Object *obedit)
 {
   Base *basedit;
   Object *ob;
-  ob = BKE_object_add(bmain, view_layer, OB_EMPTY, NULL);
+  ob = BKE_object_add(bmain, scene, view_layer, OB_EMPTY, NULL);
   Base *basact = BKE_view_layer_active_base_get(view_layer, __func__);
   BLI_assert(basact->object == ob);
   if (v3d && v3d->localvd) {
@@ -530,7 +531,7 @@ static int add_hook_object(const bContext *C,
 
   if (mode == OBJECT_ADDHOOK_NEWOB && !ob) {
 
-    ob = add_hook_object_new(bmain, view_layer, v3d, obedit);
+    ob = add_hook_object_new(bmain, scene, view_layer, v3d, obedit);
 
     /* transform cent to global coords for loc */
     mul_v3_m4v3(ob->loc, obedit->obmat, cent);

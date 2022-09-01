@@ -2314,12 +2314,13 @@ static bool get_new_constraint_target(
   /* if still not found, add a new empty to act as a target (if allowed) */
   if ((found == false) && (add)) {
     Main *bmain = CTX_data_main(C);
+    Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
     Object *obt;
 
     /* add new target object */
-    obt = BKE_object_add(bmain, view_layer, OB_EMPTY, NULL);
+    obt = BKE_object_add(bmain, scene, view_layer, OB_EMPTY, NULL);
 
     /* transform cent to global coords for loc */
     if (pchanact) {

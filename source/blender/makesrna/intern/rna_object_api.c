@@ -145,7 +145,8 @@ static void rna_Object_hide_set(
   }
 
   Scene *scene = CTX_data_scene(C);
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
   WM_event_add_notifier(C, NC_SCENE | ND_OB_SELECT, scene);
 }

@@ -246,7 +246,8 @@ static void rna_ObjectBase_hide_viewport_update(bContext *C, PointerRNA *UNUSED(
 {
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
   WM_event_add_notifier(C, NC_SCENE | ND_OB_SELECT, scene);
 }
@@ -310,7 +311,8 @@ static void rna_LayerCollection_exclude_update(Main *bmain, Scene *UNUSED(scene)
   const bool exclude = (lc->flag & LAYER_COLLECTION_EXCLUDE) != 0;
   BKE_layer_collection_set_flag(lc, LAYER_COLLECTION_EXCLUDE, exclude);
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
 
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
   if (!exclude) {
@@ -335,7 +337,8 @@ static void rna_LayerCollection_update(Main *UNUSED(bmain), Scene *UNUSED(scene)
   LayerCollection *lc = (LayerCollection *)ptr->data;
   ViewLayer *view_layer = BKE_view_layer_find_from_collection(scene, lc);
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
 
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 

@@ -21,6 +21,7 @@
 #include "BKE_context.h"
 #include "BKE_global.h"
 #include "BKE_image.h"
+#include "BKE_layer.h"
 #include "BKE_screen.h"
 #include "BKE_workspace.h"
 
@@ -1904,6 +1905,7 @@ void ED_area_init(wmWindowManager *wm, wmWindow *win, ScrArea *area)
   WorkSpace *workspace = WM_window_get_active_workspace(win);
   const bScreen *screen = BKE_workspace_active_screen_get(win->workspace_hook);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  Scene *scene = WM_window_get_active_scene(win);
 
   if (ED_area_is_global(area) && (area->global->flag & GLOBAL_AREA_IS_HIDDEN)) {
     return;
@@ -1967,6 +1969,7 @@ void ED_area_init(wmWindowManager *wm, wmWindow *win, ScrArea *area)
   /* Avoid re-initializing tools while resizing the window. */
   if ((G.moving & G_TRANSFORM_WM) == 0) {
     if ((1 << area->spacetype) & WM_TOOLSYSTEM_SPACE_MASK) {
+      BKE_view_layer_ensure_sync(scene, view_layer);
       WM_toolsystem_refresh_screen_area(workspace, view_layer, area);
       area->flag |= AREA_FLAG_ACTIVE_TOOL_UPDATE;
     }

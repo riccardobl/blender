@@ -552,6 +552,9 @@ struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer, const 
 
 struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer,
                                                              const char *name);
+
+void BKE_view_layer_tag_out_of_sync(struct ViewLayer *view_layer);
+void BKE_view_layer_ensure_sync(struct Scene *scene, struct ViewLayer *view_layer);
 // This should not exist in the final solution.
 const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
                                                              const char *name);

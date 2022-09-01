@@ -2701,7 +2701,8 @@ void BKE_lib_override_library_main_resync(Main *bmain,
     /* Hide the collection from viewport and render. */
     override_resync_residual_storage->flag |= COLLECTION_HIDE_VIEWPORT | COLLECTION_HIDE_RENDER;
   }
-
+  /* BKE_collection_add above could have tagged the view_layer out of sync. */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const Object *old_active_object = BKE_view_layer_active_object_get(view_layer);
 
   /* Necessary to improve performances, and prevent layers matching override sub-collections to be

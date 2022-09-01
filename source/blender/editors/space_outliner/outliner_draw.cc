@@ -301,7 +301,8 @@ static void outliner_object_set_flag_recursive_fn(bContext *C,
     DEG_relations_tag_update(bmain);
   }
   else {
-    BKE_layer_collection_sync(scene, view_layer);
+    // BKE_layer_collection_sync(scene, view_layer);
+    BKE_view_layer_tag_out_of_sync(view_layer);
     DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
   }
 }

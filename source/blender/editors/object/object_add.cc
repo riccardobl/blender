@@ -626,7 +626,7 @@ Object *ED_object_add_type_with_obdata(bContext *C,
     }
   }
   else {
-    ob = BKE_object_add(bmain, view_layer, type, name);
+    ob = BKE_object_add(bmain, scene, view_layer, type, name);
   }
 
   Base *ob_base_act = BKE_view_layer_active_base_get(view_layer, __func__);

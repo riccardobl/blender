@@ -2269,7 +2269,8 @@ static Object *object_add_common(Main *bmain, ViewLayer *view_layer, int type, c
   return ob;
 }
 
-Object *BKE_object_add(Main *bmain, ViewLayer *view_layer, int type, const char *name)
+Object *BKE_object_add(
+    Main *bmain, Scene *scene, ViewLayer *view_layer, int type, const char *name)
 {
   Object *ob = object_add_common(bmain, view_layer, type, name);
 
@@ -2278,6 +2279,7 @@ Object *BKE_object_add(Main *bmain, ViewLayer *view_layer, int type, const char 
 
   /* NOTE: There is no way to be sure that #BKE_collection_viewlayer_object_add will actually
    * manage to find a valid collection in given `view_layer` to add the new object to. */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
   if (base != nullptr) {
     BKE_view_layer_base_select_and_set_active(view_layer, base);

@@ -524,6 +524,7 @@ void ED_object_modifier_copy_to_object(bContext *C,
 
 bool ED_object_modifier_convert_psys_to_mesh(ReportList *UNUSED(reports),
                                              Main *bmain,
+                                             Scene *scene,
                                              Depsgraph *depsgraph,
                                              ViewLayer *view_layer,
                                              Object *ob,
@@ -583,7 +584,7 @@ bool ED_object_modifier_convert_psys_to_mesh(ReportList *UNUSED(reports),
   }
 
   /* add new mesh */
-  Object *obn = BKE_object_add(bmain, view_layer, OB_MESH, nullptr);
+  Object *obn = BKE_object_add(bmain, scene, view_layer, OB_MESH, nullptr);
   Mesh *me = static_cast<Mesh *>(obn->data);
 
   me->totvert = verts_num;
@@ -1621,12 +1622,13 @@ static int modifier_convert_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob = ED_object_active_context(C);
   ModifierData *md = edit_modifier_property_get(op, ob, 0);
 
   if (!md || !ED_object_modifier_convert_psys_to_mesh(
-                 op->reports, bmain, depsgraph, view_layer, ob, md)) {
+                 op->reports, bmain, scene, depsgraph, view_layer, ob, md)) {
     return OPERATOR_CANCELLED;
   }
 
@@ -2636,7 +2638,10 @@ static void skin_armature_bone_create(Object *skin_ob,
   }
 }
 
-static Object *modifier_skin_armature_create(Depsgraph *depsgraph, Main *bmain, Object *skin_ob)
+static Object *modifier_skin_armature_create(Depsgraph *depsgraph,
+                                             Main *bmain,
+                                             Scene *scene,
+                                             Object *skin_ob)
 {
   Mesh *me = static_cast<Mesh *>(skin_ob->data);
   const Span<MVert> me_verts = me->vertices();
@@ -2653,7 +2658,7 @@ static Object *modifier_skin_armature_create(Depsgraph *depsgraph, Main *bmain, 
   CustomData_add_layer(&me->vdata, CD_MDEFORMVERT, CD_SET_DEFAULT, nullptr, me->totvert);
 
   ViewLayer *view_layer = DEG_get_input_view_layer(depsgraph);
-  Object *arm_ob = BKE_object_add(bmain, view_layer, OB_ARMATURE, nullptr);
+  Object *arm_ob = BKE_object_add(bmain, scene, view_layer, OB_ARMATURE, nullptr);
   BKE_object_transform_copy(arm_ob, skin_ob);
   bArmature *arm = static_cast<bArmature *>(arm_ob->data);
   arm->layer = 1;
@@ -2708,6 +2713,7 @@ static Object *modifier_skin_armature_create(Depsgraph *depsgraph, Main *bmain, 
 static int skin_armature_create_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
+  Scene *scene = CTX_data_scene(C);
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
   Object *ob = CTX_data_active_object(C);
   Mesh *me = static_cast<Mesh *>(ob->data);
@@ -2719,7 +2725,7 @@ static int skin_armature_create_exec(bContext *C, wmOperator *op)
   }
 
   /* create new armature */
-  Object *arm_ob = modifier_skin_armature_create(depsgraph, bmain, ob);
+  Object *arm_ob = modifier_skin_armature_create(depsgraph, bmain, scene, ob);
 
   /* add a modifier to connect the new armature to the mesh */
   ArmatureModifierData *arm_md = (ArmatureModifierData *)BKE_modifier_new(eModifierType_Armature);

@@ -965,7 +965,8 @@ static int collection_view_layer_exec(bContext *C, wmOperator *op)
 
   BLI_gset_free(data.collections_to_edit, nullptr);
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_relations_tag_update(bmain);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER, nullptr);
@@ -1114,7 +1115,8 @@ static int collection_isolate_exec(bContext *C, wmOperator *op)
   }
   BLI_gset_free(data.collections_to_edit, nullptr);
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
@@ -1198,7 +1200,8 @@ static int collection_visibility_exec(bContext *C, wmOperator *op)
   }
   BLI_gset_free(data.collections_to_edit, nullptr);
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
@@ -1388,7 +1391,8 @@ static int collection_flag_exec(bContext *C, wmOperator *op)
     BLI_gset_free(data.collections_to_edit, nullptr);
   }
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   if (!is_render) {
@@ -1538,7 +1542,8 @@ static int outliner_hide_exec(bContext *C, wmOperator *UNUSED(op))
   }
   BLI_gset_free(data.bases_to_edit, nullptr);
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
@@ -1576,7 +1581,8 @@ static int outliner_unhide_all_exec(bContext *C, wmOperator *UNUSED(op))
     base->flag &= ~BASE_HIDDEN;
   }
 
-  BKE_layer_collection_sync(scene, view_layer);
+  // BKE_layer_collection_sync(scene, view_layer);
+  BKE_view_layer_tag_out_of_sync(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
