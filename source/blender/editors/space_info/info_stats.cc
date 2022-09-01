@@ -495,7 +495,7 @@ static void get_stats_string(
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Object *obedit = OBEDIT_FROM_OBACT(ob);
   eObjectMode object_mode = ob ? (eObjectMode)ob->mode : OB_MODE_OBJECT;
-  LayerCollection *layer_collection = view_layer->active_collection;
+  LayerCollection *layer_collection = BKE_view_layer_active_collection_get(view_layer, __func__);
 
   if (object_mode == OB_MODE_OBJECT) {
     *ofs += BLI_snprintf_rlen(info + *ofs,

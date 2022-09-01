@@ -549,6 +549,9 @@ struct Object *BKE_view_layer_edit_object_get(const struct ViewLayer *view_layer
 
 struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer, const char *name);
 struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer, const char *name);
+
+struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer,
+                                                             const char *name);
 // This should not exist in the final solution.
 const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
                                                              const char *name);

@@ -1306,7 +1306,7 @@ static void draw_selected_name(
   s += sprintf(s, "(%d)", cfra);
 
   if ((ob == NULL) || (ob->mode == OB_MODE_OBJECT)) {
-    LayerCollection *layer_collection = view_layer->active_collection;
+    LayerCollection *layer_collection = BKE_view_layer_active_collection_get(view_layer, __func__);
     s += sprintf(s,
                  " %s%s",
                  BKE_collection_ui_name_get(layer_collection->collection),

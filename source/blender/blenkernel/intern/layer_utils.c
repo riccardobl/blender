@@ -220,6 +220,14 @@ struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer, const 
   // TODO: BLI_assert_msg(view_layer->flags & ..., name);
   return view_layer->basact;
 }
+
+struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer,
+                                                             const char *name)
+{
+  // TODO: BLI_assert_msg(view_layer->flags & ..., name);
+  return view_layer->active_collection;
+}
+
 const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
                                                              const char *UNUSED(name))
 {

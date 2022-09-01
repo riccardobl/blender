@@ -51,7 +51,7 @@
 static PointerRNA rna_ViewLayer_active_layer_collection_get(PointerRNA *ptr)
 {
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
-  LayerCollection *lc = view_layer->active_collection;
+  LayerCollection *lc = BKE_view_layer_active_collection_get(view_layer, __func__);
   return rna_pointer_inherit_refine(ptr, &RNA_LayerCollection, lc);
 }
 
