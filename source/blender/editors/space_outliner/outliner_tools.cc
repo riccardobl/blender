@@ -2391,7 +2391,7 @@ static int outliner_delete_exec(bContext *C, wmOperator *op)
   SpaceOutliner *space_outliner = CTX_wm_space_outliner(C);
   struct wmMsgBus *mbus = CTX_wm_message_bus(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  const Base *basact_prev = view_layer->basact;
+  const Base *basact_prev = BKE_view_layer_active_base_get(view_layer, __func__);
 
   const bool delete_hierarchy = RNA_boolean_get(op->ptr, "hierarchy");
 
@@ -2435,7 +2435,7 @@ static int outliner_delete_exec(bContext *C, wmOperator *op)
   DEG_id_tag_update(&scene->id, ID_RECALC_COPY_ON_WRITE);
   DEG_relations_tag_update(bmain);
 
-  if (basact_prev != view_layer->basact) {
+  if (basact_prev != BKE_view_layer_active_base_get(view_layer, __func__)) {
     WM_event_add_notifier(C, NC_SCENE | ND_OB_ACTIVE, scene);
     WM_msg_publish_rna_prop(mbus, &scene->id, view_layer, LayerObjects, active);
   }

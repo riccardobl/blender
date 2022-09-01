@@ -2319,6 +2319,7 @@ static void direct_link_layer_collections(BlendDataReader *reader, ListBase *lb,
 void BKE_view_layer_blend_read_data(BlendDataReader *reader, ViewLayer *view_layer)
 {
   view_layer->stats = NULL;
+  // TODO: need to check BKE_view_layer_object_bases_get(view_layer, __func__) and basact
   BLO_read_list(reader, BKE_view_layer_object_bases_get(view_layer, __func__));
   BLO_read_data_address(reader, &view_layer->basact);
 

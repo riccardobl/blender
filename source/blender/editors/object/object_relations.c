@@ -263,7 +263,7 @@ static int vertex_parent_set_exec(bContext *C, wmOperator *op)
       else {
         Object workob;
 
-        ob->parent = view_layer->basact->object;
+        ob->parent = BKE_view_layer_active_object_get(view_layer);
         if (par3 != INDEX_UNSET) {
           ob->partype = PARVERT3;
           ob->par1 = par1;

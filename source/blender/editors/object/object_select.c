@@ -217,7 +217,7 @@ Base *ED_object_find_first_by_data_id(ViewLayer *view_layer, ID *id)
   BLI_assert(OB_DATA_SUPPORT_ID(GS(id->name)));
 
   /* Try active object. */
-  Base *basact = view_layer->basact;
+  Base *basact = BKE_view_layer_active_base_get(view_layer, __func__);
 
   if (basact && basact->object && basact->object->data == id) {
     return basact;
@@ -257,7 +257,8 @@ bool ED_object_jump_to_object(bContext *C, Object *ob, const bool UNUSED(reveal_
 
   /* TODO: use 'reveal_hidden', as is done with bones. */
 
-  if (view_layer->basact != base || !(base->flag & BASE_SELECTED)) {
+  if (BKE_view_layer_active_base_get(view_layer, __func__) != base ||
+      !(base->flag & BASE_SELECTED)) {
     /* Select if not selected. */
     if (!(base->flag & BASE_SELECTED)) {
       ED_object_base_deselect_all(view_layer, v3d, SEL_DESELECT);

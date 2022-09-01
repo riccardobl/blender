@@ -908,7 +908,7 @@ bool ED_mball_select_pick(bContext *C, const int mval[2], const struct SelectPic
     DEG_id_tag_update(&mb->id, ID_RECALC_SELECT);
     WM_event_add_notifier(C, NC_GEOM | ND_SELECT, mb);
 
-    if (view_layer->basact != base) {
+    if (BKE_view_layer_active_base_get(view_layer, __func__) != base) {
       ED_object_base_activate(C, base);
     }
 

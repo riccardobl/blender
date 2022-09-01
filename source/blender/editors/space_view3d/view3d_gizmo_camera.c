@@ -56,7 +56,7 @@ static bool WIDGETGROUP_camera_poll(const bContext *C, wmGizmoGroupType *UNUSED(
   }
 
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  Base *base = view_layer->basact;
+  Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;
     if (ob->type == OB_CAMERA) {

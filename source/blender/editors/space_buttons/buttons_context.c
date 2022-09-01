@@ -209,7 +209,7 @@ static bool buttons_context_path_object(ButsContextPath *path)
   }
 
   ViewLayer *view_layer = ptr->data;
-  Object *ob = (view_layer->basact) ? view_layer->basact->object : NULL;
+  Object *ob = BKE_view_layer_active_object_get(view_layer);
 
   if (ob) {
     RNA_id_pointer_create(&ob->id, &path->ptr[path->len]);

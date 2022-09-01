@@ -2585,7 +2585,7 @@ Base **BKE_object_pose_base_array_get_ex(ViewLayer *view_layer,
                                          uint *r_bases_len,
                                          bool unique)
 {
-  Base *base_active = view_layer->basact;
+  Base *base_active = BKE_view_layer_active_base_get(view_layer, __func__);
   Object *ob_pose = base_active ? BKE_object_pose_armature_get(base_active->object) : nullptr;
   Base *base_pose = nullptr;
   Base **bases = nullptr;
@@ -5184,7 +5184,8 @@ LinkNode *BKE_object_relational_superset(struct ViewLayer *view_layer,
 
         /* child relationship */
         if (includeFilter & (OB_REL_CHILDREN | OB_REL_CHILDREN_RECURSIVE)) {
-          LISTBASE_FOREACH (Base *, local_base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+          LISTBASE_FOREACH (
+              Base *, local_base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
             if (BASE_EDITABLE(((View3D *)nullptr), local_base)) {
 
               Object *child = local_base->object;

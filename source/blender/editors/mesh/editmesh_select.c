@@ -2214,7 +2214,7 @@ bool EDBM_select_pick(bContext *C, const int mval[2], const struct SelectPick_Pa
 
     /* Changing active object is handy since it allows us to
      * switch UV layers, vgroups for eg. */
-    if (vc.view_layer->basact != basact) {
+    if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
       ED_object_base_activate(C, basact);
     }
 

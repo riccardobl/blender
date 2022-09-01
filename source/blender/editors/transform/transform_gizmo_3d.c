@@ -1014,8 +1014,8 @@ int ED_transform_calc_gizmo_stats(const bContext *C,
   else {
 
     /* we need the one selected object, if its not active */
-    base = view_layer->basact;
-    ob = BKE_view_layer_active_object_get(view_layer);
+    base = BKE_view_layer_active_base_get(view_layer, __func__);
+    ob = base ? base->object : NULL;
     if (base && ((base->flag & BASE_SELECTED) == 0)) {
       ob = NULL;
     }

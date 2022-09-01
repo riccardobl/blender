@@ -723,7 +723,7 @@ static eSnapMode snap_mode_from_spacetype(TransInfo *t)
 static eSnapTargetSelect snap_target_select_from_spacetype(TransInfo *t)
 {
   ViewLayer *view_layer = t->view_layer;
-  Base *base_act = view_layer->basact;
+  Base *base_act = BKE_view_layer_active_base_get(view_layer, __func__);
 
   eSnapTargetSelect ret = SCE_SNAP_TARGET_ALL;
 
@@ -960,7 +960,7 @@ static void setSnappingCallback(TransInfo *t)
   }
   else if (t->spacetype == SPACE_IMAGE) {
     SpaceImage *sima = t->area->spacedata.first;
-    Object *obact = t->view_layer->basact ? t->view_layer->basact->object : NULL;
+    Object *obact = BKE_view_layer_active_object_get(t->view_layer);
 
     const bool is_uv_editor = sima->mode == SI_MODE_UV;
     const bool has_edit_object = obact && BKE_object_is_in_editmode(obact);

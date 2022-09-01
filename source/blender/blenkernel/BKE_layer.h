@@ -360,7 +360,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
     data_.object_type = _object_type; \
     data_.view_layer = _view_layer; \
     data_.v3d = _v3d; \
-    data_.base_active = _view_layer->basact; \
+    data_.base_active = BKE_view_layer_active_base_get(_view_layer, __func__); \
     ITER_BEGIN (BKE_view_layer_bases_in_mode_iterator_begin, \
                 BKE_view_layer_bases_in_mode_iterator_next, \
                 BKE_view_layer_bases_in_mode_iterator_end, \
@@ -548,6 +548,7 @@ struct Object *BKE_view_layer_active_object_get(const struct ViewLayer *view_lay
 struct Object *BKE_view_layer_edit_object_get(const struct ViewLayer *view_layer);
 
 struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer, const char *name);
+struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer, const char *name);
 // This should not exist in the final solution.
 const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
                                                              const char *name);

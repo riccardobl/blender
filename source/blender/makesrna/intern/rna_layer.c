@@ -71,7 +71,7 @@ static PointerRNA rna_LayerObjects_active_object_get(PointerRNA *ptr)
 {
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
   return rna_pointer_inherit_refine(
-      ptr, &RNA_Object, view_layer->basact ? view_layer->basact->object : NULL);
+      ptr, &RNA_Object, BKE_view_layer_active_object_get(view_layer));
 }
 
 static void rna_LayerObjects_active_object_set(PointerRNA *ptr,

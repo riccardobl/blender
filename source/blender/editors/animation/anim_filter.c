@@ -398,7 +398,7 @@ bool ANIM_animdata_get_context(const bContext *C, bAnimContext *ac)
   }
   ac->view_layer = CTX_data_view_layer(C);
   ac->depsgraph = CTX_data_depsgraph_pointer(C);
-  ac->obact = (ac->view_layer->basact) ? ac->view_layer->basact->object : NULL;
+  ac->obact = BKE_view_layer_active_object_get(ac->view_layer);
   ac->area = area;
   ac->region = region;
   ac->sl = sl;

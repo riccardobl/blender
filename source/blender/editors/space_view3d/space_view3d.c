@@ -1889,11 +1889,11 @@ static int view3d_context(const bContext *C, const char *member, bContextDataRes
      *
      * See T85532 for alternatives that were considered. */
     ViewLayer *view_layer = CTX_data_view_layer(C);
-    if (view_layer->basact) {
-      Object *ob = view_layer->basact->object;
+    Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+    if (base) {
+      Object *ob = base->object;
       /* if hidden but in edit mode, we still display, can happen with animation */
-      if ((view_layer->basact->flag & BASE_VISIBLE_DEPSGRAPH) != 0 ||
-          (ob->mode != OB_MODE_OBJECT)) {
+      if ((base->flag & BASE_VISIBLE_DEPSGRAPH) != 0 || (ob->mode != OB_MODE_OBJECT)) {
         CTX_data_id_pointer_set(result, &ob->id);
       }
     }

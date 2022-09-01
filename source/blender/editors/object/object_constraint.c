@@ -31,6 +31,7 @@
 #include "BKE_constraint.h"
 #include "BKE_context.h"
 #include "BKE_fcurve.h"
+#include "BKE_layer.h"
 #include "BKE_main.h"
 #include "BKE_object.h"
 #include "BKE_report.h"
@@ -2314,7 +2315,7 @@ static bool get_new_constraint_target(
   if ((found == false) && (add)) {
     Main *bmain = CTX_data_main(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
-    Base *base = view_layer->basact;
+    Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
     Object *obt;
 
     /* add new target object */

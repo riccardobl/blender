@@ -1758,8 +1758,10 @@ static void object_get_datamask(const Depsgraph *depsgraph,
     return;
   }
 
-  Object *actob = view_layer->basact ? DEG_get_original_object(view_layer->basact->object) :
-                                       nullptr;
+  Object *actob = BKE_view_layer_active_object_get(view_layer);
+  if (actob) {
+    actob = DEG_get_original_object(actob);
+  }
   if (DEG_get_original_object(ob) == actob) {
     bool editing = BKE_paint_select_face_test(actob);
 

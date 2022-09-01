@@ -61,15 +61,12 @@ void ED_editors_init_for_undo(Main *bmain)
   wmWindowManager *wm = bmain->wm.first;
   LISTBASE_FOREACH (wmWindow *, win, &wm->windows) {
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
-    Base *base = view_layer->basact;
-    if (base != NULL) {
-      Object *ob = base->object;
-      if (ob->mode & OB_MODE_TEXTURE_PAINT) {
-        Scene *scene = WM_window_get_active_scene(win);
+    Object *ob = BKE_view_layer_active_object_get(view_layer);
+    if (ob && (ob->mode & OB_MODE_TEXTURE_PAINT)) {
+      Scene *scene = WM_window_get_active_scene(win);
 
-        BKE_texpaint_slots_refresh_object(scene, ob);
-        ED_paint_proj_mesh_data_check(scene, ob, NULL, NULL, NULL, NULL);
-      }
+      BKE_texpaint_slots_refresh_object(scene, ob);
+      ED_paint_proj_mesh_data_check(scene, ob, NULL, NULL, NULL, NULL);
     }
   }
 }

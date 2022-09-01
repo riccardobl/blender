@@ -214,6 +214,12 @@ struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer,
   // TODO: BLI_assert_msg(view_layer->flags & ..., name);
   return &view_layer->object_bases;
 }
+
+struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer, const char *name)
+{
+  // TODO: BLI_assert_msg(view_layer->flags & ..., name);
+  return view_layer->basact;
+}
 const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
                                                              const char *UNUSED(name))
 {
@@ -285,7 +291,8 @@ Object *BKE_view_layer_non_active_selected_object(struct ViewLayer *view_layer,
 
 Object *BKE_view_layer_active_object_get(const ViewLayer *view_layer)
 {
-  return view_layer->basact ? view_layer->basact->object : NULL;
+  Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+  return base ? base->object : NULL;
 }
 
 Object *BKE_view_layer_edit_object_get(const ViewLayer *view_layer)

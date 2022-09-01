@@ -1100,7 +1100,7 @@ bool ED_armature_edit_select_pick_bone(bContext *C,
       arm->act_edbone = ebone;
     }
 
-    if (view_layer->basact != basact) {
+    if (BKE_view_layer_active_base_get(view_layer, __func__) != basact) {
       ED_object_base_activate(C, basact);
     }
 

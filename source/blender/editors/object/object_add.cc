@@ -629,7 +629,7 @@ Object *ED_object_add_type_with_obdata(bContext *C,
     ob = BKE_object_add(bmain, view_layer, type, name);
   }
 
-  Base *ob_base_act = view_layer->basact;
+  Base *ob_base_act = BKE_view_layer_active_base_get(view_layer, __func__);
   /* While not getting a valid base is not a good thing, it can happen in convoluted corner cases,
    * better not crash on it in releases. */
   BLI_assert(ob_base_act != nullptr);
@@ -3443,9 +3443,12 @@ static int object_convert_exec(bContext *C, wmOperator *op)
     ED_object_base_activate(C, basact);
     view_layer->basact = basact;
   }
-  else if (view_layer->basact->object->flag & OB_DONE) {
-    WM_event_add_notifier(C, NC_OBJECT | ND_MODIFIER, view_layer->basact->object);
-    WM_event_add_notifier(C, NC_OBJECT | ND_DATA, view_layer->basact->object);
+  else {
+    Object *object = BKE_view_layer_active_object_get(view_layer);
+    if (object->flag & OB_DONE) {
+      WM_event_add_notifier(C, NC_OBJECT | ND_MODIFIER, object);
+      WM_event_add_notifier(C, NC_OBJECT | ND_DATA, object);
+    }
   }
 
   DEG_relations_tag_update(bmain);
@@ -3648,8 +3651,8 @@ static int duplicate_exec(bContext *C, wmOperator *op)
   const bool linked = RNA_boolean_get(op->ptr, "linked");
   const eDupli_ID_Flags dupflag = (linked) ? (eDupli_ID_Flags)0 : (eDupli_ID_Flags)U.dupflag;
 
-  /* We need to handle that here ourselves, because we may duplicate several objects, in which case
-   * we also want to remap pointers between those... */
+  /* We need to handle that here ourselves, because we may duplicate several objects, in which
+   * case we also want to remap pointers between those... */
   BKE_main_id_newptr_and_tag_clear(bmain);
 
   /* Do not do collection re-syncs for each object; will do it once afterwards.
@@ -3682,7 +3685,7 @@ static int duplicate_exec(bContext *C, wmOperator *op)
     ED_object_base_select(base, BA_DESELECT);
 
     /* new object will become active */
-    if (view_layer->basact == base) {
+    if (BKE_view_layer_active_base_get(view_layer, __func__) == base) {
       ob_new_active = ob_new;
     }
   }
@@ -3809,8 +3812,8 @@ static int object_add_named_exec(bContext *C, wmOperator *op)
   /* Do immediately, as #copy_object_set_idnew() below operates on visible objects. */
   BKE_base_eval_flags(basen);
 
-  /* object_add_duplicate_internal() doesn't deselect other objects, unlike object_add_common() or
-   * BKE_view_layer_base_deselect_all(). */
+  /* object_add_duplicate_internal() doesn't deselect other objects, unlike object_add_common()
+   * or BKE_view_layer_base_deselect_all(). */
   ED_object_base_deselect_all(view_layer, nullptr, SEL_DESELECT);
   ED_object_base_select(basen, BA_SELECT);
   ED_object_base_activate(C, basen);
@@ -4073,8 +4076,8 @@ static int object_join_exec(bContext *C, wmOperator *op)
      * Internally the join functions use #invert_m4_m4_safe_ortho which creates
      * an inevitable matrix from one that has one or more degenerate axes.
      *
-     * In most cases we don't worry about special handling for non-inevitable matrices however for
-     * joining objects there may be flat 2D objects where it's not obvious the scale is zero.
+     * In most cases we don't worry about special handling for non-inevitable matrices however
+     * for joining objects there may be flat 2D objects where it's not obvious the scale is zero.
      * In this case, using #invert_m4_m4_safe_ortho works as well as we can expect,
      * joining the contents, flattening on the axis that's zero scaled.
      * If the zero scale is removed, the data on this axis remains un-scaled

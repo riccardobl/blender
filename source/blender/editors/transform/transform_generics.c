@@ -1084,10 +1084,9 @@ bool calculateCenterActive(TransInfo *t, bool select_only, float r_center[3])
   else {
     /* object mode */
     ViewLayer *view_layer = t->view_layer;
-    Object *ob = BKE_view_layer_active_object_get(view_layer);
-    Base *base = view_layer->basact;
-    if (ob && ((!select_only) || ((base->flag & BASE_SELECTED) != 0))) {
-      copy_v3_v3(r_center, ob->obmat[3]);
+    Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+    if (base && ((!select_only) || ((base->flag & BASE_SELECTED) != 0))) {
+      copy_v3_v3(r_center, base->object->obmat[3]);
       return true;
     }
   }
