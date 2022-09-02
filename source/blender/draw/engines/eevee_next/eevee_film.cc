@@ -475,6 +475,7 @@ void Film::sync()
     GPUShader *sh = inst_.shaders.static_shader_get(FILM_CRYPTOMATTE_POST);
     DRWShadingGroup *grp = DRW_shgroup_create(sh, cryptomatte_post_ps_);
     DRW_shgroup_uniform_image_ref(grp, "cryptomatte_img", &cryptomatte_tx_);
+    DRW_shgroup_uniform_image_ref(grp, "weight_img", &weight_tx_.current());
     DRW_shgroup_uniform_int_copy(grp, "cryptomatte_layer_len", cryptomatte_layer_count);
     DRW_shgroup_uniform_int_copy(
         grp, "cryptomatte_samples_per_layer", inst_.view_layer->cryptomatte_levels);

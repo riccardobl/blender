@@ -18,10 +18,9 @@ void cryptomatte_load_samples(ivec2 texel, int layer, out vec2 samples[CRYPTOMAT
   }
 }
 
-bool cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
+void cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
 {
   /* Sort samples. Lame implementation, can be replaced with a more efficient algorithm. */
-  bool changed = false;
   for (int i = 0; i < cryptomatte_samples_per_layer - 1 && samples[i].y != 0.0; i++) {
     int highest_index = i;
     float highest_weight = samples[i].y;
@@ -36,10 +35,14 @@ bool cryptomatte_sort_samples(inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
       vec2 tmp = samples[i];
       samples[i] = samples[highest_index];
       samples[highest_index] = tmp;
-      changed = true;
     }
   }
-  return changed;
+}
+void cryptomatte_normalize_weight(float total_weight, inout vec2 samples[CRYPTOMATTE_LEVELS_MAX])
+{
+  for (int i = 0; i < CRYPTOMATTE_LEVELS_MAX; i++) {
+    samples[i].y /= total_weight;
+  }
 }
 
 void cryptomatte_store_samples(ivec2 texel, int layer, in vec2 samples[CRYPTOMATTE_LEVELS_MAX])
@@ -62,10 +65,12 @@ void main()
   for (int layer = 0; layer < cryptomatte_layer_len; layer++) {
     vec2 samples[CRYPTOMATTE_LEVELS_MAX];
     cryptomatte_load_samples(texel, layer, samples);
-    bool changed = cryptomatte_sort_samples(samples);
-    /* TODO(jbakker): Normalize the weights based on the film pixel weight. */
-    if (changed) {
-      cryptomatte_store_samples(texel, layer, samples);
-    }
+    cryptomatte_sort_samples(samples);
+    /* Repeat texture coordinates as the weight can be optimized to a small portion of the film. */
+    float weight = imageLoad(weight_img,
+                             ivec3(texel % imageSize(weight_img).xy, 0))
+                       .x;
+    cryptomatte_normalize_weight(weight, samples);
+    cryptomatte_store_samples(texel, layer, samples);
   }
 }
