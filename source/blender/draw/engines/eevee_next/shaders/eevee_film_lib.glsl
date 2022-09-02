@@ -204,9 +204,6 @@ void film_cryptomatte_layer_accum_and_store(
 /** \name Load/Store Data
  * \{ */
 
-#define WEIGHT_lAYER_ACCUMULATION 0
-#define WEIGHT_lAYER_DISTANCE 1
-
 /* Returns the distance used to store nearest interpolation data. */
 float film_distance_load(ivec2 texel)
 {
@@ -216,7 +213,7 @@ float film_distance_load(ivec2 texel)
   if (!film_buf.use_history || film_buf.use_reprojection) {
     return 1.0e16;
   }
-  return imageLoad(in_weight_img, ivec3(texel, WEIGHT_lAYER_DISTANCE)).x;
+  return imageLoad(in_weight_img, ivec3(texel, FILM_WEIGHT_LAYER_DISTANCE)).x;
 }
 
 float film_weight_load(ivec2 texel)
@@ -227,7 +224,7 @@ float film_weight_load(ivec2 texel)
   if (!film_buf.use_history || film_buf.use_reprojection) {
     return 0.0;
   }
-  return imageLoad(in_weight_img, ivec3(texel, WEIGHT_lAYER_ACCUMULATION)).x;
+  return imageLoad(in_weight_img, ivec3(texel, FILM_WEIGHT_LAYER_ACCUMULATION)).x;
 }
 
 /* Returns motion in pixel space to retrieve the pixel history. */
@@ -590,12 +587,12 @@ void film_store_depth(ivec2 texel_film, float value, out float out_depth)
 
 void film_store_distance(ivec2 texel, float value)
 {
-  imageStore(out_weight_img, ivec3(texel, WEIGHT_lAYER_DISTANCE), vec4(value));
+  imageStore(out_weight_img, ivec3(texel, FILM_WEIGHT_LAYER_DISTANCE), vec4(value));
 }
 
 void film_store_weight(ivec2 texel, float value)
 {
-  imageStore(out_weight_img, ivec3(texel, WEIGHT_lAYER_ACCUMULATION), vec4(value));
+  imageStore(out_weight_img, ivec3(texel, FILM_WEIGHT_LAYER_ACCUMULATION), vec4(value));
 }
 
 float film_display_depth_ammend(ivec2 texel, float depth)
