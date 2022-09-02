@@ -67,8 +67,9 @@ void main()
     cryptomatte_load_samples(texel, layer, samples);
     cryptomatte_sort_samples(samples);
     /* Repeat texture coordinates as the weight can be optimized to a small portion of the film. */
-    float weight = imageLoad(weight_img,
-                             ivec3(texel % imageSize(weight_img).xy, 0))
+    float weight = imageLoad(
+                       weight_img,
+                       ivec3(texel % imageSize(weight_img).xy, FILM_WEIGHT_LAYER_ACCUMULATION))
                        .x;
     cryptomatte_normalize_weight(weight, samples);
     cryptomatte_store_samples(texel, layer, samples);
