@@ -372,12 +372,15 @@ void Instance::update_passes(RenderEngine *engine, Scene *scene, ViewLayer *view
     }
   }
 
+  /* NOTE: Name channels lowercase rgba so that compression rules check in OpenEXR DWA code uses
+   * loseless compression. Reportedly this naming is the only one which works good from the
+   * interoperability point of view. Using xyzw naming is not portable. */
   auto register_cryptomatte_passes = [&](eViewLayerCryptomatteFlags cryptomatte_layer,
                                          eViewLayerEEVEEPassType eevee_pass) {
     if (view_layer->cryptomatte_flag & cryptomatte_layer) {
       for (std::string pass_name : Film::pass_to_render_pass_names(eevee_pass, view_layer)) {
         RE_engine_register_pass(
-            engine, scene, view_layer, pass_name.c_str(), 4, "RGBA", SOCK_RGBA);
+            engine, scene, view_layer, pass_name.c_str(), 4, "rgba", SOCK_RGBA);
       }
     }
   };
