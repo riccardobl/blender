@@ -291,7 +291,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     /* Set pass offsets.  */
 
     data_.display_id = aovs_info.display_id;
-    data_.display_mode = aovs_info.display_is_value ? DISPLAY_MODE_VALUE : DISPLAY_MODE_COLOR;
+    data_.storage_type = aovs_info.display_is_value ? PASS_STORAGE_VALUE : PASS_STORAGE_COLOR;
 
     /* Combined is in a separate buffer. */
     data_.combined_id = (enabled_passes_ & EEVEE_RENDER_PASS_COMBINED) ? 0 : -1;
@@ -302,13 +302,13 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     data_.value_len = 0;
 
     auto pass_index_get = [&](eViewLayerEEVEEPassType pass_type) {
-      eDisplayMode display_mode = pass_display_mode(pass_type);
+      ePassStorageType storage_type = pass_storage_type(pass_type);
       int index = (enabled_passes_ & pass_type) ?
-                      (display_mode == DISPLAY_MODE_VALUE ? data_.value_len : data_.color_len)++ :
+                      (storage_type == PASS_STORAGE_VALUE ? data_.value_len : data_.color_len)++ :
                       -1;
       if (inst_.is_viewport() && inst_.v3d->shading.render_pass == pass_type) {
         data_.display_id = index;
-        data_.display_mode = display_mode;
+        data_.storage_type = storage_type;
       }
       return index;
     };
@@ -344,7 +344,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
 
         if (inst_.is_viewport() && inst_.v3d->shading.render_pass == pass_type) {
           data_.display_id = index;
-          data_.display_mode = DISPLAY_MODE_CRYPTOMATTE;
+          data_.storage_type = PASS_STORAGE_CRYPTOMATTE;
         }
       }
       return index;
@@ -697,9 +697,9 @@ void Film::cryptomatte_sort()
 
 float *Film::read_pass(eViewLayerEEVEEPassType pass_type, int layer_offset)
 {
-  eDisplayMode pass_mode = pass_display_mode(pass_type);
-  const bool is_value = pass_mode == DISPLAY_MODE_VALUE;
-  const bool is_cryptomatte = pass_mode == DISPLAY_MODE_CRYPTOMATTE;
+  ePassStorageType storage_type = pass_storage_type(pass_type);
+  const bool is_value = storage_type == PASS_STORAGE_VALUE;
+  const bool is_cryptomatte = storage_type == PASS_STORAGE_CRYPTOMATTE;
 
   Texture &accum_tx = (pass_type == EEVEE_RENDER_PASS_COMBINED) ?
                           combined_tx_.current() :

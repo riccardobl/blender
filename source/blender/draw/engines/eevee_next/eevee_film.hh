@@ -105,20 +105,20 @@ class Film {
   int cryptomatte_layer_max_get() const;
   int cryptomatte_layer_len_get() const;
 
-  static eDisplayMode pass_display_mode(eViewLayerEEVEEPassType pass_type)
+  static ePassStorageType pass_storage_type(eViewLayerEEVEEPassType pass_type)
   {
     switch (pass_type) {
       case EEVEE_RENDER_PASS_Z:
       case EEVEE_RENDER_PASS_MIST:
       case EEVEE_RENDER_PASS_SHADOW:
       case EEVEE_RENDER_PASS_AO:
-        return DISPLAY_MODE_VALUE;
+        return PASS_STORAGE_VALUE;
       case EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT:
       case EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET:
       case EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL:
-        return DISPLAY_MODE_CRYPTOMATTE;
+        return PASS_STORAGE_CRYPTOMATTE;
       default:
-        return DISPLAY_MODE_COLOR;
+        return PASS_STORAGE_COLOR;
     }
   }
 
