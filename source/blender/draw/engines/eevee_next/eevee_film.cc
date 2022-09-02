@@ -474,12 +474,11 @@ void Film::sync()
     cryptomatte_post_ps_ = DRW_pass_create("Film.Cryptomatte.Post", DRW_STATE_NO_DRAW);
     GPUShader *sh = inst_.shaders.static_shader_get(FILM_CRYPTOMATTE_POST);
     DRWShadingGroup *grp = DRW_shgroup_create(sh, cryptomatte_post_ps_);
-    Texture &cryptomatte_tx = inst_.film.cryptomatte_tx_get();
-    DRW_shgroup_uniform_image_ref(grp, "cryptomatte_img", &cryptomatte_tx);
+    DRW_shgroup_uniform_image_ref(grp, "cryptomatte_img", &cryptomatte_tx_);
     DRW_shgroup_uniform_int_copy(grp, "cryptomatte_layer_len", cryptomatte_layer_count);
     DRW_shgroup_uniform_int_copy(
         grp, "cryptomatte_samples_per_layer", inst_.view_layer->cryptomatte_levels);
-    int3 dispatch_size = math::divide_ceil(cryptomatte_tx.size(), int3(FILM_GROUP_SIZE));
+    int2 dispatch_size = math::divide_ceil(int2(cryptomatte_tx_.size()), int2(FILM_GROUP_SIZE));
     DRW_shgroup_call_compute(grp, UNPACK2(dispatch_size), 1);
   }
   else {

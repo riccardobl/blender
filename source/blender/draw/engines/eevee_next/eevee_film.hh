@@ -101,11 +101,6 @@ class Film {
     return data_.background_opacity;
   }
 
-  Texture &cryptomatte_tx_get()
-  {
-    return cryptomatte_tx_;
-  }
-
   eViewLayerEEVEEPassType enabled_passes_get() const;
   int cryptomatte_layer_max_get() const;
   int cryptomatte_layer_len_get() const;
