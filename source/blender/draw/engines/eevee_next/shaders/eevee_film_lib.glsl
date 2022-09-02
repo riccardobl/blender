@@ -159,6 +159,45 @@ void film_sample_accum_combined(FilmSample samp, inout vec4 accum, inout float w
   weight_accum += weight;
 }
 
+void film_sample_cryptomatte_accum(FilmSample samp,
+                                   int layer,
+                                   sampler2D tex,
+                                   inout vec2 crypto_samples[4])
+{
+  float hash = texelFetch(tex, samp.texel, 0)[layer];
+  /* Find existing entry. */
+  for (int i = 0; i < 4; i++) {
+    if (crypto_samples[i].x == hash) {
+      crypto_samples[i].y += samp.weight;
+      return;
+    }
+  }
+  /* Overwrite entry with less weight. */
+  for (int i = 0; i < 4; i++) {
+    if (crypto_samples[i].y < samp.weight) {
+      crypto_samples[i] = vec2(hash, samp.weight);
+      return;
+    }
+  }
+}
+
+void film_cryptomatte_layer_accum_and_store(
+    FilmSample dst, ivec2 texel_film, int pass_id, int layer_component, inout vec4 out_color)
+{
+  if (pass_id == -1) {
+    return;
+  }
+  /* x = hash, y = accumed weight. Only keep track of 4 highest weighted samples. */
+  vec2 crypto_samples[4] = {vec2(0.0), vec2(0.0), vec2(0.0), vec2(0.0)};
+  for (int i = 0; i < film_buf.samples_len; i++) {
+    FilmSample src = film_sample_get(i, texel_film);
+    film_sample_cryptomatte_accum(src, layer_component, cryptomatte_tx, crypto_samples);
+  }
+  for (int i = 0; i < 4; i++) {
+    cryptomatte_store_film_sample(dst, pass_id, crypto_samples[i], out_color);
+  }
+}
+
 /** \} */
 
 /* -------------------------------------------------------------------- */
@@ -704,15 +743,16 @@ void film_process_data(ivec2 texel_film, out vec4 out_color, out float out_depth
   }
 
   if (film_buf.cryptomatte_samples_len != 0) {
-    vec4 hashes = texelFetch(cryptomatte_tx, dst.texel, 0);
-    if (film_buf.cryptomatte_object_id != -1) {
-      cryptomatte_store_film_sample(dst, film_buf.cryptomatte_object_id, hashes.x, out_color);
+    /* Cryptomatte passess cannot be cleared by a weighted store like other passes. */
+    if (!film_buf.use_history || film_buf.use_reprojection) {
+      cryptomatte_clear_samples(dst);
     }
-    if (film_buf.cryptomatte_asset_id != -1) {
-      cryptomatte_store_film_sample(dst, film_buf.cryptomatte_asset_id, hashes.y, out_color);
-    }
-    if (film_buf.cryptomatte_material_id != -1) {
-      cryptomatte_store_film_sample(dst, film_buf.cryptomatte_material_id, hashes.z, out_color);
-    }
+
+    film_cryptomatte_layer_accum_and_store(
+        dst, texel_film, film_buf.cryptomatte_object_id, 0, out_color);
+    film_cryptomatte_layer_accum_and_store(
+        dst, texel_film, film_buf.cryptomatte_asset_id, 1, out_color);
+    film_cryptomatte_layer_accum_and_store(
+        dst, texel_film, film_buf.cryptomatte_material_id, 2, out_color);
   }
 }
