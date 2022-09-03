@@ -166,7 +166,7 @@ static void do_outliner_item_mode_toggle_generic(bContext *C, TreeViewContext *t
   if (ED_object_mode_set(C, OB_MODE_OBJECT)) {
     Base *base_active = BKE_view_layer_base_find(tvc->view_layer, tvc->obact);
     if (base_active != base) {
-      BKE_view_layer_base_deselect_all(tvc->view_layer);
+      BKE_view_layer_base_deselect_all(tvc->scene, tvc->view_layer);
       BKE_view_layer_base_select_and_set_active(tvc->view_layer, base);
       DEG_id_tag_update(&tvc->scene->id, ID_RECALC_SELECT);
       ED_undo_push(C, "Change Active");
@@ -360,7 +360,7 @@ static void tree_element_object_activate(bContext *C,
       if ((scene->toolsettings->object_flag & SCE_OBJECT_MODE_LOCK) ?
               (ob->mode == OB_MODE_OBJECT) :
               true) {
-        BKE_view_layer_base_deselect_all(view_layer);
+        BKE_view_layer_base_deselect_all(scene, view_layer);
       }
       ED_object_base_select(base, BA_SELECT);
       if (parent_tselem) {
@@ -1417,7 +1417,7 @@ static void do_outliner_item_activate_tree_element(bContext *C,
         FOREACH_COLLECTION_OBJECT_RECURSIVE_END;
       }
       else {
-        BKE_view_layer_base_deselect_all(tvc->view_layer);
+        BKE_view_layer_base_deselect_all(tvc->scene, tvc->view_layer);
 
         FOREACH_COLLECTION_OBJECT_RECURSIVE_BEGIN (gr, object) {
           Base *base = BKE_view_layer_base_find(tvc->view_layer, object);

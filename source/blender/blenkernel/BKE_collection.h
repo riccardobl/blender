@@ -216,7 +216,8 @@ struct ListBase BKE_collection_object_cache_get(struct Collection *collection);
 ListBase BKE_collection_object_cache_instanced_get(struct Collection *collection);
 void BKE_collection_object_cache_free(struct Collection *collection);
 
-struct Base *BKE_collection_or_layer_objects(const struct ViewLayer *view_layer,
+struct Base *BKE_collection_or_layer_objects(const struct Scene *scene,
+                                             struct ViewLayer *view_layer,
                                              struct Collection *collection);
 
 /* Editing. */

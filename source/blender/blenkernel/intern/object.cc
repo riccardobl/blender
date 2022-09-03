@@ -2258,11 +2258,12 @@ Object *BKE_object_add_only_object(Main *bmain, int type, const char *name)
   return ob;
 }
 
-static Object *object_add_common(Main *bmain, ViewLayer *view_layer, int type, const char *name)
+static Object *object_add_common(
+    Main *bmain, Scene *scene, ViewLayer *view_layer, int type, const char *name)
 {
   Object *ob = BKE_object_add_only_object(bmain, type, name);
   ob->data = BKE_object_obdata_add_from_type(bmain, type, name);
-  BKE_view_layer_base_deselect_all(view_layer);
+  BKE_view_layer_base_deselect_all(scene, view_layer);
 
   DEG_id_tag_update_ex(
       bmain, &ob->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY | ID_RECALC_ANIMATION);
@@ -2272,7 +2273,7 @@ static Object *object_add_common(Main *bmain, ViewLayer *view_layer, int type, c
 Object *BKE_object_add(
     Main *bmain, Scene *scene, ViewLayer *view_layer, int type, const char *name)
 {
-  Object *ob = object_add_common(bmain, view_layer, type, name);
+  Object *ob = object_add_common(bmain, scene, view_layer, type, name);
 
   LayerCollection *layer_collection = BKE_layer_collection_get_active(view_layer);
   BKE_collection_viewlayer_object_add(bmain, view_layer, layer_collection->collection, ob);
@@ -2291,7 +2292,7 @@ Object *BKE_object_add(
 Object *BKE_object_add_from(
     Main *bmain, Scene *scene, ViewLayer *view_layer, int type, const char *name, Object *ob_src)
 {
-  Object *ob = object_add_common(bmain, view_layer, type, name);
+  Object *ob = object_add_common(bmain, scene, view_layer, type, name);
   BKE_collection_object_add_from(bmain, scene, ob_src, ob);
 
   Base *base = BKE_view_layer_base_find(view_layer, ob);
@@ -2300,8 +2301,13 @@ Object *BKE_object_add_from(
   return ob;
 }
 
-Object *BKE_object_add_for_data(
-    Main *bmain, ViewLayer *view_layer, int type, const char *name, ID *data, bool do_id_user)
+Object *BKE_object_add_for_data(Main *bmain,
+                                const Scene *scene,
+                                ViewLayer *view_layer,
+                                int type,
+                                const char *name,
+                                ID *data,
+                                bool do_id_user)
 {
   /* same as object_add_common, except we don't create new ob->data */
   Object *ob = BKE_object_add_only_object(bmain, type, name);
@@ -2310,7 +2316,7 @@ Object *BKE_object_add_for_data(
     id_us_plus(data);
   }
 
-  BKE_view_layer_base_deselect_all(view_layer);
+  BKE_view_layer_base_deselect_all(scene, view_layer);
   DEG_id_tag_update_ex(
       bmain, &ob->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY | ID_RECALC_ANIMATION);
 
@@ -5138,13 +5144,15 @@ static void obrel_list_add(LinkNode **links, Object *ob)
   ob->id.tag |= LIB_TAG_DOIT;
 }
 
-LinkNode *BKE_object_relational_superset(struct ViewLayer *view_layer,
+LinkNode *BKE_object_relational_superset(const Scene *scene,
+                                         struct ViewLayer *view_layer,
                                          eObjectSet objectSet,
                                          eObRelationTypes includeFilter)
 {
   LinkNode *links = nullptr;
 
   /* Remove markers from all objects */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }

@@ -1245,11 +1245,12 @@ static void add_collision_object(ListBase *relations,
 }
 
 ListBase *BKE_collision_relations_create(Depsgraph *depsgraph,
+                                         const Scene *scene,
                                          Collection *collection,
                                          unsigned int modifier_type)
 {
   ViewLayer *view_layer = DEG_get_input_view_layer(depsgraph);
-  Base *base = BKE_collection_or_layer_objects(view_layer, collection);
+  Base *base = BKE_collection_or_layer_objects(scene, view_layer, collection);
   const bool for_render = (DEG_get_mode(depsgraph) == DAG_EVAL_RENDER);
   const int base_flag = (for_render) ? BASE_ENABLED_RENDER : BASE_ENABLED_VIEWPORT;
 

@@ -1054,7 +1054,7 @@ static void scene_blend_write(BlendWriter *writer, ID *id, const void *id_addres
   BKE_curvemapping_curves_blend_write(writer, &sce->r.mblur_shutter_curve);
 
   LISTBASE_FOREACH (ViewLayer *, view_layer, &sce->view_layers) {
-    BKE_view_layer_blend_write(writer, view_layer);
+    BKE_view_layer_blend_write(writer, sce, view_layer);
   }
 
   if (sce->master_collection) {
@@ -2048,6 +2048,7 @@ Scene *BKE_scene_add(Main *bmain, const char *name)
 bool BKE_scene_object_find(Scene *scene, Object *ob)
 {
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     if (BLI_findptr(
             BKE_view_layer_object_bases_get(view_layer, __func__), ob, offsetof(Base, object))) {
       return true;
@@ -2059,6 +2060,7 @@ bool BKE_scene_object_find(Scene *scene, Object *ob)
 Object *BKE_scene_object_find_by_name(const Scene *scene, const char *name)
 {
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if (STREQ(base->object->id.name + 2, name)) {
         return base->object;
@@ -2080,6 +2082,7 @@ void BKE_scene_set_background(Main *bmain, Scene *scene)
 
   /* copy layers and flags from bases to objects */
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       /* collection patch... */
       BKE_scene_object_base_flag_sync_from_base(base);
@@ -2123,6 +2126,7 @@ int BKE_scene_base_iter_next(
       if (iter->phase == F_START) {
         ViewLayer *view_layer = (depsgraph) ? DEG_get_evaluated_view_layer(depsgraph) :
                                               BKE_view_layer_context_active_PLACEHOLDER(*scene);
+        BKE_view_layer_ensure_sync(*scene, view_layer);
         *base = static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);
         if (*base) {
           *ob = (*base)->object;
@@ -2133,6 +2137,7 @@ int BKE_scene_base_iter_next(
           while ((*scene)->set) {
             (*scene) = (*scene)->set;
             ViewLayer *view_layer_set = BKE_view_layer_default_render(*scene);
+            BKE_view_layer_ensure_sync(*scene, view_layer_set);
             ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer_set, __func__);
             if (object_bases->first) {
               *base = static_cast<Base *>(object_bases->first);
@@ -2155,6 +2160,7 @@ int BKE_scene_base_iter_next(
               while ((*scene)->set) {
                 (*scene) = (*scene)->set;
                 ViewLayer *view_layer_set = BKE_view_layer_default_render(*scene);
+                BKE_view_layer_ensure_sync(*scene, view_layer_set);
                 ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer_set, __func__);
                 if (object_bases->first) {
                   *base = static_cast<Base *>(object_bases->first);
@@ -2811,6 +2817,7 @@ Base *_setlooper_base_step(Scene **sce_iter, ViewLayer *view_layer, Base *base)
   if ((base == nullptr) && (view_layer != nullptr)) {
     /* First time looping, return the scenes first base. */
     /* For the first loop we should get the layer from workspace when available. */
+    BKE_view_layer_ensure_sync(*sce_iter, view_layer);
     ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
     if (object_bases->first) {
       return static_cast<Base *>(object_bases->first);
@@ -2882,8 +2889,9 @@ bool BKE_scene_uses_cycles_experimental_features(Scene *scene)
   return RNA_enum_get(&cycles_ptr, "feature_set") == CYCLES_FEATURES_EXPERIMENTAL;
 }
 
-void BKE_scene_base_flag_to_objects(ViewLayer *view_layer)
+void BKE_scene_base_flag_to_objects(const Scene *scene, ViewLayer *view_layer)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     BKE_scene_object_base_flag_sync_from_base(base);
   }

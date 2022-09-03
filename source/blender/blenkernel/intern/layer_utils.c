@@ -298,7 +298,7 @@ Object *BKE_view_layer_non_active_selected_object(struct ViewLayer *view_layer,
 
 Object *BKE_view_layer_active_object_get(const ViewLayer *view_layer)
 {
-  Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+  Base *base = BKE_view_layer_active_base_get((ViewLayer *)view_layer, __func__);
   return base ? base->object : NULL;
 }
 

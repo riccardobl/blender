@@ -393,10 +393,11 @@ bool ANIM_animdata_get_context(const bContext *C, bAnimContext *ac)
   /* get useful default context settings from context */
   ac->bmain = bmain;
   ac->scene = scene;
+  ac->view_layer = CTX_data_view_layer(C);
   if (scene) {
     ac->markers = ED_context_get_markers(C);
+    BKE_view_layer_ensure_sync(ac->scene, ac->view_layer);
   }
-  ac->view_layer = CTX_data_view_layer(C);
   ac->depsgraph = CTX_data_depsgraph_pointer(C);
   ac->obact = BKE_view_layer_active_object_get(ac->view_layer);
   ac->area = area;

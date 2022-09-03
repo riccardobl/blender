@@ -201,6 +201,7 @@ struct Object *BKE_object_add_from(struct Main *bmain,
  * assigning it to the object.
  */
 struct Object *BKE_object_add_for_data(struct Main *bmain,
+                                       const struct Scene *scene,
                                        struct ViewLayer *view_layer,
                                        int type,
                                        const char *name,
@@ -613,7 +614,8 @@ typedef enum eObjectSet {
  * If #OB_SET_VISIBLE or#OB_SET_SELECTED are collected,
  * then also add related objects according to the given \a includeFilter.
  */
-struct LinkNode *BKE_object_relational_superset(struct ViewLayer *view_layer,
+struct LinkNode *BKE_object_relational_superset(const struct Scene *scene,
+                                                struct ViewLayer *view_layer,
                                                 eObjectSet objectSet,
                                                 eObRelationTypes includeFilter);
 /**

@@ -1335,7 +1335,7 @@ static int view_camera_exec(bContext *C, wmOperator *op)
       }
 
       if (v3d->camera == NULL) {
-        v3d->camera = BKE_view_layer_camera_find(view_layer);
+        v3d->camera = BKE_view_layer_camera_find(scene, view_layer);
       }
 
       /* couldn't find any useful camera, bail out */

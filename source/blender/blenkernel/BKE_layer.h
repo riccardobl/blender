@@ -78,7 +78,9 @@ void BKE_view_layer_free_ex(struct ViewLayer *view_layer, bool do_id_user);
 /**
  * Tag all the selected objects of a render-layer.
  */
-void BKE_view_layer_selected_objects_tag(struct ViewLayer *view_layer, int tag);
+void BKE_view_layer_selected_objects_tag(const struct Scene *scene,
+                                         struct ViewLayer *view_layer,
+                                         int tag);
 
 /**
  * Fallback for when a Scene has no camera to use.
@@ -87,14 +89,14 @@ void BKE_view_layer_selected_objects_tag(struct ViewLayer *view_layer, int tag);
  * If rendering you pass the scene active layer, when viewing in the viewport
  * you want to get #ViewLayer from context.
  */
-struct Object *BKE_view_layer_camera_find(struct ViewLayer *view_layer);
+struct Object *BKE_view_layer_camera_find(const struct Scene *scene, struct ViewLayer *view_layer);
 /**
  * Find the #ViewLayer a #LayerCollection belongs to.
  */
 struct ViewLayer *BKE_view_layer_find_from_collection(const struct Scene *scene,
                                                       struct LayerCollection *lc);
 struct Base *BKE_view_layer_base_find(struct ViewLayer *view_layer, struct Object *ob);
-void BKE_view_layer_base_deselect_all(struct ViewLayer *view_layer);
+void BKE_view_layer_base_deselect_all(const struct Scene *scene, struct ViewLayer *view_layer);
 
 void BKE_view_layer_base_select_and_set_active(struct ViewLayer *view_layer, struct Base *selbase);
 
@@ -161,7 +163,9 @@ void BKE_scene_collection_sync(const struct Scene *scene);
  * and on file loaded in case linked data changed or went missing.
  */
 void BKE_layer_collection_sync(const struct Scene *scene, struct ViewLayer *view_layer);
-void BKE_layer_collection_local_sync(struct ViewLayer *view_layer, const struct View3D *v3d);
+void BKE_layer_collection_local_sync(const struct Scene *scene,
+                                     struct ViewLayer *view_layer,
+                                     const struct View3D *v3d);
 /**
  * Sync the local collection for all the 3D Viewports.
  */
@@ -226,7 +230,8 @@ void BKE_layer_collection_isolate_global(struct Scene *scene,
  *
  * Same as #BKE_layer_collection_isolate_local but for a viewport
  */
-void BKE_layer_collection_isolate_local(struct ViewLayer *view_layer,
+void BKE_layer_collection_isolate_local(const struct Scene *scene,
+                                        struct ViewLayer *view_layer,
                                         const struct View3D *v3d,
                                         struct LayerCollection *lc,
                                         bool extend);
@@ -256,7 +261,9 @@ void BKE_layer_eval_view_layer_indexed(struct Depsgraph *depsgraph,
 
 /* .blend file I/O */
 
-void BKE_view_layer_blend_write(struct BlendWriter *writer, struct ViewLayer *view_layer);
+void BKE_view_layer_blend_write(struct BlendWriter *writer,
+                                const struct Scene *scene,
+                                struct ViewLayer *view_layer);
 void BKE_view_layer_blend_read_data(struct BlendDataReader *reader, struct ViewLayer *view_layer);
 void BKE_view_layer_blend_read_lib(struct BlendLibReader *reader,
                                    struct Library *lib,
@@ -421,10 +428,11 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
   } \
   ((void)0)
 
-#define FOREACH_OBJECT_BEGIN(view_layer, _instance) \
+#define FOREACH_OBJECT_BEGIN(scene, view_layer, _instance) \
   { \
     Object *_instance; \
     Base *_base; \
+    BKE_view_layer_ensure_sync(scene, view_layer); \
     for (_base = (Base *)BKE_view_layer_object_bases_get(view_layer, __func__)->first; _base; \
          _base = _base->next) { \
       _instance = _base->object;
@@ -554,7 +562,7 @@ struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *v
                                                              const char *name);
 
 void BKE_view_layer_tag_out_of_sync(struct ViewLayer *view_layer);
-void BKE_view_layer_ensure_sync(struct Scene *scene, struct ViewLayer *view_layer);
+void BKE_view_layer_ensure_sync(const struct Scene *scene, struct ViewLayer *view_layer);
 // This should not exist in the final solution.
 const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
                                                              const char *name);
