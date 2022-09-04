@@ -667,7 +667,9 @@ void ED_object_check_force_modifiers(struct Main *bmain,
  * If id is not already an Object, try to find an object that uses it as data.
  * Prefers active, then selected, then visible/selectable.
  */
-struct Base *ED_object_find_first_by_data_id(struct ViewLayer *view_layer, struct ID *id);
+struct Base *ED_object_find_first_by_data_id(const struct Scene *scene,
+                                             struct ViewLayer *view_layer,
+                                             struct ID *id);
 
 /**
  * Select and make the target object active in the view layer.

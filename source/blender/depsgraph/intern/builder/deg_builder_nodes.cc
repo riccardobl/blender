@@ -2118,8 +2118,9 @@ void DepsgraphNodeBuilder::build_scene_audio(Scene *scene)
                      });
 }
 
-void DepsgraphNodeBuilder::build_scene_speakers(Scene * /*scene*/, ViewLayer *view_layer)
+void DepsgraphNodeBuilder::build_scene_speakers(Scene *scene, ViewLayer *view_layer)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *object = base->object;
     if (object->type != OB_SPEAKER || !need_pull_base_into_graph(base)) {

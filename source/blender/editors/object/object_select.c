@@ -213,9 +213,11 @@ static int get_base_select_priority(Base *base)
   return 1;
 }
 
-Base *ED_object_find_first_by_data_id(ViewLayer *view_layer, ID *id)
+Base *ED_object_find_first_by_data_id(const Scene *scene, ViewLayer *view_layer, ID *id)
 {
   BLI_assert(OB_DATA_SUPPORT_ID(GS(id->name)));
+
+  BKE_view_layer_ensure_sync(scene, view_layer);
 
   /* Try active object. */
   Base *basact = BKE_view_layer_active_base_get(view_layer, __func__);
@@ -1294,8 +1296,10 @@ void OBJECT_OT_select_mirror(wmOperatorType *ot)
 
 static bool object_select_more_less(bContext *C, const bool select)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     ob->flag &= ~OB_DONE;
