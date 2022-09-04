@@ -1847,6 +1847,7 @@ static size_t animdata_filter_gpencil(bAnimContext *ac,
   bDopeSheet *ads = ac->ads;
   size_t items = 0;
 
+  Scene *scene = ac->scene;
   ViewLayer *view_layer = (ViewLayer *)ac->view_layer;
 
   /* Include all annotation datablocks. */
@@ -1859,6 +1860,7 @@ static size_t animdata_filter_gpencil(bAnimContext *ac,
     }
   }
   /* Objects in the scene */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     /* Only consider this object if it has got some GP data (saving on all the other tests) */
     if (base->object && (base->object->type == OB_GPENCIL)) {
@@ -3169,11 +3171,13 @@ static int ds_base_sorting_cmp(const void *base1_ptr, const void *base2_ptr)
 
 /* Get a sorted list of all the bases - for inclusion in dopesheet (when drawing channels) */
 static Base **animdata_filter_ds_sorted_bases(bDopeSheet *ads,
+                                              const Scene *scene,
                                               ViewLayer *view_layer,
                                               int filter_mode,
                                               size_t *r_usable_bases)
 {
   /* Create an array with space for all the bases, but only containing the usable ones */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   size_t tot_bases = BLI_listbase_count(BKE_view_layer_object_bases_get(view_layer, __func__));
   size_t num_bases = 0;
 
@@ -3248,15 +3252,17 @@ static size_t animdata_filter_dopesheet(bAnimContext *ac,
    * - Don't do this if this behavior has been turned off (i.e. due to it being too slow)
    * - Don't do this if there's just a single object
    */
-  // TODO: Use BKE_view_layer_object_bases_get?
+  BKE_view_layer_ensure_sync(scene, view_layer);
+  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
   if ((filter_mode & ANIMFILTER_LIST_CHANNELS) && !(ads->flag & ADS_FLAG_NO_DB_SORT) &&
-      (view_layer->object_bases.first != view_layer->object_bases.last)) {
+      (object_bases->first != object_bases->last)) {
     /* Filter list of bases (i.e. objects), sort them, then add their contents normally... */
     /* TODO: Cache the old sorted order - if the set of bases hasn't changed, don't re-sort... */
     Base **sorted_bases;
     size_t num_bases;
 
-    sorted_bases = animdata_filter_ds_sorted_bases(ads, view_layer, filter_mode, &num_bases);
+    sorted_bases = animdata_filter_ds_sorted_bases(
+        ads, scene, view_layer, filter_mode, &num_bases);
     if (sorted_bases) {
       /* Add the necessary channels for these bases... */
       for (size_t i = 0; i < num_bases; i++) {

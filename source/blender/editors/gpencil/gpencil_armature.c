@@ -529,6 +529,7 @@ static bool gpencil_generate_weights_poll(bContext *C)
     return false;
   }
 
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   bGPdata *gpd = (bGPdata *)ob->data;
 
@@ -537,6 +538,7 @@ static bool gpencil_generate_weights_poll(bContext *C)
   }
 
   /* need some armature in the view layer */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->object->type == OB_ARMATURE) {
       return true;
@@ -549,6 +551,7 @@ static bool gpencil_generate_weights_poll(bContext *C)
 static int gpencil_generate_weights_exec(bContext *C, wmOperator *op)
 {
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob = CTX_data_active_object(C);
   Object *ob_eval = DEG_get_evaluated_object(depsgraph, ob);
@@ -567,6 +570,7 @@ static int gpencil_generate_weights_exec(bContext *C, wmOperator *op)
   /* get armature */
   const int arm_idx = RNA_enum_get(op->ptr, "armature");
   if (arm_idx > 0) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Base *base = BLI_findlink(BKE_view_layer_object_bases_get(view_layer, __func__), arm_idx - 1);
     ob_arm = base->object;
   }
@@ -608,6 +612,7 @@ static const EnumPropertyItem *gpencil_armatures_enum_itemf(bContext *C,
                                                             PropertyRNA *UNUSED(prop),
                                                             bool *r_free)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   EnumPropertyItem *item = NULL, item_tmp = {0};
   int totitem = 0;
@@ -624,6 +629,7 @@ static const EnumPropertyItem *gpencil_armatures_enum_itemf(bContext *C,
   RNA_enum_item_add(&item, &totitem, &item_tmp);
   i++;
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if (ob->type == OB_ARMATURE) {

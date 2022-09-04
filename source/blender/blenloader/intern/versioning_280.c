@@ -512,6 +512,7 @@ static void do_version_layers_to_collections(Main *bmain, Scene *scene)
       }
     }
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     /* for convenience set the same active object in all the layers */
     if (scene->basact) {
       view_layer->basact = BKE_view_layer_base_find(view_layer, scene->basact->object);
@@ -537,6 +538,7 @@ static void do_version_layers_to_collections(Main *bmain, Scene *scene)
       view_layer->flag &= ~VIEW_LAYER_RENDER;
     }
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     /* convert active base */
     if (scene->basact) {
       view_layer->basact = BKE_view_layer_base_find(view_layer, scene->basact->object);

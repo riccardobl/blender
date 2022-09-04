@@ -2192,8 +2192,6 @@ void BKE_view_layer_bases_in_mode_iterator_next(BLI_Iterator *iter)
 
   if (base == data->base_active) {
     /* first step */
-    // TODO: We should assure that the object_bases are valid. Adding
-    // BKE_view_layer_object_bases_get here seems not correct. this should happen by the caller.
     base = data->view_layer->object_bases.first;
     if ((base == data->base_active) && BKE_base_is_visible(data->v3d, base)) {
       base = base->next;
@@ -2396,13 +2394,13 @@ void BKE_view_layer_blend_read_lib(BlendLibReader *reader, Library *lib, ViewLay
     BLO_read_id_address(reader, lib, &fls->group);
   }
 
-  LISTBASE_FOREACH_MUTABLE (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH_MUTABLE (Base *, base, &view_layer->object_bases) {
     /* we only bump the use count for the collection objects */
     BLO_read_id_address(reader, lib, &base->object);
 
     if (base->object == NULL) {
       /* Free in case linked object got lost. */
-      BLI_freelinkN(BKE_view_layer_object_bases_get(view_layer, __func__), base);
+      BLI_freelinkN(&view_layer->object_bases, base);
       if (view_layer->basact == base) {
         view_layer->basact = NULL;
       }

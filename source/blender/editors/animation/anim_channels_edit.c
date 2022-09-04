@@ -2954,6 +2954,7 @@ static int click_select_channel_object(bContext *C,
                                        bAnimListElem *ale,
                                        const short /* eEditKeyframes_Select or -1 */ selectmode)
 {
+  Scene *scene = ac->scene;
   ViewLayer *view_layer = ac->view_layer;
   Base *base = (Base *)ale->data;
   Object *ob = base->object;
@@ -2973,6 +2974,7 @@ static int click_select_channel_object(bContext *C,
   }
   else {
     /* deselect all */
+    BKE_view_layer_ensure_sync(scene, view_layer);
     /* TODO: should this deselect all other types of channels too? */
     LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       ED_object_base_select(b, BA_DESELECT);
