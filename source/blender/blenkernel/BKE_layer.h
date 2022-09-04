@@ -359,7 +359,8 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
   } \
   ((void)0)
 
-#define FOREACH_BASE_IN_MODE_BEGIN(_view_layer, _v3d, _object_type, _object_mode, _instance) \
+#define FOREACH_BASE_IN_MODE_BEGIN( \
+    _scene, _view_layer, _v3d, _object_type, _object_mode, _instance) \
   { \
     struct ObjectsInModeIteratorData data_; \
     memset(&data_, 0, sizeof(data_)); \
@@ -367,6 +368,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
     data_.object_type = _object_type; \
     data_.view_layer = _view_layer; \
     data_.v3d = _v3d; \
+    BKE_view_layer_ensure_sync(_scene, _view_layer); \
     data_.base_active = BKE_view_layer_active_base_get(_view_layer, __func__); \
     ITER_BEGIN (BKE_view_layer_bases_in_mode_iterator_begin, \
                 BKE_view_layer_bases_in_mode_iterator_next, \
@@ -380,21 +382,22 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
   } \
   ((void)0)
 
-#define FOREACH_BASE_IN_EDIT_MODE_BEGIN(_view_layer, _v3d, _instance) \
-  FOREACH_BASE_IN_MODE_BEGIN (_view_layer, _v3d, -1, OB_MODE_EDIT, _instance)
+#define FOREACH_BASE_IN_EDIT_MODE_BEGIN(_scene, _view_layer, _v3d, _instance) \
+  FOREACH_BASE_IN_MODE_BEGIN (_scene, _view_layer, _v3d, -1, OB_MODE_EDIT, _instance)
 
 #define FOREACH_BASE_IN_EDIT_MODE_END FOREACH_BASE_IN_MODE_END
 
-#define FOREACH_OBJECT_IN_MODE_BEGIN(_view_layer, _v3d, _object_type, _object_mode, _instance) \
-  FOREACH_BASE_IN_MODE_BEGIN (_view_layer, _v3d, _object_type, _object_mode, _base) { \
+#define FOREACH_OBJECT_IN_MODE_BEGIN( \
+    _scene, _view_layer, _v3d, _object_type, _object_mode, _instance) \
+  FOREACH_BASE_IN_MODE_BEGIN (_scene, _view_layer, _v3d, _object_type, _object_mode, _base) { \
     Object *_instance = _base->object;
 
 #define FOREACH_OBJECT_IN_MODE_END \
   } \
   FOREACH_BASE_IN_MODE_END
 
-#define FOREACH_OBJECT_IN_EDIT_MODE_BEGIN(_view_layer, _v3d, _instance) \
-  FOREACH_BASE_IN_EDIT_MODE_BEGIN (_view_layer, _v3d, _base) { \
+#define FOREACH_OBJECT_IN_EDIT_MODE_BEGIN(_scene, _view_layer, _v3d, _instance) \
+  FOREACH_BASE_IN_EDIT_MODE_BEGIN (_scene, _view_layer, _v3d, _base) { \
     Object *_instance = _base->object;
 
 #define FOREACH_OBJECT_IN_EDIT_MODE_END \
@@ -411,11 +414,12 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
 
 #define FOREACH_SELECTED_BASE_END ITER_END
 
-#define FOREACH_VISIBLE_BASE_BEGIN(_view_layer, _v3d, _instance) \
+#define FOREACH_VISIBLE_BASE_BEGIN(_scene, _view_layer, _v3d, _instance) \
   { \
     struct ObjectsVisibleIteratorData data_ = {NULL}; \
     data_.view_layer = _view_layer; \
     data_.v3d = _v3d; \
+    BKE_view_layer_ensure_sync(_scene, _view_layer); \
     ITER_BEGIN (BKE_view_layer_visible_bases_iterator_begin, \
                 BKE_view_layer_visible_bases_iterator_next, \
                 BKE_view_layer_visible_bases_iterator_end, \
@@ -519,12 +523,14 @@ struct ObjectsInModeParams {
 };
 
 struct Base **BKE_view_layer_array_from_bases_in_mode_params(
+    const struct Scene *scene,
     struct ViewLayer *view_layer,
     const struct View3D *v3d,
     uint *r_len,
     const struct ObjectsInModeParams *params);
 
 struct Object **BKE_view_layer_array_from_objects_in_mode_params(
+    const struct Scene *scene,
     struct ViewLayer *view_layer,
     const struct View3D *v3d,
     uint *len,
@@ -535,20 +541,32 @@ bool BKE_view_layer_filter_edit_mesh_has_edges(const struct Object *ob, void *us
 
 /* Utility functions that wrap common arguments (add more as needed). */
 
-struct Object **BKE_view_layer_array_from_objects_in_edit_mode(struct ViewLayer *view_layer,
+struct Object **BKE_view_layer_array_from_objects_in_edit_mode(const struct Scene *scene,
+                                                               struct ViewLayer *view_layer,
                                                                const struct View3D *v3d,
                                                                uint *r_len);
-struct Base **BKE_view_layer_array_from_bases_in_edit_mode(struct ViewLayer *view_layer,
+struct Base **BKE_view_layer_array_from_bases_in_edit_mode(const struct Scene *scene,
+                                                           struct ViewLayer *view_layer,
                                                            const struct View3D *v3d,
                                                            uint *r_len);
 struct Object **BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
-    struct ViewLayer *view_layer, const struct View3D *v3d, uint *r_len);
+    const struct Scene *scene,
+    struct ViewLayer *view_layer,
+    const struct View3D *v3d,
+    uint *r_len);
 
 struct Base **BKE_view_layer_array_from_bases_in_edit_mode_unique_data(
-    struct ViewLayer *view_layer, const struct View3D *v3d, uint *r_len);
+    const struct Scene *scene,
+    struct ViewLayer *view_layer,
+    const struct View3D *v3d,
+    uint *r_len);
 struct Object **BKE_view_layer_array_from_objects_in_edit_mode_unique_data_with_uvs(
-    struct ViewLayer *view_layer, const struct View3D *v3d, uint *r_len);
-struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(struct ViewLayer *view_layer,
+    const struct Scene *scene,
+    struct ViewLayer *view_layer,
+    const struct View3D *v3d,
+    uint *r_len);
+struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(const struct Scene *scene,
+                                                                      struct ViewLayer *view_layer,
                                                                       const struct View3D *v3d,
                                                                       uint *r_len,
                                                                       eObjectMode mode);

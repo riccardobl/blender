@@ -213,11 +213,15 @@ void ED_object_base_free_and_unlink(struct Main *bmain, struct Scene *scene, str
 void ED_object_base_free_and_unlink_no_indirect_check(struct Main *bmain,
                                                       struct Scene *scene,
                                                       struct Object *ob);
-bool ED_object_base_deselect_all_ex(struct ViewLayer *view_layer,
+bool ED_object_base_deselect_all_ex(const struct Scene *scene,
+                                    struct ViewLayer *view_layer,
                                     struct View3D *v3d,
                                     int action,
                                     bool *r_any_visible);
-bool ED_object_base_deselect_all(struct ViewLayer *view_layer, struct View3D *v3d, int action);
+bool ED_object_base_deselect_all(const struct Scene *scene,
+                                 struct ViewLayer *view_layer,
+                                 struct View3D *v3d,
+                                 int action);
 
 /**
  * Single object duplicate, if `dupflag == 0`, fully linked, else it uses the flags given.

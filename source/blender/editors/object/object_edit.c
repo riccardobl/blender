@@ -140,6 +140,7 @@ Object **ED_object_array_in_mode_or_selected(bContext *C,
                                              uint *r_objects_len)
 {
   ScrArea *area = CTX_wm_area(C);
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
   ID *id_pin = NULL;
@@ -200,7 +201,7 @@ Object **ED_object_array_in_mode_or_selected(bContext *C,
       params.filter_fn = filter_fn;
       params.filter_userdata = filter_user_data;
       objects = BKE_view_layer_array_from_objects_in_mode_params(
-          view_layer, v3d, r_objects_len, &params);
+          scene, view_layer, v3d, r_objects_len, &params);
     }
     else {
       objects = BKE_view_layer_array_selected_objects(

@@ -312,7 +312,8 @@ void ED_pose_recalculate_paths(struct bContext *C,
 /**
  * \return True when pick finds an element or the selection changed.
  */
-bool ED_armature_pose_select_pick_bone(struct ViewLayer *view_layer,
+bool ED_armature_pose_select_pick_bone(const struct Scene *scene,
+                                       struct ViewLayer *view_layer,
                                        struct View3D *v3d,
                                        struct Object *ob,
                                        struct Bone *bone,
@@ -323,7 +324,8 @@ bool ED_armature_pose_select_pick_bone(struct ViewLayer *view_layer,
  *
  * \return True when pick finds an element or the selection changed.
  */
-bool ED_armature_pose_select_pick_with_buffer(struct ViewLayer *view_layer,
+bool ED_armature_pose_select_pick_with_buffer(const struct Scene *scene,
+                                              struct ViewLayer *view_layer,
                                               struct View3D *v3d,
                                               struct Base *base,
                                               const struct GPUSelectResult *buffer,

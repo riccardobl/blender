@@ -132,14 +132,12 @@ void ED_object_base_activate_with_mode_exit_if_needed(bContext *C, Base *base)
   ED_object_base_activate(C, base);
 }
 
-bool ED_object_base_deselect_all_ex(ViewLayer *view_layer,
-                                    View3D *v3d,
-                                    int action,
-                                    bool *r_any_visible)
+bool ED_object_base_deselect_all_ex(
+    const Scene *scene, ViewLayer *view_layer, View3D *v3d, int action, bool *r_any_visible)
 {
   if (action == SEL_TOGGLE) {
     action = SEL_SELECT;
-    FOREACH_VISIBLE_BASE_BEGIN (view_layer, v3d, base) {
+    FOREACH_VISIBLE_BASE_BEGIN (scene, view_layer, v3d, base) {
       if (v3d && ((v3d->object_type_exclude_select & (1 << base->object->type)) != 0)) {
         continue;
       }
@@ -153,7 +151,7 @@ bool ED_object_base_deselect_all_ex(ViewLayer *view_layer,
 
   bool any_visible = false;
   bool changed = false;
-  FOREACH_VISIBLE_BASE_BEGIN (view_layer, v3d, base) {
+  FOREACH_VISIBLE_BASE_BEGIN (scene, view_layer, v3d, base) {
     if (v3d && ((v3d->object_type_exclude_select & (1 << base->object->type)) != 0)) {
       continue;
     }
@@ -190,9 +188,12 @@ bool ED_object_base_deselect_all_ex(ViewLayer *view_layer,
   return changed;
 }
 
-bool ED_object_base_deselect_all(ViewLayer *view_layer, View3D *v3d, int action)
+bool ED_object_base_deselect_all(const Scene *scene,
+                                 ViewLayer *view_layer,
+                                 View3D *v3d,
+                                 int action)
 {
-  return ED_object_base_deselect_all_ex(view_layer, v3d, action, NULL);
+  return ED_object_base_deselect_all_ex(scene, view_layer, v3d, action, NULL);
 }
 
 /** \} */
@@ -247,6 +248,7 @@ Base *ED_object_find_first_by_data_id(ViewLayer *view_layer, ID *id)
 
 bool ED_object_jump_to_object(bContext *C, Object *ob, const bool UNUSED(reveal_hidden))
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
@@ -261,7 +263,7 @@ bool ED_object_jump_to_object(bContext *C, Object *ob, const bool UNUSED(reveal_
       !(base->flag & BASE_SELECTED)) {
     /* Select if not selected. */
     if (!(base->flag & BASE_SELECTED)) {
-      ED_object_base_deselect_all(view_layer, v3d, SEL_DESELECT);
+      ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
 
       if (BASE_VISIBLE(v3d, base)) {
         ED_object_base_select(base, BA_SELECT);
@@ -383,6 +385,7 @@ static bool objects_selectable_poll(bContext *C)
 
 static int object_select_by_type_exec(bContext *C, wmOperator *op)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   short obtype, extend;
@@ -391,7 +394,7 @@ static int object_select_by_type_exec(bContext *C, wmOperator *op)
   extend = RNA_boolean_get(op->ptr, "extend");
 
   if (extend == 0) {
-    ED_object_base_deselect_all(view_layer, v3d, SEL_DESELECT);
+    ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
   CTX_DATA_BEGIN (C, Base *, base, visible_bases) {
@@ -401,7 +404,6 @@ static int object_select_by_type_exec(bContext *C, wmOperator *op)
   }
   CTX_DATA_END;
 
-  Scene *scene = CTX_data_scene(C);
   DEG_id_tag_update(&scene->id, ID_RECALC_SELECT);
   WM_event_add_notifier(C, NC_SCENE | ND_OB_SELECT, scene);
 
@@ -624,7 +626,7 @@ static int object_select_linked_exec(bContext *C, wmOperator *op)
   extend = RNA_boolean_get(op->ptr, "extend");
 
   if (extend == 0) {
-    ED_object_base_deselect_all(view_layer, v3d, SEL_DESELECT);
+    ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
   ob = BKE_view_layer_active_object_get(view_layer);
@@ -1021,7 +1023,7 @@ static int object_select_grouped_exec(bContext *C, wmOperator *op)
   extend = RNA_boolean_get(op->ptr, "extend");
 
   if (extend == 0) {
-    changed = ED_object_base_deselect_all(view_layer, v3d, SEL_DESELECT);
+    changed = ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
   ob = BKE_view_layer_active_object_get(view_layer);
@@ -1114,15 +1116,15 @@ void OBJECT_OT_select_grouped(wmOperatorType *ot)
 
 static int object_select_all_exec(bContext *C, wmOperator *op)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   int action = RNA_enum_get(op->ptr, "action");
   bool any_visible = false;
 
-  bool changed = ED_object_base_deselect_all_ex(view_layer, v3d, action, &any_visible);
+  bool changed = ED_object_base_deselect_all_ex(scene, view_layer, v3d, action, &any_visible);
 
   if (changed) {
-    Scene *scene = CTX_data_scene(C);
     DEG_id_tag_update(&scene->id, ID_RECALC_SELECT);
     WM_event_add_notifier(C, NC_SCENE | ND_OB_SELECT, scene);
 

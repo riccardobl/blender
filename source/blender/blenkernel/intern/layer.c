@@ -498,7 +498,6 @@ void BKE_view_layer_copy_data(Scene *scene_dst,
 
   /* Clear temporary data. */
   BLI_listbase_clear(&view_layer_dst->drawdata);
-  // TODO: BKE_view_layer_object_bases_get should we set tag the view_layer_dst here for rebuild.
   view_layer_dst->object_bases_array = NULL;
   view_layer_dst->object_bases_hash = NULL;
 
@@ -1531,7 +1530,6 @@ void BKE_base_set_visible(Scene *scene, ViewLayer *view_layer, Base *base, bool 
     base->flag ^= BASE_HIDDEN;
   }
 
-  // BKE_layer_collection_sync(scene, view_layer);
   BKE_view_layer_tag_out_of_sync(view_layer);
 }
 

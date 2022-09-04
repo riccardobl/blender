@@ -824,6 +824,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
                                   wmWindowManager *wm,
                                   wmWindow *win,
                                   Main *bmain,
+                                  Scene *scene,
                                   ViewLayer *view_layer,
                                   ScrArea *area,
                                   const bool frame_selected,
@@ -856,7 +857,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         base->local_view_bits &= ~local_view_bit;
       }
-      FOREACH_BASE_IN_EDIT_MODE_BEGIN (view_layer, v3d, base_iter) {
+      FOREACH_BASE_IN_EDIT_MODE_BEGIN (scene, view_layer, v3d, base_iter) {
         BKE_object_minmax(base_iter->object, min, max, false);
         base_iter->local_view_bits |= local_view_bit;
         ok = true;
@@ -1043,8 +1044,16 @@ static int localview_exec(bContext *C, wmOperator *op)
     changed = true;
   }
   else {
-    changed = view3d_localview_init(
-        depsgraph, wm, win, bmain, view_layer, area, frame_selected, smooth_viewtx, op->reports);
+    changed = view3d_localview_init(depsgraph,
+                                    wm,
+                                    win,
+                                    bmain,
+                                    scene,
+                                    view_layer,
+                                    area,
+                                    frame_selected,
+                                    smooth_viewtx,
+                                    op->reports);
   }
 
   if (changed) {

@@ -291,25 +291,31 @@ struct Object *BKE_object_pose_armature_get_visible(struct Object *ob,
 /**
  * Access pose array with special check to get pose object when in weight paint mode.
  */
-struct Object **BKE_object_pose_array_get_ex(struct ViewLayer *view_layer,
+struct Object **BKE_object_pose_array_get_ex(const struct Scene *scene,
+                                             struct ViewLayer *view_layer,
                                              struct View3D *v3d,
                                              unsigned int *r_objects_len,
                                              bool unique);
-struct Object **BKE_object_pose_array_get_unique(struct ViewLayer *view_layer,
+struct Object **BKE_object_pose_array_get_unique(const struct Scene *scene,
+                                                 struct ViewLayer *view_layer,
                                                  struct View3D *v3d,
                                                  unsigned int *r_objects_len);
-struct Object **BKE_object_pose_array_get(struct ViewLayer *view_layer,
+struct Object **BKE_object_pose_array_get(const struct Scene *scene,
+                                          struct ViewLayer *view_layer,
                                           struct View3D *v3d,
                                           unsigned int *r_objects_len);
 
-struct Base **BKE_object_pose_base_array_get_ex(struct ViewLayer *view_layer,
+struct Base **BKE_object_pose_base_array_get_ex(const struct Scene *scene,
+                                                struct ViewLayer *view_layer,
                                                 struct View3D *v3d,
                                                 unsigned int *r_bases_len,
                                                 bool unique);
-struct Base **BKE_object_pose_base_array_get_unique(struct ViewLayer *view_layer,
+struct Base **BKE_object_pose_base_array_get_unique(const struct Scene *scene,
+                                                    struct ViewLayer *view_layer,
                                                     struct View3D *v3d,
                                                     unsigned int *r_bases_len);
-struct Base **BKE_object_pose_base_array_get(struct ViewLayer *view_layer,
+struct Base **BKE_object_pose_base_array_get(const struct Scene *scene,
+                                             struct ViewLayer *view_layer,
                                              struct View3D *v3d,
                                              unsigned int *r_bases_len);
 

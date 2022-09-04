@@ -191,7 +191,7 @@ static void editselect_buf_cache_init(ViewContext *vc, short select_mode)
   if (vc->obedit) {
     uint bases_len = 0;
     Base **bases = BKE_view_layer_array_from_bases_in_edit_mode(
-        vc->view_layer, vc->v3d, &bases_len);
+        vc->scene, vc->view_layer, vc->v3d, &bases_len);
 
     DRW_select_buffer_context_create(bases, bases_len, select_mode);
     MEM_freeN(bases);
@@ -593,7 +593,8 @@ static blender::Vector<Base *> do_pose_tag_select_op_prepare(ViewContext *vc)
 {
   blender::Vector<Base *> bases;
 
-  FOREACH_BASE_IN_MODE_BEGIN (vc->view_layer, vc->v3d, OB_ARMATURE, OB_MODE_POSE, base_iter) {
+  FOREACH_BASE_IN_MODE_BEGIN (
+      vc->scene, vc->view_layer, vc->v3d, OB_ARMATURE, OB_MODE_POSE, base_iter) {
     Object *ob_iter = base_iter->object;
     bArmature *arm = static_cast<bArmature *>(ob_iter->data);
     LISTBASE_FOREACH (bPoseChannel *, pchan, &ob_iter->pose->chanbase) {
@@ -1308,7 +1309,8 @@ static bool view3d_lasso_select(bContext *C,
     }
   }
   else { /* Edit Mode */
-    FOREACH_OBJECT_IN_MODE_BEGIN (vc->view_layer, vc->v3d, ob->type, ob->mode, ob_iter) {
+    FOREACH_OBJECT_IN_MODE_BEGIN (
+        vc->scene, vc->view_layer, vc->v3d, ob->type, ob->mode, ob_iter) {
       ED_view3d_viewcontext_init_object(vc, ob_iter);
       bool changed = false;
 
@@ -1651,6 +1653,7 @@ static int bone_select_menu_exec(bContext *C, wmOperator *op)
   params.sel_op = ED_select_op_from_operator(op->ptr);
 
   View3D *v3d = CTX_wm_view3d(C);
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
 
@@ -1668,7 +1671,8 @@ static int bone_select_menu_exec(bContext *C, wmOperator *op)
   }
   else {
     bPoseChannel *pchan = (bPoseChannel *)object_mouse_select_menu_data[name_index].item_ptr;
-    ED_armature_pose_select_pick_bone(view_layer, v3d, basact->object, pchan->bone, &params);
+    ED_armature_pose_select_pick_bone(
+        scene, view_layer, v3d, basact->object, pchan->bone, &params);
   }
 
   /* Weak but ensures we activate the menu again before using the enum. */
@@ -1702,7 +1706,6 @@ static int bone_select_menu_exec(bContext *C, wmOperator *op)
   }
 
   /* Undo? */
-  Scene *scene = CTX_data_scene(C);
   DEG_id_tag_update(&scene->id, ID_RECALC_SELECT);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
   WM_event_add_notifier(C, NC_SCENE | ND_OB_SELECT, scene);
@@ -2613,7 +2616,8 @@ static bool ed_object_select_pick(bContext *C,
           }
         }
       }
-      else if (ED_armature_pose_select_pick_with_buffer(view_layer,
+      else if (ED_armature_pose_select_pick_with_buffer(scene,
+                                                        view_layer,
                                                         v3d,
                                                         basact ? basact : (Base *)oldbasact,
                                                         gpu->buffer,
@@ -3561,7 +3565,7 @@ static bool do_armature_box_select(ViewContext *vc, const rcti *rect, const eSel
 
   uint bases_len = 0;
   Base **bases = BKE_view_layer_array_from_bases_in_edit_mode_unique_data(
-      vc->view_layer, vc->v3d, &bases_len);
+      vc->scene, vc->view_layer, vc->v3d, &bases_len);
 
   if (SEL_OP_USE_PRE_DESELECT(sel_op)) {
     changed |= ED_armature_edit_deselect_all_visible_multi_ex(bases, bases_len);
@@ -3799,7 +3803,7 @@ static int view3d_box_select_exec(bContext *C, wmOperator *op)
 
   if (vc.obedit) {
     FOREACH_OBJECT_IN_MODE_BEGIN (
-        vc.view_layer, vc.v3d, vc.obedit->type, vc.obedit->mode, ob_iter) {
+        vc.scene, vc.view_layer, vc.v3d, vc.obedit->type, vc.obedit->mode, ob_iter) {
       ED_view3d_viewcontext_init_object(&vc, ob_iter);
       bool changed = false;
 
@@ -4645,7 +4649,7 @@ static void view3d_circle_select_recalc(void *user_data)
     switch (vc.obedit->type) {
       case OB_MESH: {
         FOREACH_OBJECT_IN_MODE_BEGIN (
-            vc.view_layer, vc.v3d, vc.obact->type, vc.obact->mode, ob_iter) {
+            vc.scene, vc.view_layer, vc.v3d, vc.obact->type, vc.obact->mode, ob_iter) {
           ED_view3d_viewcontext_init_object(&vc, ob_iter);
           BM_mesh_select_mode_flush_ex(
               vc.em->bm, vc.em->selectmode, BM_SELECT_LEN_FLUSH_RECALC_ALL);
@@ -4701,7 +4705,8 @@ static int view3d_circle_select_exec(bContext *C, wmOperator *op)
       BKE_object_update_select_id(CTX_data_main(C));
     }
 
-    FOREACH_OBJECT_IN_MODE_BEGIN (vc.view_layer, vc.v3d, obact->type, obact->mode, ob_iter) {
+    FOREACH_OBJECT_IN_MODE_BEGIN (
+        vc.scene, vc.view_layer, vc.v3d, obact->type, obact->mode, ob_iter) {
       ED_view3d_viewcontext_init_object(&vc, ob_iter);
 
       obact = vc.obact;

@@ -3814,7 +3814,7 @@ static int object_add_named_exec(bContext *C, wmOperator *op)
 
   /* object_add_duplicate_internal() doesn't deselect other objects, unlike object_add_common()
    * or BKE_view_layer_base_deselect_all(). */
-  ED_object_base_deselect_all(view_layer, nullptr, SEL_DESELECT);
+  ED_object_base_deselect_all(scene, view_layer, nullptr, SEL_DESELECT);
   ED_object_base_select(basen, BA_SELECT);
   ED_object_base_activate(C, basen);
 

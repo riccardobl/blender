@@ -484,6 +484,7 @@ static void tree_element_posechannel_activate(bContext *C,
                                               const eOLSetState set,
                                               bool recursive)
 {
+  Scene *scene = CTX_data_scene(C);
   Object *ob = (Object *)tselem->id;
   bArmature *arm = static_cast<bArmature *>(ob->data);
   bPoseChannel *pchan = static_cast<bPoseChannel *>(te->directdata);
@@ -492,7 +493,8 @@ static void tree_element_posechannel_activate(bContext *C,
     if (set != OL_SETSEL_EXTEND) {
       /* Single select forces all other bones to get unselected. */
       uint objects_len = 0;
-      Object **objects = BKE_object_pose_array_get_unique(view_layer, nullptr, &objects_len);
+      Object **objects = BKE_object_pose_array_get_unique(
+          scene, view_layer, nullptr, &objects_len);
 
       for (uint object_index = 0; object_index < objects_len; object_index++) {
         Object *ob_iter = BKE_object_pose_armature_get(objects[object_index]);
@@ -588,6 +590,7 @@ static void tree_element_ebone_activate(bContext *C,
                                         const eOLSetState set,
                                         bool recursive)
 {
+  Scene *scene = CTX_data_scene(C);
   bArmature *arm = (bArmature *)tselem->id;
   EditBone *ebone = static_cast<EditBone *>(te->directdata);
 
@@ -600,7 +603,7 @@ static void tree_element_ebone_activate(bContext *C,
       ob_params.no_dup_data = true;
 
       Base **bases = BKE_view_layer_array_from_bases_in_mode_params(
-          view_layer, nullptr, &bases_len, &ob_params);
+          scene, view_layer, nullptr, &bases_len, &ob_params);
       ED_armature_edit_deselect_all_multi_ex(bases, bases_len);
       MEM_freeN(bases);
 
