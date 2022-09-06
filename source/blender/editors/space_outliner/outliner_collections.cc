@@ -380,7 +380,7 @@ void outliner_collection_delete(
               const IDTypeInfo *id_type = BKE_idtype_get_info_from_id(&parent->id);
               BLI_assert(id_type->owner_get != nullptr);
 
-              ID *scene_owner = id_type->owner_get(bmain, &parent->id, nullptr);
+              ID *scene_owner = id_type->owner_get(&parent->id);
               BLI_assert(GS(scene_owner->name) == ID_SCE);
               if (ID_IS_LINKED(scene_owner) || ID_IS_OVERRIDE_LIBRARY(scene_owner)) {
                 skip = true;
@@ -613,7 +613,7 @@ static int collection_duplicate_exec(bContext *C, wmOperator *op)
     const IDTypeInfo *id_type = BKE_idtype_get_info_from_id(&parent->id);
     BLI_assert(id_type->owner_get != nullptr);
 
-    Scene *scene_owner = (Scene *)id_type->owner_get(bmain, &parent->id, nullptr);
+    Scene *scene_owner = (Scene *)id_type->owner_get(&parent->id);
     BLI_assert(scene_owner != nullptr);
     BLI_assert(GS(scene_owner->id.name) == ID_SCE);
 
@@ -1577,6 +1577,7 @@ static int outliner_unhide_all_exec(bContext *C, wmOperator *UNUSED(op))
   }
 
   /* Unhide all objects. */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->flag &= ~BASE_HIDDEN;
   }

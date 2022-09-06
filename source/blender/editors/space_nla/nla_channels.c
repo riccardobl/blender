@@ -130,6 +130,7 @@ static int mouse_nla_channels(bContext *C, bAnimContext *ac, int channel_index, 
         else {
           /* deselect all */
           /* TODO: should this deselect all other types of channels too? */
+          BKE_view_layer_ensure_sync(ac->scene, view_layer);
           LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer, __func__)) {
             ED_object_base_select(b, BA_DESELECT);
             if (b->object->adt) {

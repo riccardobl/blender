@@ -164,6 +164,7 @@ bool view3d_orbit_calc_center(bContext *C, float r_dyn_ofs[3])
 
   const Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
   Scene *scene = CTX_data_scene(C);
+  Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
   View3D *v3d = CTX_wm_view3d(C);
   Object *ob_act_eval = BKE_view_layer_active_object_get(view_layer_eval);
@@ -207,6 +208,7 @@ bool view3d_orbit_calc_center(bContext *C, float r_dyn_ofs[3])
     float select_center[3];
 
     zero_v3(select_center);
+    BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
     LISTBASE_FOREACH (
         Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
       if (BASE_SELECTED(v3d, base_eval)) {
@@ -752,6 +754,7 @@ static int view3d_all_exec(bContext *C, wmOperator *op)
   RegionView3D *rv3d = CTX_wm_region_view3d(C);
   Scene *scene = CTX_data_scene(C);
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
+  Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
 
   const bool use_all_regions = RNA_boolean_get(op->ptr, "use_all_regions");
@@ -778,6 +781,7 @@ static int view3d_all_exec(bContext *C, wmOperator *op)
     INIT_MINMAX(min, max);
   }
 
+  BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
   LISTBASE_FOREACH (
       Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
     if (BASE_VISIBLE(v3d, base_eval)) {
@@ -863,6 +867,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
   RegionView3D *rv3d = CTX_wm_region_view3d(C);
   Scene *scene = CTX_data_scene(C);
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
+  Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
   Object *ob_eval = BKE_view_layer_active_object_get(view_layer_eval);
   Object *obedit = CTX_data_edit_object(C);
@@ -887,6 +892,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     /* hard-coded exception, we look for the one selected armature */
     /* this is weak code this way, we should make a generic
      * active/selection callback interface once... */
+    BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
     Base *base_eval;
     for (base_eval = BKE_view_layer_object_bases_get(view_layer_eval, __func__)->first; base_eval;
          base_eval = base_eval->next) {
@@ -966,6 +972,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     ok_dist = 0; /* don't zoom */
   }
   else {
+    BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
     LISTBASE_FOREACH (
         Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
       if (BASE_SELECTED(v3d, base_eval)) {

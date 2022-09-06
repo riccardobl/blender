@@ -706,6 +706,7 @@ bool ED_object_editmode_free_ex(Main *bmain, Object *obedit)
 
 bool ED_object_editmode_exit_multi_ex(Main *bmain, Scene *scene, ViewLayer *view_layer, int flag)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   if (obedit == NULL) {
     return false;
@@ -959,6 +960,7 @@ static int posemode_exec(bContext *C, wmOperator *op)
   }
 
   {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     if (obact == obedit) {
       ED_object_editmode_exit_ex(bmain, scene, obedit, EM_FREEDATA);

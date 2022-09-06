@@ -250,6 +250,7 @@ static void scene_copy_data(Main *bmain, ID *id_dst, const ID *id_src, const int
                    (ID *)scene_src->master_collection,
                    (ID **)&scene_dst->master_collection,
                    flag_private_id_data);
+    scene_dst->master_collection->owner_id = &scene_dst->id;
   }
 
   /* View Layers */
@@ -275,6 +276,7 @@ static void scene_copy_data(Main *bmain, ID *id_dst, const ID *id_src, const int
                            (void *)(&scene_src->id),
                            &scene_dst->id,
                            ID_REMAP_SKIP_NEVER_NULL_USAGE | ID_REMAP_SKIP_USER_CLEAR);
+    scene_dst->nodetree->owner_id = &scene_dst->id;
   }
 
   if (scene_src->rigidbody_world) {
@@ -2512,7 +2514,9 @@ static bool check_rendered_viewport_visible(Main *bmain)
 
 /* TODO(@campbellbarton): shouldn't we be able to use 'DEG_get_view_layer' here?
  * Currently this is nullptr on load, so don't. */
-static void prepare_mesh_for_viewport_render(Main *bmain, const ViewLayer *view_layer)
+static void prepare_mesh_for_viewport_render(Main *bmain,
+                                             const Scene *scene,
+                                             ViewLayer *view_layer)
 {
   /* This is needed to prepare mesh to be used by the render
    * engine from the viewport rendering. We do loading here
@@ -2522,7 +2526,7 @@ static void prepare_mesh_for_viewport_render(Main *bmain, const ViewLayer *view_
    * This makes it so viewport render engine doesn't need to
    * call loading of the edit data for the mesh objects.
    */
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   if (obedit) {
     Mesh *mesh = static_cast<Mesh *>(obedit->data);
@@ -2599,7 +2603,7 @@ static void scene_graph_update_tagged(Depsgraph *depsgraph, Main *bmain, bool on
     /* Uncomment this to check if graph was properly tagged for update. */
     // DEG_debug_graph_relations_validate(depsgraph, bmain, scene);
     /* Flush editing data if needed. */
-    prepare_mesh_for_viewport_render(bmain, view_layer);
+    prepare_mesh_for_viewport_render(bmain, scene, view_layer);
     /* Update all objects: drivers, matrices, etc. flags set
      * by depsgraph or manual, no layer check here, gets correct flushed. */
     DEG_evaluate_on_refresh(depsgraph);

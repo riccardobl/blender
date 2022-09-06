@@ -291,8 +291,9 @@ static void ObjectToTransData(TransInfo *t, TransData *td, Object *ob)
   }
 }
 
-static void trans_object_base_deps_flag_prepare(ViewLayer *view_layer)
+static void trans_object_base_deps_flag_prepare(const Scene *scene, ViewLayer *view_layer)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
@@ -323,10 +324,13 @@ static void flush_trans_object_base_deps_flag(Depsgraph *depsgraph, Object *obje
                                      NULL);
 }
 
-static void trans_object_base_deps_flag_finish(const TransInfo *t, ViewLayer *view_layer)
+static void trans_object_base_deps_flag_finish(const TransInfo *t,
+                                               const Scene *scene,
+                                               ViewLayer *view_layer)
 {
 
   if ((t->options & CTX_OBMODE_XFORM_OBDATA) == 0) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if (base->object->id.tag & LIB_TAG_DOIT) {
         base->flag_legacy |= BA_SNAP_FIX_DEPS_FIASCO;
@@ -356,8 +360,9 @@ static void set_trans_object_base_flags(TransInfo *t)
   /* Make sure depsgraph is here. */
   DEG_graph_relations_update(depsgraph);
   /* Clear all flags we need. It will be used to detect dependencies. */
-  trans_object_base_deps_flag_prepare(view_layer);
+  trans_object_base_deps_flag_prepare(scene, view_layer);
   /* Traverse all bases and set all possible flags. */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     base->flag_legacy &= ~(BA_WAS_SEL | BA_TRANSFORM_LOCKED_IN_PLACE);
     if (BASE_SELECTED_EDITABLE(v3d, base)) {
@@ -392,7 +397,7 @@ static void set_trans_object_base_flags(TransInfo *t)
   /* Store temporary bits in base indicating that base is being modified
    * (directly or indirectly) by transforming objects.
    */
-  trans_object_base_deps_flag_finish(t, view_layer);
+  trans_object_base_deps_flag_finish(t, scene, view_layer);
 }
 
 static bool mark_children(Object *ob)
@@ -420,7 +425,7 @@ static int count_proportional_objects(TransInfo *t)
   Scene *scene = t->scene;
   Depsgraph *depsgraph = BKE_scene_ensure_depsgraph(bmain, scene, view_layer);
   /* Clear all flags we need. It will be used to detect dependencies. */
-  trans_object_base_deps_flag_prepare(view_layer);
+  trans_object_base_deps_flag_prepare(scene, view_layer);
   /* Rotations around local centers are allowed to propagate, so we take all objects. */
   if (!((t->around == V3D_AROUND_LOCAL_ORIGINS) && (ELEM(t->mode, TFM_ROTATION, TFM_TRACKBALL)))) {
     /* Mark all parents. */
@@ -460,14 +465,16 @@ static int count_proportional_objects(TransInfo *t)
   /* Store temporary bits in base indicating that base is being modified
    * (directly or indirectly) by transforming objects.
    */
-  trans_object_base_deps_flag_finish(t, view_layer);
+  trans_object_base_deps_flag_finish(t, scene, view_layer);
   return total;
 }
 
 static void clear_trans_object_base_flags(TransInfo *t)
 {
+  Scene *scene = t->scene;
   ViewLayer *view_layer = t->view_layer;
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->flag_legacy & BA_WAS_SEL) {
       ED_object_base_select(base, BA_SELECT);
@@ -558,9 +565,11 @@ static void createTransObject(bContext *C, TransInfo *t)
   CTX_DATA_END;
 
   if (is_prop_edit) {
+    Scene *scene = t->scene;
     ViewLayer *view_layer = t->view_layer;
     View3D *v3d = t->view;
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       Object *ob = base->object;
 
@@ -590,9 +599,11 @@ static void createTransObject(bContext *C, TransInfo *t)
       }
     }
 
+    Scene *scene = t->scene;
     ViewLayer *view_layer = t->view_layer;
     View3D *v3d = t->view;
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       Object *ob = base->object;
 
@@ -638,8 +649,10 @@ static void createTransObject(bContext *C, TransInfo *t)
       }
     }
 
+    Scene *scene = t->scene;
     ViewLayer *view_layer = t->view_layer;
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       Object *ob = base->object;
       if (ob->parent != NULL) {

@@ -112,6 +112,7 @@ struct XFormObjectSkipChild_Container;
 struct XFormObjectSkipChild_Container *ED_object_xform_skip_child_container_create(void);
 void ED_object_xform_skip_child_container_item_ensure_from_array(
     struct XFormObjectSkipChild_Container *xcs,
+    const struct Scene *scene,
     struct ViewLayer *view_layer,
     struct Object **objects,
     uint objects_len);

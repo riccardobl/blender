@@ -351,7 +351,9 @@ static void image_listener(const wmSpaceTypeListenerParams *params)
       }
       break;
     case NC_MASK: {
+      Scene *scene = WM_window_get_active_scene(win);
       ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+      BKE_view_layer_ensure_sync(scene, view_layer);
       Object *obedit = BKE_view_layer_edit_object_get(view_layer);
       if (ED_space_image_check_show_maskedit(sima, obedit)) {
         switch (wmn->data) {

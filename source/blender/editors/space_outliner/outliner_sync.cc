@@ -225,7 +225,8 @@ static void outliner_select_sync_to_object(ViewLayer *view_layer,
   }
 }
 
-static void outliner_select_sync_to_edit_bone(ViewLayer *view_layer,
+static void outliner_select_sync_to_edit_bone(const Scene *scene,
+                                              ViewLayer *view_layer,
                                               TreeElement *te,
                                               TreeStoreElem *tselem,
                                               GSet *selected_ebones)
@@ -250,6 +251,7 @@ static void outliner_select_sync_to_edit_bone(ViewLayer *view_layer,
 
   /* Tag if selection changed */
   if (bone_flag != ebone->flag) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     DEG_id_tag_update(&arm->id, ID_RECALC_SELECT);
     WM_main_add_notifier(NC_OBJECT | ND_BONE_SELECT, obedit);
@@ -318,7 +320,8 @@ static void outliner_sync_selection_from_outliner(Scene *scene,
     }
     else if (tselem->type == TSE_EBONE) {
       if (sync_types->edit_bone) {
-        outliner_select_sync_to_edit_bone(view_layer, te, tselem, selected_items->edit_bones);
+        outliner_select_sync_to_edit_bone(
+            scene, view_layer, te, tselem, selected_items->edit_bones);
       }
     }
     else if (tselem->type == TSE_POSE_CHANNEL) {

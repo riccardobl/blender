@@ -233,10 +233,12 @@ static void tree_element_viewlayer_activate(bContext *C, TreeElement *te)
 /**
  * Select object tree
  */
-static void do_outliner_object_select_recursive(ViewLayer *view_layer,
+static void do_outliner_object_select_recursive(const Scene *scene,
+                                                ViewLayer *view_layer,
                                                 Object *ob_parent,
                                                 bool select)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if ((((base->flag & BASE_VISIBLE_DEPSGRAPH) != 0) &&
@@ -370,7 +372,8 @@ static void tree_element_object_activate(bContext *C,
 
     if (recursive) {
       /* Recursive select/deselect for Object hierarchies */
-      do_outliner_object_select_recursive(view_layer, ob, (base->flag & BASE_SELECTED) != 0);
+      do_outliner_object_select_recursive(
+          scene, view_layer, ob, (base->flag & BASE_SELECTED) != 0);
     }
 
     if (set != OL_SETSEL_NONE) {

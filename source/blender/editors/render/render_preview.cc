@@ -307,6 +307,7 @@ static void switch_preview_floor_visibility(Main *pr_main,
                                             const ePreviewRenderMethod pr_method)
 {
   /* Hide floor for icon renders. */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (STREQ(base->object->id.name + 2, "Floor")) {
       base->object->visibility_flag &= ~OB_HIDE_RENDER;
@@ -533,7 +534,7 @@ static Scene *preview_prepare_scene(
       else {
         sce->display.render_aa = SCE_DISPLAY_AA_OFF;
       }
-
+      BKE_view_layer_ensure_sync(sce, view_layer);
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (base->object->id.name[2] == 'p') {
           /* copy over object color, in case material uses it */
@@ -586,6 +587,7 @@ static Scene *preview_prepare_scene(
         sce->world->horb = 0.0f;
       }
 
+      BKE_view_layer_ensure_sync(sce, view_layer);
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (base->object->id.name[2] == 'p') {
           if (base->object->type == OB_LAMP) {
@@ -679,7 +681,7 @@ static bool ed_preview_draw_rect(ScrArea *area, int split, int first, rcti *rect
         /* material preview only needs monoscopy (view 0) */
         RE_AcquiredResultGet32(re, &rres, (uint *)rect_byte, 0);
 
-        IMMDrawPixelsTexState state = immDrawPixelsTexSetup(GPU_SHADER_2D_IMAGE_COLOR);
+        IMMDrawPixelsTexState state = immDrawPixelsTexSetup(GPU_SHADER_3D_IMAGE_COLOR);
         immDrawPixelsTexTiled(&state,
                               fx,
                               fy,

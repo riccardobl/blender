@@ -1663,7 +1663,9 @@ static bool rna_SpaceImageEditor_show_uvedit_get(PointerRNA *ptr)
   Object *obedit = NULL;
   wmWindow *win = ED_screen_window_find(screen, G_MAIN->wm.first);
   if (win != NULL) {
+    Scene *scene = WM_window_get_active_scene(win);
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+    BKE_view_layer_ensure_sync(scene, view_layer);
     obedit = BKE_view_layer_edit_object_get(view_layer);
   }
   return ED_space_image_show_uvedit(sima, obedit);
@@ -1676,7 +1678,9 @@ static bool rna_SpaceImageEditor_show_maskedit_get(PointerRNA *ptr)
   Object *obedit = NULL;
   wmWindow *win = ED_screen_window_find(screen, G_MAIN->wm.first);
   if (win != NULL) {
+    Scene *scene = WM_window_get_active_scene(win);
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+    BKE_view_layer_ensure_sync(scene, view_layer);
     obedit = BKE_view_layer_edit_object_get(view_layer);
   }
   return ED_space_image_check_show_maskedit(sima, obedit);
@@ -4737,7 +4741,7 @@ static void rna_def_space_view3d_overlay(BlenderRNA *brna)
   RNA_def_property_ui_text(prop, "Opacity", "Vertex Paint mix factor");
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_VIEW3D, "rna_GPencil_update");
 
-  /* Developper Debug overlay */
+  /* Developer Debug overlay */
 
   prop = RNA_def_property(srna, "use_debug_freeze_view_culling", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, NULL, "debug_flag", V3D_DEBUG_FREEZE_CULLING);

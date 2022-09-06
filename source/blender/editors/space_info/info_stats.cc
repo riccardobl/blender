@@ -358,6 +358,7 @@ static void stats_update(Depsgraph *depsgraph,
                          View3D *v3d_local,
                          SceneStats *stats)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const Object *ob = BKE_view_layer_active_object_get(view_layer);
   const Object *obedit = BKE_view_layer_edit_object_get(view_layer);
 

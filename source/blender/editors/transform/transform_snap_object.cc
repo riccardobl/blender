@@ -543,8 +543,10 @@ static void iter_snap_objects(SnapObjectContext *sctx,
                               IterSnapObjsCallback sob_callback,
                               void *data)
 {
+  Scene *scene = DEG_get_input_scene(sctx->runtime.depsgraph);
   ViewLayer *view_layer = DEG_get_input_view_layer(sctx->runtime.depsgraph);
   const eSnapTargetSelect snap_target_select = params->snap_target_select;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base_act = BKE_view_layer_active_base_get(view_layer, __func__);
 
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
@@ -3408,8 +3410,8 @@ static eSnapMode transform_snap_context_project_view3d_mixed_impl(SnapObjectCont
 
   bool use_occlusion_test = params->use_occlusion_test && !XRAY_ENABLED(v3d);
 
-  /* Note: if both face raycast and face nearest are enabled, first find result of nearest, then
-   * override with raycast. */
+  /* NOTE: if both face ray-cast and face nearest are enabled, first find result of nearest, then
+   * override with ray-cast. */
   if ((snap_to_flag & SCE_SNAP_MODE_FACE_NEAREST) && !has_hit) {
     has_hit = nearestWorldObjects(
         sctx, params, init_co, prev_co, loc, no, &index, &ob_eval, obmat);

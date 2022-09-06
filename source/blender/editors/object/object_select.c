@@ -117,9 +117,11 @@ void ED_object_base_activate(bContext *C, Base *base)
 
 void ED_object_base_activate_with_mode_exit_if_needed(bContext *C, Base *base)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   /* Currently we only need to be concerned with edit-mode. */
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   if (obedit) {
     Object *ob = base->object;

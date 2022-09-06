@@ -919,7 +919,7 @@ struct OutlinerLibOverrideData {
    * override), or an actual already existing override. */
   Map<ID *, Vector<OutlinerLiboverrideDataIDRoot>> id_hierarchy_roots;
 
-  /** All 'session_uuid' of all hierarchy root IDs used or created by the operation.  */
+  /** All 'session_uuid' of all hierarchy root IDs used or created by the operation. */
   Set<uint> id_hierarchy_roots_uid;
 
   void id_root_add(ID *id_hierarchy_root_reference,
@@ -2113,7 +2113,7 @@ static Base *outliner_batch_delete_hierarchy(
   if (!base) {
     return nullptr;
   }
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   object = base->object;
   for (child_base =
            static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);
