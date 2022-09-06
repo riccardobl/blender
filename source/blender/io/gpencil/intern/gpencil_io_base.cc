@@ -128,12 +128,14 @@ void GpencilIO::prepare_camera_params(Scene *scene, const GpencilIOParams *ipara
 
 void GpencilIO::create_object_list()
 {
+  Scene *scene = CTX_data_scene(params_.C);
   ViewLayer *view_layer = CTX_data_view_layer(params_.C);
 
   float3 camera_z_axis;
   copy_v3_v3(camera_z_axis, rv3d_->viewinv[2]);
   ob_list_.clear();
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *object = base->object;
 

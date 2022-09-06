@@ -2113,7 +2113,7 @@ static Base *outliner_batch_delete_hierarchy(
   if (!base) {
     return nullptr;
   }
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   object = base->object;
   for (child_base =
            static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);

@@ -203,7 +203,7 @@ static int snap_sel_to_grid_exec(bContext *C, wmOperator *UNUSED(op))
       BKE_scene_graph_evaluated_ensure(depsgraph, bmain);
       xcs = ED_object_xform_skip_child_container_create();
       ED_object_xform_skip_child_container_item_ensure_from_array(
-          xcs, view_layer, objects, objects_eval_len);
+          xcs, scene, view_layer, objects, objects_eval_len);
       MEM_freeN(objects);
     }
     if (use_transform_data_origin) {
@@ -487,7 +487,7 @@ static bool snap_selected_to_location(bContext *C,
       BKE_scene_graph_evaluated_ensure(depsgraph, bmain);
       xcs = ED_object_xform_skip_child_container_create();
       ED_object_xform_skip_child_container_item_ensure_from_array(
-          xcs, view_layer, objects, objects_len);
+          xcs, scene, view_layer, objects, objects_len);
     }
     if (use_transform_data_origin) {
       BKE_scene_graph_evaluated_ensure(depsgraph, bmain);

@@ -543,8 +543,10 @@ static void iter_snap_objects(SnapObjectContext *sctx,
                               IterSnapObjsCallback sob_callback,
                               void *data)
 {
+  Scene *scene = DEG_get_input_scene(sctx->runtime.depsgraph);
   ViewLayer *view_layer = DEG_get_input_view_layer(sctx->runtime.depsgraph);
   const eSnapTargetSelect snap_target_select = params->snap_target_select;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base_act = BKE_view_layer_active_base_get(view_layer, __func__);
 
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {

@@ -140,9 +140,10 @@ void ED_view3d_viewcontext_init_object(ViewContext *vc, Object *obact)
 /** \name Internal Object Utilities
  * \{ */
 
-static bool object_deselect_all_visible(ViewLayer *view_layer, View3D *v3d)
+static bool object_deselect_all_visible(const Scene *scene, ViewLayer *view_layer, View3D *v3d)
 {
   bool changed = false;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->flag & BASE_SELECTED) {
       if (BASE_SELECTABLE(v3d, base)) {
@@ -155,9 +156,10 @@ static bool object_deselect_all_visible(ViewLayer *view_layer, View3D *v3d)
 }
 
 /* deselect all except b */
-static bool object_deselect_all_except(ViewLayer *view_layer, Base *b)
+static bool object_deselect_all_except(const Scene *scene, ViewLayer *view_layer, Base *b)
 {
   bool changed = false;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->flag & BASE_SELECTED) {
       if (b != base) {
@@ -562,9 +564,9 @@ static bool do_lasso_select_objects(ViewContext *vc,
 
   bool changed = false;
   if (SEL_OP_USE_PRE_DESELECT(sel_op)) {
-    changed |= object_deselect_all_visible(vc->view_layer, vc->v3d);
+    changed |= object_deselect_all_visible(vc->scene, vc->view_layer, vc->v3d);
   }
-
+  BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer, __func__)) {
     if (BASE_SELECTABLE(v3d, base)) { /* Use this to avoid unnecessary lasso look-ups. */
       const bool is_select = base->flag & BASE_SELECTED;
@@ -1458,6 +1460,7 @@ static int object_select_menu_exec(bContext *C, wmOperator *op)
   const char *name = object_mouse_select_menu_data[name_index].idname;
 
   View3D *v3d = CTX_wm_view3d(C);
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
 
@@ -1499,7 +1502,7 @@ static int object_select_menu_exec(bContext *C, wmOperator *op)
     }
   }
   else {
-    object_deselect_all_except(view_layer, basact);
+    object_deselect_all_except(scene, view_layer, basact);
     ED_object_base_select(basact, BA_SELECT);
     changed = true;
   }
@@ -2100,6 +2103,7 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
                                       bool do_bones_get_priotity,
                                       int *r_select_id_subelem)
 {
+  Scene *scene = vc->scene;
   ViewLayer *view_layer = vc->view_layer;
   View3D *v3d = vc->v3d;
   int a;
@@ -2192,6 +2196,7 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
 
   Base *basact = nullptr;
   if (found) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
       if (has_bones ? BASE_VISIBLE(v3d, base) : BASE_SELECTABLE(v3d, base)) {
         if (base->object->runtime.select_id == select_id) {
@@ -2212,9 +2217,11 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
 static Base *mouse_select_object_center(ViewContext *vc, Base *startbase, const int mval[2])
 {
   ARegion *region = vc->region;
+  Scene *scene = vc->scene;
   ViewLayer *view_layer = vc->view_layer;
   View3D *v3d = vc->v3d;
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
 
   const float mval_fl[2] = {(float)mval[0], (float)mval[1]};
@@ -2529,6 +2536,7 @@ static bool ed_object_select_pick(bContext *C,
   /* No menu, continue with selection. */
 
   ViewLayer *view_layer = vc.view_layer;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   /* Don't set when the context has no active object (hidden), see: T60807. */
   const Base *oldbasact = vc.obact ? BKE_view_layer_active_base_get(view_layer, __func__) :
                                      nullptr;
@@ -2720,7 +2728,7 @@ static bool ed_object_select_pick(bContext *C,
       else if (found || params->deselect_all) {
         /* Deselect everything. */
         /* `basact` may be nullptr. */
-        if (object_deselect_all_except(view_layer, basact)) {
+        if (object_deselect_all_except(scene, view_layer, basact)) {
           changed_object = true;
         }
       }
@@ -2732,7 +2740,7 @@ static bool ed_object_select_pick(bContext *C,
     if (vc.obedit) {
       /* Only do the select (use for setting vertex parents & hooks).
        * In edit-mode do not activate. */
-      object_deselect_all_except(view_layer, basact);
+      object_deselect_all_except(scene, view_layer, basact);
       ED_object_base_select(basact, BA_SELECT);
 
       changed_object = true;
@@ -2763,7 +2771,7 @@ static bool ed_object_select_pick(bContext *C,
           break;
         }
         case SEL_OP_SET: {
-          object_deselect_all_except(view_layer, basact);
+          object_deselect_all_except(scene, view_layer, basact);
           ED_object_base_select(basact, BA_SELECT);
           break;
         }
@@ -3441,8 +3449,7 @@ static bool do_mesh_box_select(ViewContext *vc,
   }
   if (ts->selectmode & SCE_SELECT_EDGE) {
     /* Does both use_zbuf and non-use_zbuf versions (need screen cos for both) */
-    struct BoxSelectUserData_ForMeshEdge cb_data {
-    };
+    struct BoxSelectUserData_ForMeshEdge cb_data {};
     cb_data.data = &data;
     cb_data.esel = use_zbuf ? esel : nullptr;
     cb_data.backbuf_offset = use_zbuf ? DRW_select_buffer_context_offset_for_object_elem(
@@ -3644,7 +3651,7 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
                                                                                  vc->obact);
   const int hits = view3d_opengl_select(
       vc, buffer, (totobj + MAXPICKELEMS), rect, VIEW3D_SELECT_ALL, select_filter);
-
+  BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer, __func__)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
@@ -3653,7 +3660,7 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
 
   bool changed = false;
   if (SEL_OP_USE_PRE_DESELECT(sel_op)) {
-    changed |= object_deselect_all_visible(vc->view_layer, vc->v3d);
+    changed |= object_deselect_all_visible(vc->scene, vc->view_layer, vc->v3d);
   }
 
   ListBase *object_bases = BKE_view_layer_object_bases_get(vc->view_layer, __func__);
@@ -4606,6 +4613,7 @@ static bool object_circle_select(ViewContext *vc,
                                  float rad)
 {
   BLI_assert(ELEM(sel_op, SEL_OP_SET, SEL_OP_ADD, SEL_OP_SUB));
+  Scene *scene = vc->scene;
   ViewLayer *view_layer = vc->view_layer;
   View3D *v3d = vc->v3d;
 
@@ -4614,11 +4622,11 @@ static bool object_circle_select(ViewContext *vc,
 
   bool changed = false;
   if (SEL_OP_USE_PRE_DESELECT(sel_op)) {
-    changed |= object_deselect_all_visible(vc->view_layer, vc->v3d);
+    changed |= object_deselect_all_visible(vc->scene, vc->view_layer, vc->v3d);
   }
   const bool select = (sel_op != SEL_OP_SUB);
   const int select_flag = select ? BASE_SELECTED : 0;
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTABLE(v3d, base) && ((base->flag & BASE_SELECTED) != select_flag)) {
       float screen_co[2];

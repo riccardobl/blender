@@ -854,6 +854,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
   else {
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     if (obedit) {
+      BKE_view_layer_ensure_sync(scene, view_layer);
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         base->local_view_bits &= ~local_view_bit;
       }
@@ -865,6 +866,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
       FOREACH_BASE_IN_EDIT_MODE_END;
     }
     else {
+      BKE_view_layer_ensure_sync(scene, view_layer);
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
         if (BASE_SELECTED(v3d, base)) {
           BKE_object_minmax(base->object, min, max, false);
@@ -956,6 +958,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
 static void view3d_localview_exit(const Depsgraph *depsgraph,
                                   wmWindowManager *wm,
                                   wmWindow *win,
+                                  const Scene *scene,
                                   ViewLayer *view_layer,
                                   ScrArea *area,
                                   const bool frame_selected,
@@ -966,7 +969,7 @@ static void view3d_localview_exit(const Depsgraph *depsgraph,
   if (v3d->localvd == NULL) {
     return;
   }
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (base->local_view_bits & v3d->local_view_uuid) {
       base->local_view_bits &= ~v3d->local_view_uuid;
@@ -1040,7 +1043,8 @@ static int localview_exec(bContext *C, wmOperator *op)
   bool changed;
 
   if (v3d->localvd) {
-    view3d_localview_exit(depsgraph, wm, win, view_layer, area, frame_selected, smooth_viewtx);
+    view3d_localview_exit(
+        depsgraph, wm, win, scene, view_layer, area, frame_selected, smooth_viewtx);
     changed = true;
   }
   else {
@@ -1101,7 +1105,7 @@ static int localview_remove_from_exec(bContext *C, wmOperator *op)
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   bool changed = false;
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     if (BASE_SELECTED(v3d, base)) {
       base->local_view_bits &= ~v3d->local_view_uuid;

@@ -3178,11 +3178,12 @@ static Base **animdata_filter_ds_sorted_bases(bDopeSheet *ads,
 {
   /* Create an array with space for all the bases, but only containing the usable ones */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  size_t tot_bases = BLI_listbase_count(BKE_view_layer_object_bases_get(view_layer, __func__));
+  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
+  size_t tot_bases = BLI_listbase_count(object_bases);
   size_t num_bases = 0;
 
   Base **sorted_bases = MEM_mallocN(sizeof(Base *) * tot_bases, "Dopesheet Usable Sorted Bases");
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, object_bases) {
     if (animdata_filter_base_is_ok(ads, base, OB_MODE_OBJECT, filter_mode)) {
       sorted_bases[num_bases++] = base;
     }
@@ -3281,7 +3282,7 @@ static size_t animdata_filter_dopesheet(bAnimContext *ac,
      */
     Object *obact = BKE_view_layer_active_object_get(view_layer);
     const eObjectMode object_mode = obact ? obact->mode : OB_MODE_OBJECT;
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, object_bases) {
       if (animdata_filter_base_is_ok(ads, base, object_mode, filter_mode)) {
         /* since we're still here, this object should be usable */
         items += animdata_filter_dopesheet_ob(ac, anim_data, ads, base, filter_mode);
