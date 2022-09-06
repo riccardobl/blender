@@ -609,6 +609,7 @@ Object *ED_object_add_type_with_obdata(bContext *C,
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     if (obedit != nullptr) {
       ED_object_editmode_exit_ex(bmain, scene, obedit, EM_FREEDATA);
@@ -629,6 +630,7 @@ Object *ED_object_add_type_with_obdata(bContext *C,
     ob = BKE_object_add(bmain, scene, view_layer, type, name);
   }
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *ob_base_act = BKE_view_layer_active_base_get(view_layer, __func__);
   /* While not getting a valid base is not a good thing, it can happen in convoluted corner cases,
    * better not crash on it in releases. */
@@ -990,6 +992,7 @@ static int object_metaball_add_exec(bContext *C, wmOperator *op)
   }
 
   bool newob = false;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   if (obedit == nullptr || obedit->type != OB_MBALL) {
     obedit = ED_object_add_type(C, OB_MBALL, nullptr, loc, rot, true, local_view_bits);
@@ -1099,6 +1102,7 @@ static int object_armature_add_exec(bContext *C, wmOperator *op)
   Main *bmain = CTX_data_main(C);
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
 
   RegionView3D *rv3d = CTX_wm_region_view3d(C);

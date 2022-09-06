@@ -256,6 +256,7 @@ static eContextResult screen_ctx_visible_or_editable_bones_(const bContext *C,
   wmWindow *win = CTX_wm_window(C);
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
 
   bArmature *arm = (obedit && obedit->type == OB_ARMATURE) ? obedit->data : NULL;
@@ -328,6 +329,7 @@ static eContextResult screen_ctx_selected_bones_(const bContext *C,
   wmWindow *win = CTX_wm_window(C);
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   bArmature *arm = (obedit && obedit->type == OB_ARMATURE) ? obedit->data : NULL;
   EditBone *flipbone = NULL;
@@ -539,7 +541,9 @@ static eContextResult screen_ctx_object(const bContext *C, bContextDataResult *r
 static eContextResult screen_ctx_edit_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   /* convenience for now, 1 object per scene in editmode */
   if (obedit) {

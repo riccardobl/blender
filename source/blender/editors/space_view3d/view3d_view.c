@@ -553,6 +553,7 @@ int view3d_opengl_select_ex(ViewContext *vc,
   ARegion *region = vc->region;
   rcti rect;
   int hits = 0;
+  BKE_view_layer_ensure_sync(scene, vc->view_layer);
   const bool use_obedit_skip = (BKE_view_layer_edit_object_get(vc->view_layer) != NULL) &&
                                (vc->obedit == NULL);
   const bool is_pick_select = (U.gpu_flag & USER_GPU_FLAG_NO_DEPT_PICK) == 0;
@@ -852,6 +853,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
     ok = false;
   }
   else {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     if (obedit) {
       BKE_view_layer_ensure_sync(scene, view_layer);

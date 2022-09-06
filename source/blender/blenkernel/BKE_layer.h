@@ -507,7 +507,8 @@ struct Object **BKE_view_layer_array_selected_objects_params(
  * Returns NULL with it finds multiple other selected objects
  * as behavior in this case would be random from the user perspective.
  */
-struct Object *BKE_view_layer_non_active_selected_object(struct ViewLayer *view_layer,
+struct Object *BKE_view_layer_non_active_selected_object(const struct Scene *scene,
+                                                         struct ViewLayer *view_layer,
                                                          const struct View3D *v3d);
 
 #define BKE_view_layer_array_selected_objects(view_layer, v3d, r_len, ...) \

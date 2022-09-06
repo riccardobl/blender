@@ -1744,6 +1744,7 @@ static void object_get_datamask(const Depsgraph *depsgraph,
                                 CustomData_MeshMasks *r_mask,
                                 bool *r_need_mapping)
 {
+  Scene *scene = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer = DEG_get_evaluated_view_layer(depsgraph);
 
   DEG_get_customdata_mask_for_object(depsgraph, ob, r_mask);
@@ -1758,6 +1759,7 @@ static void object_get_datamask(const Depsgraph *depsgraph,
     return;
   }
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *actob = BKE_view_layer_active_object_get(view_layer);
   if (actob) {
     actob = DEG_get_original_object(actob);

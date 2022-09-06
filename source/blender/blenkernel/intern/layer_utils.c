@@ -275,9 +275,11 @@ bool BKE_view_layer_filter_edit_mesh_has_edges(const Object *ob, void *UNUSED(us
   return false;
 }
 
-Object *BKE_view_layer_non_active_selected_object(struct ViewLayer *view_layer,
+Object *BKE_view_layer_non_active_selected_object(const struct Scene *scene,
+                                                  struct ViewLayer *view_layer,
                                                   const struct View3D *v3d)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
   Object *ob_result = NULL;
   FOREACH_SELECTED_OBJECT_BEGIN (view_layer, v3d, ob_iter) {

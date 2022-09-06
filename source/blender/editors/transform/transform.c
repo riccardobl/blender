@@ -485,6 +485,7 @@ static void viewRedrawForce(const bContext *C, TransInfo *t)
       /* XXX how to deal with lock? */
       SpaceImage *sima = (SpaceImage *)t->area->spacedata.first;
       if (sima->lock) {
+        BKE_view_layer_ensure_sync(t->scene, t->view_layer);
         WM_event_add_notifier(
             C, NC_GEOM | ND_DATA, BKE_view_layer_edit_object_get(t->view_layer)->data);
       }

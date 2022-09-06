@@ -706,6 +706,7 @@ bool ED_object_editmode_free_ex(Main *bmain, Object *obedit)
 
 bool ED_object_editmode_exit_multi_ex(Main *bmain, Scene *scene, ViewLayer *view_layer, int flag)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   if (obedit == NULL) {
     return false;
@@ -713,7 +714,6 @@ bool ED_object_editmode_exit_multi_ex(Main *bmain, Scene *scene, ViewLayer *view
   bool changed = false;
   const short obedit_type = obedit->type;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
     Object *ob = base->object;
     if ((ob->type == obedit_type) && (ob->mode & OB_MODE_EDIT)) {
@@ -959,6 +959,7 @@ static int posemode_exec(bContext *C, wmOperator *op)
   }
 
   {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     if (obact == obedit) {
       ED_object_editmode_exit_ex(bmain, scene, obedit, EM_FREEDATA);

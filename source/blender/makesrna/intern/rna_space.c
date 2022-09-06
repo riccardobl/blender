@@ -1663,7 +1663,9 @@ static bool rna_SpaceImageEditor_show_uvedit_get(PointerRNA *ptr)
   Object *obedit = NULL;
   wmWindow *win = ED_screen_window_find(screen, G_MAIN->wm.first);
   if (win != NULL) {
+    Scene *scene = WM_window_get_active_scene(win);
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+    BKE_view_layer_ensure_sync(scene, view_layer);
     obedit = BKE_view_layer_edit_object_get(view_layer);
   }
   return ED_space_image_show_uvedit(sima, obedit);
@@ -1676,7 +1678,9 @@ static bool rna_SpaceImageEditor_show_maskedit_get(PointerRNA *ptr)
   Object *obedit = NULL;
   wmWindow *win = ED_screen_window_find(screen, G_MAIN->wm.first);
   if (win != NULL) {
+    Scene *scene = WM_window_get_active_scene(win);
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+    BKE_view_layer_ensure_sync(scene, view_layer);
     obedit = BKE_view_layer_edit_object_get(view_layer);
   }
   return ED_space_image_check_show_maskedit(sima, obedit);
