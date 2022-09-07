@@ -336,7 +336,7 @@ static bool edbm_backbuf_check_and_select_verts_obmode(Mesh *me,
                                                        EditSelectBuf_Cache *esel,
                                                        const eSelectOp sel_op)
 {
-  MVert *verts = BKE_mesh_vertices_for_write(me);
+  MVert *verts = BKE_mesh_verts_for_write(me);
   MVert *mv = verts;
   bool changed = false;
 
@@ -366,7 +366,7 @@ static bool edbm_backbuf_check_and_select_faces_obmode(Mesh *me,
                                                        EditSelectBuf_Cache *esel,
                                                        const eSelectOp sel_op)
 {
-  MPoly *polygons = BKE_mesh_polygons_for_write(me);
+  MPoly *polygons = BKE_mesh_polys_for_write(me);
   bool changed = false;
 
   const BLI_bitmap *select_bitmap = esel->select_bitmap;
@@ -2829,7 +2829,7 @@ static bool ed_wpaint_vertex_select_pick(bContext *C,
 
   Mesh *me = static_cast<Mesh *>(obact->data); /* already checked for nullptr */
   uint index = 0;
-  MVert *verts = BKE_mesh_vertices_for_write(me);
+  MVert *verts = BKE_mesh_verts_for_write(me);
 
   MVert *mv;
   bool changed = false;
