@@ -167,6 +167,7 @@ bool view3d_orbit_calc_center(bContext *C, float r_dyn_ofs[3])
   Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
   View3D *v3d = CTX_wm_view3d(C);
+  BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
   Object *ob_act_eval = BKE_view_layer_active_object_get(view_layer_eval);
   Object *ob_act = DEG_get_original_object(ob_act_eval);
 
@@ -208,7 +209,6 @@ bool view3d_orbit_calc_center(bContext *C, float r_dyn_ofs[3])
     float select_center[3];
 
     zero_v3(select_center);
-    BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
     LISTBASE_FOREACH (
         Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
       if (BASE_SELECTED(v3d, base_eval)) {
@@ -869,6 +869,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
   Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
+  BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
   Object *ob_eval = BKE_view_layer_active_object_get(view_layer_eval);
   Object *obedit = CTX_data_edit_object(C);
   const bGPdata *gpd_eval = ob_eval && (ob_eval->type == OB_GPENCIL) ? ob_eval->data : NULL;
@@ -892,7 +893,6 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     /* hard-coded exception, we look for the one selected armature */
     /* this is weak code this way, we should make a generic
      * active/selection callback interface once... */
-    BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
     Base *base_eval;
     for (base_eval = BKE_view_layer_object_bases_get(view_layer_eval, __func__)->first; base_eval;
          base_eval = base_eval->next) {
@@ -972,7 +972,6 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     ok_dist = 0; /* don't zoom */
   }
   else {
-    BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
     LISTBASE_FOREACH (
         Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
       if (BASE_SELECTED(v3d, base_eval)) {
@@ -1316,6 +1315,7 @@ static int view_camera_exec(bContext *C, wmOperator *op)
     Scene *scene = CTX_data_scene(C);
 
     if (rv3d->persp != RV3D_CAMOB) {
+      BKE_view_layer_ensure_sync(scene, view_layer);
       Object *ob = BKE_view_layer_active_object_get(view_layer);
 
       if (!rv3d->smooth_timer) {

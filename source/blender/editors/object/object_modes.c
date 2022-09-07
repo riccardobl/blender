@@ -190,7 +190,10 @@ bool ED_object_mode_compat_set(bContext *C, Object *ob, eObjectMode mode, Report
 bool ED_object_mode_set_ex(bContext *C, eObjectMode mode, bool use_undo, ReportList *reports)
 {
   wmWindowManager *wm = CTX_wm_manager(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     return (mode == OB_MODE_OBJECT);

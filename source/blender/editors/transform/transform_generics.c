@@ -176,6 +176,7 @@ void initTransInfo(bContext *C, TransInfo *t, wmOperator *op, const wmEvent *eve
 {
   Scene *sce = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(sce, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   const eObjectMode object_mode = obact ? obact->mode : OB_MODE_OBJECT;
   ToolSettings *ts = CTX_data_tool_settings(C);
@@ -333,6 +334,7 @@ void initTransInfo(bContext *C, TransInfo *t, wmOperator *op, const wmEvent *eve
   }
   else if (t->spacetype == SPACE_IMAGE) {
     SpaceImage *sima = area->spacedata.first;
+    BKE_view_layer_ensure_sync(t->scene, t->view_layer);
     if (ED_space_image_show_uvedit(sima, BKE_view_layer_active_object_get(t->view_layer))) {
       /* UV transform */
     }
@@ -1066,8 +1068,8 @@ bool calculateCenterActive(TransInfo *t, bool select_only, float r_center[3])
     }
   }
   else if (t->options & CTX_POSE_BONE) {
-    ViewLayer *view_layer = t->view_layer;
-    Object *ob = BKE_view_layer_active_object_get(view_layer);
+    BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+    Object *ob = BKE_view_layer_active_object_get(t->view_layer);
     if (ED_object_calc_active_center_for_posemode(ob, select_only, r_center)) {
       mul_m4_v3(ob->obmat, r_center);
       return true;

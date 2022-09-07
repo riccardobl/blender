@@ -433,8 +433,10 @@ bool ED_undo_is_memfile_compatible(const bContext *C)
 {
   /* Some modes don't co-exist with memfile undo, disable their use: T60593
    * (this matches 2.7x behavior). */
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   if (view_layer != NULL) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obact = BKE_view_layer_active_object_get(view_layer);
     if (obact != NULL) {
       if (obact->mode & OB_MODE_EDIT) {
@@ -447,8 +449,10 @@ bool ED_undo_is_memfile_compatible(const bContext *C)
 
 bool ED_undo_is_legacy_compatible_for_property(struct bContext *C, ID *id)
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   if (view_layer != NULL) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *obact = BKE_view_layer_active_object_get(view_layer);
     if (obact != NULL) {
       if (obact->mode & OB_MODE_ALL_PAINT) {
@@ -800,6 +804,7 @@ void ED_OT_undo_history(wmOperatorType *ot)
 void ED_undo_object_set_active_or_warn(
     Scene *scene, ViewLayer *view_layer, Object *ob, const char *info, CLG_LogRef *log)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob_prev = BKE_view_layer_active_object_get(view_layer);
   if (ob_prev != ob) {
     Base *base = BKE_view_layer_base_find(view_layer, ob);

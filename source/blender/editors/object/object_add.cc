@@ -3448,6 +3448,7 @@ static int object_convert_exec(bContext *C, wmOperator *op)
     view_layer->basact = basact;
   }
   else {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *object = BKE_view_layer_active_object_get(view_layer);
     if (object->flag & OB_DONE) {
       WM_event_add_notifier(C, NC_OBJECT | ND_MODIFIER, object);
@@ -3895,12 +3896,14 @@ void OBJECT_OT_add_named(wmOperatorType *ot)
 static int object_transform_to_mouse_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   Object *ob = reinterpret_cast<Object *>(
       WM_operator_properties_id_lookup_from_name_or_session_uuid(bmain, op->ptr, ID_OB));
 
   if (!ob) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     ob = BKE_view_layer_active_object_get(view_layer);
   }
 

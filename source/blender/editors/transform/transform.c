@@ -1479,6 +1479,7 @@ static void drawTransformPixel(const struct bContext *C, ARegion *region, void *
   if (region == t->region) {
     Scene *scene = t->scene;
     ViewLayer *view_layer = t->view_layer;
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Object *ob = BKE_view_layer_active_object_get(view_layer);
 
     /* draw auto-key-framing hint in the corner
@@ -1539,6 +1540,7 @@ void saveTransform(bContext *C, TransInfo *t, wmOperator *op)
     if (!(t->options & CTX_NO_PET)) {
       if ((prop = RNA_struct_find_property(op->ptr, "use_proportional_edit")) &&
           !RNA_property_is_set(op->ptr, prop)) {
+        BKE_view_layer_ensure_sync(t->scene, t->view_layer);
         const Object *obact = BKE_view_layer_active_object_get(t->view_layer);
 
         if (t->spacetype == SPACE_GRAPH) {

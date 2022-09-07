@@ -127,7 +127,6 @@ void ED_object_base_activate_with_mode_exit_if_needed(bContext *C, Base *base)
     Object *ob = base->object;
     if (((ob->mode & OB_MODE_EDIT) == 0) || (obedit->type != ob->type)) {
       Main *bmain = CTX_data_main(C);
-      Scene *scene = CTX_data_scene(C);
       ED_object_editmode_exit_multi_ex(bmain, scene, view_layer, EM_FREEDATA);
     }
   }
@@ -633,6 +632,7 @@ static int object_select_linked_exec(bContext *C, wmOperator *op)
     ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     BKE_report(op->reports, RPT_ERROR, "No active object");
@@ -787,6 +787,7 @@ static bool select_grouped_children(bContext *C, Object *ob, const bool recursiv
 /* Makes parent active and de-selected BKE_view_layer_active_object_get. */
 static bool select_grouped_parent(bContext *C)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   Base *baspar, *basact = CTX_data_active_base(C);
@@ -797,6 +798,7 @@ static bool select_grouped_parent(bContext *C)
     return 0;
   }
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   baspar = BKE_view_layer_base_find(view_layer, basact->object->parent);
 
   /* can be NULL if parent in other scene */
@@ -1030,6 +1032,7 @@ static int object_select_grouped_exec(bContext *C, wmOperator *op)
     changed = ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     BKE_report(op->reports, RPT_ERROR, "No active object");

@@ -960,6 +960,7 @@ static void setSnappingCallback(TransInfo *t)
   }
   else if (t->spacetype == SPACE_IMAGE) {
     SpaceImage *sima = t->area->spacedata.first;
+    BKE_view_layer_ensure_sync(t->scene, t->view_layer);
     Object *obact = BKE_view_layer_active_object_get(t->view_layer);
 
     const bool is_uv_editor = sima->mode == SI_MODE_UV;

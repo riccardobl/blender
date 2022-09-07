@@ -638,7 +638,7 @@ int ED_transform_calc_gizmo_stats(const bContext *C,
   const short orient_index = params->orientation_index ?
                                  (params->orientation_index - 1) :
                                  BKE_scene_orientation_get_index(scene, SCE_ORIENT_DEFAULT);
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Object *obedit = OBEDIT_FROM_OBACT(ob);
   if (ob && ob->mode & OB_MODE_WEIGHT_PAINT) {
@@ -1105,6 +1105,7 @@ static void gizmo_prepare_mat(const bContext *C,
           /* pass */
         }
         else {
+          BKE_view_layer_ensure_sync(scene, view_layer);
           Object *ob = BKE_view_layer_active_object_get(view_layer);
           if (ob != NULL) {
             if ((ob->mode & OB_MODE_ALL_SCULPT) && ob->sculpt) {

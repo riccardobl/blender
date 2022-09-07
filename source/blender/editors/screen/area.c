@@ -1967,8 +1967,7 @@ void ED_area_init(wmWindowManager *wm, wmWindow *win, ScrArea *area)
   /* Avoid re-initializing tools while resizing the window. */
   if ((G.moving & G_TRANSFORM_WM) == 0) {
     if ((1 << area->spacetype) & WM_TOOLSYSTEM_SPACE_MASK) {
-      BKE_view_layer_ensure_sync(scene, view_layer);
-      WM_toolsystem_refresh_screen_area(workspace, view_layer, area);
+      WM_toolsystem_refresh_screen_area(workspace, scene, view_layer, area);
       area->flag |= AREA_FLAG_ACTIVE_TOOL_UPDATE;
     }
     else {

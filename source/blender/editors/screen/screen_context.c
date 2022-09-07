@@ -213,6 +213,7 @@ static eContextResult screen_ctx_objects_in_mode(const bContext *C, bContextData
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (obact && (obact->mode != OB_MODE_OBJECT)) {
@@ -231,6 +232,8 @@ static eContextResult screen_ctx_objects_in_mode_unique_data(const bContext *C,
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (obact && (obact->mode != OB_MODE_OBJECT)) {
@@ -399,8 +402,9 @@ static eContextResult screen_ctx_visible_pose_bones(const bContext *C, bContextD
 {
   wmWindow *win = CTX_wm_window(C);
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   Object *obpose = BKE_object_pose_armature_get(obact);
   if (obpose && obpose->pose && obpose->data) {
@@ -428,8 +432,9 @@ static eContextResult screen_ctx_selected_pose_bones(const bContext *C, bContext
 {
   wmWindow *win = CTX_wm_window(C);
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   Object *obpose = BKE_object_pose_armature_get(obact);
   if (obpose && obpose->pose && obpose->data) {
@@ -457,7 +462,9 @@ static eContextResult screen_ctx_selected_pose_bones_from_active_object(const bC
                                                                         bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   Object *obpose = BKE_object_pose_armature_get(obact);
   if (obpose && obpose->pose && obpose->data) {
@@ -481,7 +488,9 @@ static eContextResult screen_ctx_selected_pose_bones_from_active_object(const bC
 static eContextResult screen_ctx_active_bone(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   if (obact && obact->type == OB_ARMATURE) {
     bArmature *arm = obact->data;
@@ -503,7 +512,9 @@ static eContextResult screen_ctx_active_bone(const bContext *C, bContextDataResu
 static eContextResult screen_ctx_active_pose_bone(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   Object *obpose = BKE_object_pose_armature_get(obact);
 
@@ -517,7 +528,9 @@ static eContextResult screen_ctx_active_pose_bone(const bContext *C, bContextDat
 static eContextResult screen_ctx_active_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (obact) {
@@ -529,7 +542,9 @@ static eContextResult screen_ctx_active_object(const bContext *C, bContextDataRe
 static eContextResult screen_ctx_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (obact) {
@@ -555,7 +570,9 @@ static eContextResult screen_ctx_edit_object(const bContext *C, bContextDataResu
 static eContextResult screen_ctx_sculpt_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (obact && (obact->mode & OB_MODE_SCULPT)) {
@@ -567,7 +584,9 @@ static eContextResult screen_ctx_sculpt_object(const bContext *C, bContextDataRe
 static eContextResult screen_ctx_vertex_paint_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   if (obact && (obact->mode & OB_MODE_VERTEX_PAINT)) {
     CTX_data_id_pointer_set(result, &obact->id);
@@ -578,7 +597,9 @@ static eContextResult screen_ctx_vertex_paint_object(const bContext *C, bContext
 static eContextResult screen_ctx_weight_paint_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   if (obact && (obact->mode & OB_MODE_ALL_WEIGHT_PAINT)) {
     CTX_data_id_pointer_set(result, &obact->id);
@@ -589,7 +610,9 @@ static eContextResult screen_ctx_weight_paint_object(const bContext *C, bContext
 static eContextResult screen_ctx_image_paint_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   if (obact && (obact->mode & OB_MODE_TEXTURE_PAINT)) {
     CTX_data_id_pointer_set(result, &obact->id);
@@ -601,7 +624,9 @@ static eContextResult screen_ctx_particle_edit_object(const bContext *C,
                                                       bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   if (obact && (obact->mode & OB_MODE_PARTICLE_EDIT)) {
     CTX_data_id_pointer_set(result, &obact->id);
@@ -612,7 +637,9 @@ static eContextResult screen_ctx_particle_edit_object(const bContext *C,
 static eContextResult screen_ctx_pose_object(const bContext *C, bContextDataResult *result)
 {
   wmWindow *win = CTX_wm_window(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   Object *obpose = BKE_object_pose_armature_get(obact);
   if (obpose) {
@@ -756,7 +783,9 @@ static eContextResult screen_ctx_gpencil_data(const bContext *C, bContextDataRes
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   /* FIXME: for some reason, CTX_data_active_object(C) returns NULL when called from these
    * situations (as outlined above - see Campbell's #ifdefs).
@@ -775,7 +804,9 @@ static eContextResult screen_ctx_gpencil_data_owner(const bContext *C, bContextD
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   /* Pointer to which data/datablock owns the reference to the Grease Pencil data being used
@@ -826,7 +857,9 @@ static eContextResult screen_ctx_active_gpencil_layer(const bContext *C,
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   bGPdata *gpd = ED_gpencil_data_get_active_direct(area, obact);
 
@@ -864,7 +897,9 @@ static eContextResult screen_ctx_active_gpencil_frame(const bContext *C,
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   bGPdata *gpd = ED_gpencil_data_get_active_direct(area, obact);
 
@@ -883,7 +918,9 @@ static eContextResult screen_ctx_visible_gpencil_layers(const bContext *C,
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   bGPdata *gpd = ED_gpencil_data_get_active_direct(area, obact);
 
@@ -903,7 +940,9 @@ static eContextResult screen_ctx_editable_gpencil_layers(const bContext *C,
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   bGPdata *gpd = ED_gpencil_data_get_active_direct(area, obact);
 
@@ -923,7 +962,9 @@ static eContextResult screen_ctx_editable_gpencil_strokes(const bContext *C,
 {
   wmWindow *win = CTX_wm_window(C);
   ScrArea *area = CTX_wm_area(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   bGPdata *gpd = ED_gpencil_data_get_active_direct(area, obact);

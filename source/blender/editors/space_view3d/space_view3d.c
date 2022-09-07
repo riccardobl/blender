@@ -1404,7 +1404,9 @@ static void view3d_main_region_message_subscribe(const wmRegionMessageSubscribeP
   WM_msg_subscribe_rna_anon_type(mbus, SceneDisplay, &msg_sub_value_region_tag_redraw);
   WM_msg_subscribe_rna_anon_type(mbus, ObjectDisplay, &msg_sub_value_region_tag_redraw);
 
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
   if (obact != NULL) {
     switch (obact->mode) {

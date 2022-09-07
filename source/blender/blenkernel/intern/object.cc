@@ -2555,6 +2555,7 @@ Object *BKE_object_pose_armature_get_visible(Object *ob, ViewLayer *view_layer, 
 Object **BKE_object_pose_array_get_ex(
     const Scene *scene, ViewLayer *view_layer, View3D *v3d, uint *r_objects_len, bool unique)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
   Object *ob_pose = BKE_object_pose_armature_get(ob_active);
   Object **objects = nullptr;

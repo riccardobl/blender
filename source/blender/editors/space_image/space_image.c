@@ -395,7 +395,9 @@ static void image_listener(const wmSpaceTypeListenerParams *params)
       switch (wmn->data) {
         case ND_TRANSFORM:
         case ND_MODIFIER: {
+          const Scene *scene = WM_window_get_active_scene(win);
           ViewLayer *view_layer = WM_window_get_active_view_layer(win);
+          BKE_view_layer_ensure_sync(scene, view_layer);
           Object *ob = BKE_view_layer_active_object_get(view_layer);
           if (ob && (ob == wmn->reference) && (ob->mode & OB_MODE_EDIT)) {
             if (sima->lock && (sima->flag & SI_DRAWSHADOW)) {

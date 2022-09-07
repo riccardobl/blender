@@ -1274,7 +1274,9 @@ static void do_view3d_vgroup_buttons(bContext *C, void *UNUSED(arg), int event)
     return;
   }
 
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   ED_vgroup_vert_active_mirror(ob, event - B_VGRP_PNL_EDIT_SINGLE);
   DEG_id_tag_update(ob->data, ID_RECALC_GEOMETRY);
@@ -1283,7 +1285,9 @@ static void do_view3d_vgroup_buttons(bContext *C, void *UNUSED(arg), int event)
 
 static bool view3d_panel_vgroup_poll(const bContext *C, PanelType *UNUSED(pt))
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   if (ob && (BKE_object_is_in_editmode_vgroup(ob) || BKE_object_is_in_wpaint_select_vert(ob))) {
     MDeformVert *dvert_act = ED_mesh_active_dvert_get_only(ob);
@@ -1300,6 +1304,7 @@ static void view3d_panel_vgroup(const bContext *C, Panel *panel)
   uiBlock *block = uiLayoutAbsoluteBlock(panel->layout);
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
 
   MDeformVert *dv;
@@ -1682,8 +1687,10 @@ static void v3d_editmetaball_buts(uiLayout *layout, Object *ob)
 
 static void do_view3d_region_buttons(bContext *C, void *UNUSED(index), int event)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
 
   switch (event) {
@@ -1718,7 +1725,9 @@ static bool view3d_panel_transform_poll(const bContext *C, PanelType *UNUSED(pt)
 static void view3d_panel_transform(const bContext *C, Panel *panel)
 {
   uiBlock *block;
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Object *obedit = OBEDIT_FROM_OBACT(ob);
   uiLayout *col;

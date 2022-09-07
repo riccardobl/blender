@@ -1381,7 +1381,7 @@ bool BKE_lib_override_library_create(Main *bmain,
   if (id_hierarchy_root_reference == nullptr) {
     id_hierarchy_root_reference = id_root_reference;
   }
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const Object *old_active_object = BKE_view_layer_active_object_get(view_layer);
 
   const bool success = lib_override_library_create_do(bmain,
@@ -1720,6 +1720,7 @@ static bool lib_override_library_resync(Main *bmain,
 
   ID *id_root_reference = id_root->override_library->reference;
   ID *id;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const Object *old_active_object = BKE_view_layer_active_object_get(view_layer);
 
   if (id_root_reference->tag & LIB_TAG_MISSING) {

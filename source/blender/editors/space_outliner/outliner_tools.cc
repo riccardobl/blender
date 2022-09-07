@@ -1318,6 +1318,7 @@ static void id_override_library_clear_single_fn(bContext *C,
    * override. */
   if (BKE_lib_override_library_is_hierarchy_leaf(bmain, id)) {
     bool do_remap_active = false;
+    BKE_view_layer_ensure_sync(CTX_data_scene(C), view_layer);
     if (BKE_view_layer_active_object_get(view_layer) == reinterpret_cast<Object *>(id)) {
       BLI_assert(GS(id->name) == ID_OB);
       do_remap_active = true;

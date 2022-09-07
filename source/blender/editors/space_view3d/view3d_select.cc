@@ -1699,7 +1699,7 @@ static int bone_select_menu_exec(bContext *C, wmOperator *op)
        * Selection causes this to be considered the 'active' pose in weight-paint mode.
        * Eventually this limitation may be removed.
        * For now, de-select all other pose objects deforming this mesh. */
-      ED_armature_pose_select_in_wpaint_mode(view_layer, basact);
+      ED_armature_pose_select_in_wpaint_mode(scene, view_layer, basact);
     }
     else {
       if (oldbasact != basact) {
@@ -2656,7 +2656,7 @@ static bool ed_object_select_pick(bContext *C,
                * Selection causes this to be considered the 'active' pose in weight-paint mode.
                * Eventually this limitation may be removed.
                * For now, de-select all other pose objects deforming this mesh. */
-              ED_armature_pose_select_in_wpaint_mode(view_layer, basact);
+              ED_armature_pose_select_in_wpaint_mode(scene, view_layer, basact);
 
               handled = true;
             }

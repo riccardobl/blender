@@ -340,7 +340,8 @@ bool ED_armature_pose_select_pick_with_buffer(const struct Scene *scene,
  * It can't be set to the active object because we need
  * to keep this set to the weight paint object.
  */
-void ED_armature_pose_select_in_wpaint_mode(struct ViewLayer *view_layer,
+void ED_armature_pose_select_in_wpaint_mode(const struct Scene *scene,
+                                            struct ViewLayer *view_layer,
                                             struct Base *base_select);
 bool ED_pose_deselect_all_multi_ex(struct Base **bases,
                                    uint bases_len,

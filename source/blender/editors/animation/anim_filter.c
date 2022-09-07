@@ -118,10 +118,12 @@ static void animedit_get_yscale_factor(bAnimContext *ac)
 /* NOTE: there's a similar function in key.c #BKE_key_from_object. */
 static Key *actedit_get_shapekeys(bAnimContext *ac)
 {
+  Scene *scene = ac->scene;
   ViewLayer *view_layer = ac->view_layer;
   Object *ob;
   Key *key;
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     return NULL;
