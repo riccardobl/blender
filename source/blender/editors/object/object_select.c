@@ -220,7 +220,7 @@ Base *ED_object_find_first_by_data_id(const Scene *scene, ViewLayer *view_layer,
 
   /* Try active object. */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  Base *basact = BKE_view_layer_active_base_get(view_layer, __func__);
+  Base *basact = BKE_view_layer_active_base_get(view_layer);
 
   if (basact && basact->object && basact->object->data == id) {
     return basact;
@@ -262,8 +262,7 @@ bool ED_object_jump_to_object(bContext *C, Object *ob, const bool UNUSED(reveal_
 
   /* TODO: use 'reveal_hidden', as is done with bones. */
 
-  if (BKE_view_layer_active_base_get(view_layer, __func__) != base ||
-      !(base->flag & BASE_SELECTED)) {
+  if (BKE_view_layer_active_base_get(view_layer) != base || !(base->flag & BASE_SELECTED)) {
     /* Select if not selected. */
     if (!(base->flag & BASE_SELECTED)) {
       ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);

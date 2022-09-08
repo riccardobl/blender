@@ -1464,7 +1464,7 @@ static int object_select_menu_exec(bContext *C, wmOperator *op)
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   BKE_view_layer_ensure_sync(scene, view_layer);
-  const Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
+  const Base *oldbasact = BKE_view_layer_active_base_get(view_layer);
 
   Base *basact = nullptr;
   CTX_DATA_BEGIN (C, Base *, base, selectable_bases) {
@@ -1661,7 +1661,7 @@ static int bone_select_menu_exec(bContext *C, wmOperator *op)
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   BKE_view_layer_ensure_sync(scene, view_layer);
-  const Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
+  const Base *oldbasact = BKE_view_layer_active_base_get(view_layer);
 
   Base *basact = object_mouse_select_menu_data[name_index].base_ptr;
 
@@ -2171,7 +2171,7 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
     if (hits > 0) {
       /* Only exclude active object when it is selected. */
       BKE_view_layer_ensure_sync(scene, view_layer);
-      Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+      Base *base = BKE_view_layer_active_base_get(view_layer);
       if (base && (base->flag & BASE_SELECTED)) {
         const int select_id_active = base->object->runtime.select_id;
         for (int i_next = 0, i_prev = hits - 1; i_next < hits; i_prev = i_next++) {
@@ -2226,7 +2226,7 @@ static Base *mouse_select_object_center(ViewContext *vc, Base *startbase, const 
   View3D *v3d = vc->v3d;
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
+  Base *oldbasact = BKE_view_layer_active_base_get(view_layer);
 
   const float mval_fl[2] = {(float)mval[0], (float)mval[1]};
   float dist = ED_view3d_select_dist_px() * 1.3333f;
@@ -2542,8 +2542,7 @@ static bool ed_object_select_pick(bContext *C,
   ViewLayer *view_layer = vc.view_layer;
   BKE_view_layer_ensure_sync(scene, view_layer);
   /* Don't set when the context has no active object (hidden), see: T60807. */
-  const Base *oldbasact = vc.obact ? BKE_view_layer_active_base_get(view_layer, __func__) :
-                                     nullptr;
+  const Base *oldbasact = vc.obact ? BKE_view_layer_active_base_get(view_layer) : nullptr;
   /* Always start list from `basact` when cycling the selection. */
   Base *startbase = (oldbasact && oldbasact->next) ?
                         oldbasact->next :
@@ -2718,8 +2717,7 @@ static bool ed_object_select_pick(bContext *C,
 
   /* Ensure code above doesn't change the active base. This code is already fairly involved,
    * it's best if changing the active object is localized to a single place. */
-  BLI_assert(oldbasact ==
-             (vc.obact ? BKE_view_layer_active_base_get(view_layer, __func__) : nullptr));
+  BLI_assert(oldbasact == (vc.obact ? BKE_view_layer_active_base_get(view_layer) : nullptr));
 
   bool found = (basact != nullptr);
   if ((handled == false) && (vc.obedit == nullptr)) {

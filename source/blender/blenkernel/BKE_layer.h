@@ -372,7 +372,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
     data_.view_layer = _view_layer; \
     data_.v3d = _v3d; \
     BKE_view_layer_ensure_sync(_scene, _view_layer); \
-    data_.base_active = BKE_view_layer_active_base_get(_view_layer, __func__); \
+    data_.base_active = BKE_view_layer_active_base_get(_view_layer); \
     ITER_BEGIN (BKE_view_layer_bases_in_mode_iterator_begin, \
                 BKE_view_layer_bases_in_mode_iterator_next, \
                 BKE_view_layer_bases_in_mode_iterator_end, \
@@ -578,10 +578,9 @@ struct Object *BKE_view_layer_active_object_get(const struct ViewLayer *view_lay
 struct Object *BKE_view_layer_edit_object_get(const struct ViewLayer *view_layer);
 
 struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer);
-struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer, const char *name);
+struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer);
 
-struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer,
-                                                             const char *name);
+struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer);
 
 void BKE_view_layer_tag_out_of_sync(struct ViewLayer *view_layer);
 void BKE_view_layer_ensure_sync(const struct Scene *scene, struct ViewLayer *view_layer);

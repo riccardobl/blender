@@ -2397,7 +2397,7 @@ static int outliner_delete_exec(bContext *C, wmOperator *op)
   struct wmMsgBus *mbus = CTX_wm_message_bus(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   BKE_view_layer_ensure_sync(scene, view_layer);
-  const Base *basact_prev = BKE_view_layer_active_base_get(view_layer, __func__);
+  const Base *basact_prev = BKE_view_layer_active_base_get(view_layer);
 
   const bool delete_hierarchy = RNA_boolean_get(op->ptr, "hierarchy");
 
@@ -2442,7 +2442,7 @@ static int outliner_delete_exec(bContext *C, wmOperator *op)
   DEG_relations_tag_update(bmain);
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  if (basact_prev != BKE_view_layer_active_base_get(view_layer, __func__)) {
+  if (basact_prev != BKE_view_layer_active_base_get(view_layer)) {
     WM_event_add_notifier(C, NC_SCENE | ND_OB_ACTIVE, scene);
     WM_msg_publish_rna_prop(mbus, &scene->id, view_layer, LayerObjects, active);
   }

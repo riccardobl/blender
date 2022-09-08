@@ -414,7 +414,7 @@ static int collection_hierarchy_delete_exec(bContext *C, wmOperator *op)
   ViewLayer *view_layer = CTX_data_view_layer(C);
   struct wmMsgBus *mbus = CTX_wm_message_bus(C);
   BKE_view_layer_ensure_sync(scene, view_layer);
-  const Base *basact_prev = BKE_view_layer_active_base_get(view_layer, __func__);
+  const Base *basact_prev = BKE_view_layer_active_base_get(view_layer);
 
   outliner_collection_delete(C, bmain, scene, op->reports, true);
 
@@ -424,7 +424,7 @@ static int collection_hierarchy_delete_exec(bContext *C, wmOperator *op)
   WM_main_add_notifier(NC_SCENE | ND_LAYER, nullptr);
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  if (basact_prev != BKE_view_layer_active_base_get(view_layer, __func__)) {
+  if (basact_prev != BKE_view_layer_active_base_get(view_layer)) {
     WM_msg_publish_rna_prop(mbus, &scene->id, view_layer, LayerObjects, active);
   }
 

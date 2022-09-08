@@ -90,7 +90,7 @@ static bool edbm_preselect_or_active(bContext *C, const View3D *v3d, Base **r_ba
     const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     BKE_view_layer_ensure_sync(scene, view_layer);
-    Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+    Base *base = BKE_view_layer_active_base_get(view_layer);
     Object *obedit = base->object;
     BMEditMesh *em = BKE_editmesh_from_object(obedit);
     BMesh *bm = em->bm;
@@ -153,7 +153,7 @@ static int edbm_polybuild_transform_at_cursor_invoke(bContext *C,
               });
   if (basact != NULL) {
     BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
-    if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
+    if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
       ED_object_base_activate(C, basact);
     }
   }
@@ -241,7 +241,7 @@ static int edbm_polybuild_delete_at_cursor_invoke(bContext *C,
                 });
     if (basact != NULL) {
       BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
-      if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
+      if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
         ED_object_base_activate(C, basact);
       }
     }
@@ -410,7 +410,7 @@ static int edbm_polybuild_face_at_cursor_invoke(bContext *C, wmOperator *op, con
 
     if (basact != NULL) {
       BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
-      if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
+      if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
         ED_object_base_activate(C, basact);
       }
     }
@@ -504,7 +504,7 @@ static int edbm_polybuild_split_at_cursor_invoke(bContext *C,
     WM_event_add_mousemove(vc.win);
 
     BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
-    if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
+    if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
       ED_object_base_activate(C, basact);
     }
 
@@ -597,7 +597,7 @@ static int edbm_polybuild_dissolve_at_cursor_invoke(bContext *C,
                 });
 
     BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
-    if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
+    if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
       ED_object_base_activate(C, basact);
     }
 

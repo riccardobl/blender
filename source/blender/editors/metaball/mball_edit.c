@@ -914,7 +914,7 @@ bool ED_mball_select_pick(bContext *C, const int mval[2], const struct SelectPic
     WM_event_add_notifier(C, NC_GEOM | ND_SELECT, mb);
 
     BKE_view_layer_ensure_sync(scene, view_layer);
-    if (BKE_view_layer_active_base_get(view_layer, __func__) != base) {
+    if (BKE_view_layer_active_base_get(view_layer) != base) {
       ED_object_base_activate(C, base);
     }
 

@@ -631,7 +631,7 @@ Object *ED_object_add_type_with_obdata(bContext *C,
   }
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  Base *ob_base_act = BKE_view_layer_active_base_get(view_layer, __func__);
+  Base *ob_base_act = BKE_view_layer_active_base_get(view_layer);
   /* While not getting a valid base is not a good thing, it can happen in convoluted corner cases,
    * better not crash on it in releases. */
   BLI_assert(ob_base_act != nullptr);
@@ -3694,7 +3694,7 @@ static int duplicate_exec(bContext *C, wmOperator *op)
 
     /* new object will become active */
     BKE_view_layer_ensure_sync(scene, view_layer);
-    if (BKE_view_layer_active_base_get(view_layer, __func__) == base) {
+    if (BKE_view_layer_active_base_get(view_layer) == base) {
       ob_new_active = ob_new;
     }
   }

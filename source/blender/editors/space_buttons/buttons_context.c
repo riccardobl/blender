@@ -156,7 +156,7 @@ static bool buttons_context_path_collection(const bContext *C,
   if (buttons_context_path_view_layer(path, window)) {
     ViewLayer *view_layer = path->ptr[path->len - 1].data;
     BKE_view_layer_ensure_sync(scene, view_layer);
-    Collection *c = BKE_view_layer_active_collection_get(view_layer, __func__)->collection;
+    Collection *c = BKE_view_layer_active_collection_get(view_layer)->collection;
 
     /* Do not show collection tab for master collection. */
     if (c == scene->master_collection) {

@@ -1895,7 +1895,7 @@ static int view3d_context(const bContext *C, const char *member, bContextDataRes
     const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     BKE_view_layer_ensure_sync(scene, view_layer);
-    Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+    Base *base = BKE_view_layer_active_base_get(view_layer);
     if (base) {
       Object *ob = base->object;
       /* if hidden but in edit mode, we still display, can happen with animation */

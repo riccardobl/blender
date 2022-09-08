@@ -1015,7 +1015,7 @@ int ED_transform_calc_gizmo_stats(const bContext *C,
 
     /* we need the one selected object, if its not active */
     BKE_view_layer_ensure_sync(scene, view_layer);
-    base = BKE_view_layer_active_base_get(view_layer, __func__);
+    base = BKE_view_layer_active_base_get(view_layer);
     ob = base ? base->object : NULL;
     if (base && ((base->flag & BASE_SELECTED) == 0)) {
       ob = NULL;
