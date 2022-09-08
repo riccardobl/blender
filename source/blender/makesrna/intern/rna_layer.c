@@ -347,9 +347,11 @@ static bool rna_LayerCollection_has_objects(LayerCollection *lc)
   return (lc->runtime_flag & LAYER_COLLECTION_HAS_OBJECTS) != 0;
 }
 
-static bool rna_LayerCollection_has_selected_objects(LayerCollection *lc, ViewLayer *view_layer)
+static bool rna_LayerCollection_has_selected_objects(LayerCollection *lc,
+                                                     const Scene *scene,
+                                                     ViewLayer *view_layer)
 {
-  return BKE_layer_collection_has_selected_objects(view_layer, lc);
+  return BKE_layer_collection_has_selected_objects(scene, view_layer, lc);
 }
 
 #else

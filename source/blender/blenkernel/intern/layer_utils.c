@@ -167,14 +167,15 @@ struct Base **BKE_view_layer_array_from_bases_in_edit_mode(ViewLayer *view_layer
   return BKE_view_layer_array_from_bases_in_mode_params(view_layer, v3d, r_len, &params);
 }
 
-struct Object **BKE_view_layer_array_from_objects_in_edit_mode_unique_data(ViewLayer *view_layer,
+struct Object **BKE_view_layer_array_from_objects_in_edit_mode_unique_data(const Scene *scene,
+                                                                           ViewLayer *view_layer,
                                                                            const View3D *v3d,
                                                                            uint *r_len)
 {
   struct ObjectsInModeParams params = {0};
   params.object_mode = OB_MODE_EDIT;
   params.no_dup_data = true;
-  return BKE_view_layer_array_from_objects_in_mode_params(view_layer, v3d, r_len, &params);
+  return BKE_view_layer_array_from_objects_in_mode_params(scene, view_layer, v3d, r_len, &params);
 }
 
 struct Base **BKE_view_layer_array_from_bases_in_edit_mode_unique_data(ViewLayer *view_layer,
@@ -188,7 +189,7 @@ struct Base **BKE_view_layer_array_from_bases_in_edit_mode_unique_data(ViewLayer
 }
 
 struct Object **BKE_view_layer_array_from_objects_in_edit_mode_unique_data_with_uvs(
-    ViewLayer *view_layer, const View3D *v3d, uint *r_len)
+    const Scene *UNUSED(scene), ViewLayer *view_layer, const View3D *v3d, uint *r_len)
 {
   struct ObjectsInModeParams params = {0};
   params.object_mode = OB_MODE_EDIT;
@@ -197,7 +198,8 @@ struct Object **BKE_view_layer_array_from_objects_in_edit_mode_unique_data_with_
   return BKE_view_layer_array_from_objects_in_mode_params(view_layer, v3d, r_len, &params);
 }
 
-struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(ViewLayer *view_layer,
+struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(const Scene *UNUSED(scene),
+                                                                      ViewLayer *view_layer,
                                                                       const View3D *v3d,
                                                                       uint *r_len,
                                                                       const eObjectMode mode)

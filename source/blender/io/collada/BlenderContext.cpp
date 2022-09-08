@@ -11,19 +11,20 @@
 
 #include "BKE_scene.h"
 
-bool bc_is_base_node(LinkNode *export_set, Object *ob, ViewLayer *view_layer)
+bool bc_is_base_node(LinkNode *export_set, Object *ob, const Scene *scene, ViewLayer *view_layer)
 {
-  Object *root = bc_get_highest_exported_ancestor_or_self(export_set, ob, view_layer);
+  Object *root = bc_get_highest_exported_ancestor_or_self(export_set, ob, scene, view_layer);
   return (root == ob);
 }
 
 Object *bc_get_highest_exported_ancestor_or_self(LinkNode *export_set,
                                                  Object *ob,
+                                                 const Scene *scene,
                                                  ViewLayer *view_layer)
 {
   Object *ancestor = ob;
   while (ob->parent) {
-    if (bc_is_in_Export_set(export_set, ob->parent, view_layer)) {
+    if (bc_is_in_Export_set(export_set, ob->parent, scene, view_layer)) {
       ancestor = ob->parent;
     }
     ob = ob->parent;

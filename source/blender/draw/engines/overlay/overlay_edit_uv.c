@@ -114,10 +114,10 @@ void OVERLAY_edit_uv_init(OVERLAY_Data *vedata)
   const bool show_modified_uvs = sima->flag & SI_DRAWSHADOW;
   const bool is_tiled_image = image && (image->source == IMA_SRC_TILED);
   const bool do_edges_only = (ts->uv_flag & UV_SYNC_SELECTION) ?
-                                  /* NOTE: Ignore #SCE_SELECT_EDGE because a single selected edge
-                                   * on the mesh may cause single UV vertices to be selected. */
-                                  false :
-                                  (ts->uv_selectmode == UV_SELECT_EDGE);
+                                 /* NOTE: Ignore #SCE_SELECT_EDGE because a single selected edge
+                                  * on the mesh may cause single UV vertices to be selected. */
+                                 false :
+                                 (ts->uv_selectmode == UV_SELECT_EDGE);
   const bool do_faces = ((sima->flag & SI_NO_DRAWFACES) == 0);
   const bool do_face_dots = (ts->uv_flag & UV_SYNC_SELECTION) ?
                                 (ts->selectmode & SCE_SELECT_FACE) != 0 :
@@ -408,7 +408,7 @@ void OVERLAY_edit_uv_cache_init(OVERLAY_Data *vedata)
       draw_ctx->obact->type == OB_MESH) {
     uint objects_len = 0;
     Object **objects = BKE_view_layer_array_from_objects_in_mode_unique_data(
-        draw_ctx->view_layer, NULL, &objects_len, draw_ctx->object_mode);
+        draw_ctx->scene, draw_ctx->view_layer, NULL, &objects_len, draw_ctx->object_mode);
     for (uint ob_index = 0; ob_index < objects_len; ob_index++) {
       Object *object_eval = DEG_get_evaluated_object(draw_ctx->depsgraph, objects[ob_index]);
       DRW_mesh_batch_cache_validate(object_eval, (Mesh *)object_eval->data);

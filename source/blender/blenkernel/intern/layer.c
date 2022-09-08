@@ -1444,7 +1444,9 @@ bool BKE_layer_collection_objects_select(ViewLayer *view_layer, LayerCollection 
   return changed;
 }
 
-bool BKE_layer_collection_has_selected_objects(ViewLayer *view_layer, LayerCollection *lc)
+bool BKE_layer_collection_has_selected_objects(const Scene *UNUSED(scene),
+                                               ViewLayer *view_layer,
+                                               LayerCollection *lc)
 {
   if (lc->collection->flag & COLLECTION_HIDE_SELECT) {
     return false;
@@ -1462,7 +1464,7 @@ bool BKE_layer_collection_has_selected_objects(ViewLayer *view_layer, LayerColle
   }
 
   LISTBASE_FOREACH (LayerCollection *, iter, &lc->layer_collections) {
-    if (BKE_layer_collection_has_selected_objects(view_layer, iter)) {
+    if (BKE_layer_collection_has_selected_objects(scene, view_layer, iter)) {
       return true;
     }
   }
