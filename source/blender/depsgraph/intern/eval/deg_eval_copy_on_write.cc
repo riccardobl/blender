@@ -456,7 +456,7 @@ void view_layer_update_orig_base_pointers(const ViewLayer *view_layer_orig,
     /* Happens when scene is only used for parameters or compositor/sequencer. */
     return;
   }
-  // TODO: BKE_view_layer_object_bases_get this should be fine, but check just in case.
+
   Base *base_orig = reinterpret_cast<Base *>(view_layer_orig->object_bases.first);
   LISTBASE_FOREACH (Base *, base_eval, &view_layer_eval->object_bases) {
     base_eval->base_orig = base_orig;

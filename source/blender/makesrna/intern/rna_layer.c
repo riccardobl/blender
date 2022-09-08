@@ -564,7 +564,6 @@ void RNA_def_view_layer(BlenderRNA *brna)
   prop = RNA_def_property(srna, "objects", PROP_COLLECTION, PROP_NONE);
   RNA_def_property_collection_sdna(prop, NULL, "object_bases", NULL);
   RNA_def_property_struct_type(prop, "Object");
-  // TODO: Use BKE_view_layer_object_bases_get?
   RNA_def_property_collection_funcs(
       prop, NULL, NULL, NULL, "rna_ViewLayer_objects_get", NULL, NULL, NULL, NULL);
   RNA_def_property_ui_text(prop, "Objects", "All the objects in this layer");

@@ -2468,7 +2468,6 @@ static void lib_link_window_scene_data_restore(wmWindow *win, Scene *scene, View
 
           /* Local-view can become invalid during undo/redo steps,
            * so we exit it when no could be found. */
-          // TODO: Use BKE_view_layer_object_bases_get here?
           for (base = view_layer->object_bases.first; base; base = base->next) {
             if (base->local_view_bits & v3d->local_view_uuid) {
               break;
