@@ -99,7 +99,9 @@ static bool WIDGETGROUP_empty_image_poll(const bContext *C, wmGizmoGroupType *UN
     return false;
   }
 
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;

@@ -3690,6 +3690,7 @@ static int duplicate_exec(bContext *C, wmOperator *op)
     ED_object_base_select(base, BA_DESELECT);
 
     /* new object will become active */
+    BKE_view_layer_ensure_sync(scene, view_layer);
     if (BKE_view_layer_active_base_get(view_layer, __func__) == base) {
       ob_new_active = ob_new;
     }

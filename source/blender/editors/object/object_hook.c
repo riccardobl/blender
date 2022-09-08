@@ -490,6 +490,7 @@ static Object *add_hook_object_new(
   Base *basedit;
   Object *ob;
   ob = BKE_object_add(bmain, scene, view_layer, OB_EMPTY, NULL);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *basact = BKE_view_layer_active_base_get(view_layer, __func__);
   BLI_assert(basact->object == ob);
   if (v3d && v3d->localvd) {

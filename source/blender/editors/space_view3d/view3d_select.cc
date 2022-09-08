@@ -1462,6 +1462,7 @@ static int object_select_menu_exec(bContext *C, wmOperator *op)
   View3D *v3d = CTX_wm_view3d(C);
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
 
   Base *basact = nullptr;
@@ -1658,6 +1659,7 @@ static int bone_select_menu_exec(bContext *C, wmOperator *op)
   View3D *v3d = CTX_wm_view3d(C);
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const Base *oldbasact = BKE_view_layer_active_base_get(view_layer, __func__);
 
   Base *basact = object_mouse_select_menu_data[name_index].base_ptr;
@@ -2167,6 +2169,7 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
     /* It's possible there are no hits (all objects contained bones). */
     if (hits > 0) {
       /* Only exclude active object when it is selected. */
+      BKE_view_layer_ensure_sync(scene, view_layer);
       Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
       if (base && (base->flag & BASE_SELECTED)) {
         const int select_id_active = base->object->runtime.select_id;
@@ -3449,7 +3452,8 @@ static bool do_mesh_box_select(ViewContext *vc,
   }
   if (ts->selectmode & SCE_SELECT_EDGE) {
     /* Does both use_zbuf and non-use_zbuf versions (need screen cos for both) */
-    struct BoxSelectUserData_ForMeshEdge cb_data {};
+    struct BoxSelectUserData_ForMeshEdge cb_data {
+    };
     cb_data.data = &data;
     cb_data.esel = use_zbuf ? esel : nullptr;
     cb_data.backbuf_offset = use_zbuf ? DRW_select_buffer_context_offset_for_object_elem(

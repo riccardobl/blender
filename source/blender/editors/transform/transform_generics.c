@@ -1085,8 +1085,8 @@ bool calculateCenterActive(TransInfo *t, bool select_only, float r_center[3])
   }
   else {
     /* object mode */
-    ViewLayer *view_layer = t->view_layer;
-    Base *base = BKE_view_layer_active_base_get(view_layer, __func__);
+  BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+    Base *base = BKE_view_layer_active_base_get(t->view_layer, __func__);
     if (base && ((!select_only) || ((base->flag & BASE_SELECTED) != 0))) {
       copy_v3_v3(r_center, base->object->obmat[3]);
       return true;

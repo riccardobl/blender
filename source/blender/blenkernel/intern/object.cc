@@ -2596,6 +2596,7 @@ Object **BKE_object_pose_array_get(const Scene *scene,
 Base **BKE_object_pose_base_array_get_ex(
     const Scene *scene, ViewLayer *view_layer, View3D *v3d, uint *r_bases_len, bool unique)
 {
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base_active = BKE_view_layer_active_base_get(view_layer, __func__);
   Object *ob_pose = base_active ? BKE_object_pose_armature_get(base_active->object) : nullptr;
   Base *base_pose = nullptr;

@@ -1718,7 +1718,9 @@ static void do_view3d_region_buttons(bContext *C, void *UNUSED(index), int event
 
 static bool view3d_panel_transform_poll(const bContext *C, PanelType *UNUSED(pt))
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   return (BKE_view_layer_active_base_get(view_layer, __func__) != NULL);
 }
 

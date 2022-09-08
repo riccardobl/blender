@@ -4961,6 +4961,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
       WM_event_add_notifier(C, NC_MATERIAL | ND_SHADING_LINKS, NULL);
     }
 
+    BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
     if (BKE_view_layer_active_base_get(vc.view_layer, __func__) != basact) {
       ED_object_base_activate(C, basact);
     }

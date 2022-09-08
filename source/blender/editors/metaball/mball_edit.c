@@ -464,7 +464,7 @@ static int select_random_metaelems_exec(bContext *C, wmOperator *op)
   const float randfac = RNA_float_get(op->ptr, "ratio");
   const int seed = WM_operator_properties_select_random_seed_increment_get(op);
 
-Scene *scene = CTX_data_scene(C);
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -905,7 +905,7 @@ bool ED_mball_select_pick(bContext *C, const int mval[2], const struct SelectPic
         break;
       }
     }
-
+    const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     MetaBall *mb = (MetaBall *)base->object->data;
     mb->lastelem = ml;
@@ -913,6 +913,7 @@ bool ED_mball_select_pick(bContext *C, const int mval[2], const struct SelectPic
     DEG_id_tag_update(&mb->id, ID_RECALC_SELECT);
     WM_event_add_notifier(C, NC_GEOM | ND_SELECT, mb);
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     if (BKE_view_layer_active_base_get(view_layer, __func__) != base) {
       ED_object_base_activate(C, base);
     }

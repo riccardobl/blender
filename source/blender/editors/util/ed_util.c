@@ -60,7 +60,7 @@ void ED_editors_init_for_undo(Main *bmain)
 {
   wmWindowManager *wm = bmain->wm.first;
   LISTBASE_FOREACH (wmWindow *, win, &wm->windows) {
-    const Scene *scene = WM_window_get_active_scene(win);
+    Scene *scene = WM_window_get_active_scene(win);
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
     BKE_view_layer_ensure_sync(scene, view_layer);
     Object *ob = BKE_view_layer_active_object_get(view_layer);
