@@ -50,7 +50,9 @@
 
 static PointerRNA rna_ViewLayer_active_layer_collection_get(PointerRNA *ptr)
 {
+  const Scene *scene = (const Scene *)ptr->owner_id;
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   LayerCollection *lc = BKE_view_layer_active_collection_get(view_layer, __func__);
   return rna_pointer_inherit_refine(ptr, &RNA_LayerCollection, lc);
 }
@@ -59,8 +61,10 @@ static void rna_ViewLayer_active_layer_collection_set(PointerRNA *ptr,
                                                       PointerRNA value,
                                                       struct ReportList *UNUSED(reports))
 {
+  const Scene *scene = (const Scene *)ptr->owner_id;
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
   LayerCollection *lc = (LayerCollection *)value.data;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   const int index = BKE_layer_collection_findindex(view_layer, lc);
   if (index != -1) {
     BKE_layer_collection_activate(view_layer, lc);
@@ -69,7 +73,9 @@ static void rna_ViewLayer_active_layer_collection_set(PointerRNA *ptr,
 
 static PointerRNA rna_LayerObjects_active_object_get(PointerRNA *ptr)
 {
+  const Scene *scene = (Scene *)ptr->owner_id;
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   return rna_pointer_inherit_refine(
       ptr, &RNA_Object, BKE_view_layer_active_object_get(view_layer));
 }
@@ -78,9 +84,11 @@ static void rna_LayerObjects_active_object_set(PointerRNA *ptr,
                                                PointerRNA value,
                                                struct ReportList *reports)
 {
+  const Scene *scene = (Scene *)ptr->owner_id;
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
   if (value.data) {
     Object *ob = value.data;
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Base *basact_test = BKE_view_layer_base_find(view_layer, ob);
     if (basact_test != NULL) {
       view_layer->basact = basact_test;
