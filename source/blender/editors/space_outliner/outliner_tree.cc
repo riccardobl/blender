@@ -1451,6 +1451,7 @@ static bool outliner_element_visible_get(const Scene *scene,
 
     if (exclude_filter & SO_FILTER_OB_STATE) {
       if (base == nullptr) {
+        BKE_view_layer_ensure_sync(scene, view_layer);
         base = BKE_view_layer_base_find(view_layer, ob);
 
         if (base == nullptr) {

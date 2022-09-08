@@ -164,6 +164,7 @@ static void do_outliner_item_mode_toggle_generic(bContext *C, TreeViewContext *t
   ED_undo_group_begin(C);
 
   if (ED_object_mode_set(C, OB_MODE_OBJECT)) {
+    BKE_view_layer_ensure_sync(tvc->scene, tvc->view_layer);
     Base *base_active = BKE_view_layer_base_find(tvc->view_layer, tvc->obact);
     if (base_active != base) {
       BKE_view_layer_base_deselect_all(tvc->scene, tvc->view_layer);
@@ -188,6 +189,7 @@ void outliner_item_mode_toggle(bContext *C,
 
   if ((tselem->type == TSE_SOME_ID) && (te->idcode == ID_OB)) {
     Object *ob = (Object *)tselem->id;
+    BKE_view_layer_ensure_sync(tvc->scene, tvc->view_layer);
     Base *base = BKE_view_layer_base_find(tvc->view_layer, ob);
 
     /* Hidden objects can be removed from the mode. */
@@ -908,11 +910,13 @@ static eOLDrawState tree_element_object_state_get(const TreeViewContext *tvc,
   return (tselem->id == (const ID *)tvc->obact) ? OL_DRAWSEL_NORMAL : OL_DRAWSEL_NONE;
 }
 
-static eOLDrawState tree_element_pose_state_get(const ViewLayer *view_layer,
+static eOLDrawState tree_element_pose_state_get(const Scene *scene,
+                                                const ViewLayer *view_layer,
                                                 const TreeStoreElem *tselem)
 {
   const Object *ob = (const Object *)tselem->id;
   /* This will just lookup in a cache, it will not change the arguments. */
+  BKE_view_layer_ensure_sync(scene, (ViewLayer *)view_layer);
   const Base *base = BKE_view_layer_base_find((ViewLayer *)view_layer, (Object *)ob);
   if (base == nullptr) {
     /* Armature not instantiated in current scene (e.g. inside an appended group). */
@@ -1128,7 +1132,7 @@ eOLDrawState tree_element_type_active_state_get(const bContext *C,
     case TSE_LINKED_PSYS:
       return OL_DRAWSEL_NONE;
     case TSE_POSE_BASE:
-      return tree_element_pose_state_get(tvc->view_layer, tselem);
+      return tree_element_pose_state_get(tvc->scene, tvc->view_layer, tselem);
     case TSE_POSE_CHANNEL:
       return tree_element_posechannel_state_get(tvc->ob_pose, te, tselem);
     case TSE_CONSTRAINT_BASE:
@@ -1418,6 +1422,7 @@ static void do_outliner_item_activate_tree_element(bContext *C,
     }
     else if ((te->idcode == ID_GR) && (space_outliner->outlinevis != SO_VIEW_LAYER)) {
       Collection *gr = (Collection *)tselem->id;
+      BKE_view_layer_ensure_sync(tvc->scene, tvc->view_layer);
 
       if (extend) {
         eObjectSelect_Mode sel = BA_SELECT;

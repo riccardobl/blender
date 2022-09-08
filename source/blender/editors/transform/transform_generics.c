@@ -1085,7 +1085,7 @@ bool calculateCenterActive(TransInfo *t, bool select_only, float r_center[3])
   }
   else {
     /* object mode */
-  BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+    BKE_view_layer_ensure_sync(t->scene, t->view_layer);
     Base *base = BKE_view_layer_active_base_get(t->view_layer, __func__);
     if (base && ((!select_only) || ((base->flag & BASE_SELECTED) != 0))) {
       copy_v3_v3(r_center, base->object->obmat[3]);
@@ -1465,6 +1465,7 @@ Object *transform_object_deform_pose_armature_get(const TransInfo *t, Object *ob
    * Lines below just check is also visible. */
   Object *ob_armature = BKE_modifiers_is_deformed_by_armature(ob);
   if (ob_armature && ob_armature->mode & OB_MODE_POSE) {
+    BKE_view_layer_ensure_sync(t->scene, t->view_layer);
     Base *base_arm = BKE_view_layer_base_find(t->view_layer, ob_armature);
     if (base_arm) {
       View3D *v3d = t->view;

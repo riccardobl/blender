@@ -2295,6 +2295,7 @@ Object *BKE_object_add_from(
   Object *ob = object_add_common(bmain, scene, view_layer, type, name);
   BKE_collection_object_add_from(bmain, scene, ob_src, ob);
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
   BKE_view_layer_base_select_and_set_active(view_layer, base);
 
@@ -2323,6 +2324,7 @@ Object *BKE_object_add_for_data(Main *bmain,
   LayerCollection *layer_collection = BKE_layer_collection_get_active(view_layer);
   BKE_collection_object_add(bmain, layer_collection->collection, ob);
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
   BKE_view_layer_base_select_and_set_active(view_layer, base);
 
@@ -2538,10 +2540,14 @@ Object *BKE_object_pose_armature_get(Object *ob)
   return nullptr;
 }
 
-Object *BKE_object_pose_armature_get_visible(Object *ob, ViewLayer *view_layer, View3D *v3d)
+Object *BKE_object_pose_armature_get_visible(Object *ob,
+                                             const Scene *scene,
+                                             ViewLayer *view_layer,
+                                             View3D *v3d)
 {
   Object *ob_armature = BKE_object_pose_armature_get(ob);
   if (ob_armature) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Base *base = BKE_view_layer_base_find(view_layer, ob_armature);
     if (base) {
       if (BASE_VISIBLE(v3d, base)) {

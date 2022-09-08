@@ -64,6 +64,7 @@ ListBase TreeDisplayViewLayer::buildTree(const TreeSourceData &source_data)
 {
   ListBase tree = {nullptr};
   Scene *scene = source_data.scene;
+  scene_ = scene;
   show_objects_ = !(space_outliner_.filter & SO_FILTER_NO_OBJECT);
 
   for (auto *view_layer : ListBaseWrapper<ViewLayer>(scene->view_layers)) {
@@ -167,6 +168,7 @@ void TreeDisplayViewLayer::add_layer_collection_objects(ListBase &tree,
                                                         LayerCollection &lc,
                                                         TreeElement &ten)
 {
+  BKE_view_layer_ensure_sync(scene_, view_layer_);
   for (CollectionObject *cob : List<CollectionObject>(lc.collection->gobject)) {
     Base *base = BKE_view_layer_base_find(view_layer_, cob->ob);
     TreeElement *te_object = outliner_add_element(

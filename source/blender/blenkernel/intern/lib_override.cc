@@ -1273,6 +1273,8 @@ static void lib_override_library_create_post_process(Main *bmain,
     }
   }
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
+
   /* We need to ensure all new overrides of objects are properly instantiated. */
   Collection *default_instantiating_collection = residual_storage;
   LISTBASE_FOREACH (Object *, ob, &bmain->objects) {

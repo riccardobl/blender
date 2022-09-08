@@ -495,6 +495,7 @@ static LayerCollection *outliner_active_layer_collection(bContext *C)
 
 static int collection_objects_select_exec(bContext *C, wmOperator *op)
 {
+  Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   LayerCollection *layer_collection = outliner_active_layer_collection(C);
   bool deselect = STREQ(op->idname, "OUTLINER_OT_collection_objects_deselect");
@@ -503,9 +504,8 @@ static int collection_objects_select_exec(bContext *C, wmOperator *op)
     return OPERATOR_CANCELLED;
   }
 
-  BKE_layer_collection_objects_select(view_layer, layer_collection, deselect);
+  BKE_layer_collection_objects_select(scene, view_layer, layer_collection, deselect);
 
-  Scene *scene = CTX_data_scene(C);
   DEG_id_tag_update(&scene->id, ID_RECALC_SELECT);
   WM_main_add_notifier(NC_SCENE | ND_OB_SELECT, scene);
   ED_outliner_select_sync_from_object_tag(C);
@@ -1198,7 +1198,7 @@ static int collection_visibility_exec(bContext *C, wmOperator *op)
   GSET_ITER (collections_to_edit_iter, data.collections_to_edit) {
     LayerCollection *layer_collection = static_cast<LayerCollection *>(
         BLI_gsetIterator_getKey(&collections_to_edit_iter));
-    BKE_layer_collection_set_visible(view_layer, layer_collection, show, is_inside);
+    BKE_layer_collection_set_visible(scene, view_layer, layer_collection, show, is_inside);
   }
   BLI_gset_free(data.collections_to_edit, nullptr);
 
@@ -1503,6 +1503,7 @@ static TreeTraversalAction outliner_hide_collect_data_to_edit(TreeElement *te, v
   }
   else if ((tselem->type == TSE_SOME_ID) && (te->idcode == ID_OB)) {
     Object *ob = (Object *)tselem->id;
+    BKE_view_layer_ensure_sync(data->scene, data->view_layer);
     Base *base = BKE_view_layer_base_find(data->view_layer, ob);
     BLI_gset_add(data->bases_to_edit, base);
   }
@@ -1533,7 +1534,7 @@ static int outliner_hide_exec(bContext *C, wmOperator *UNUSED(op))
   GSET_ITER (collections_to_edit_iter, data.collections_to_edit) {
     LayerCollection *layer_collection = static_cast<LayerCollection *>(
         BLI_gsetIterator_getKey(&collections_to_edit_iter));
-    BKE_layer_collection_set_visible(view_layer, layer_collection, false, false);
+    BKE_layer_collection_set_visible(scene, view_layer, layer_collection, false, false);
   }
   BLI_gset_free(data.collections_to_edit, nullptr);
 

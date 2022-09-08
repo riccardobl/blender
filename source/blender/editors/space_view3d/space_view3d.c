@@ -751,7 +751,7 @@ static void view3d_ob_drop_copy_external_asset(bContext *UNUSED(C), wmDrag *drag
   WM_event_add_notifier(C, NC_SCENE | ND_LAYER_CONTENT, scene);
 
   RNA_int_set(drop->ptr, "session_uuid", id->session_uuid);
-
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, (Object *)id);
   if (base != NULL) {
     BKE_view_layer_base_select_and_set_active(view_layer, base);
@@ -804,6 +804,7 @@ static void view3d_collection_drop_copy_external_asset(bContext *UNUSED(C),
 
   /* Make an object active, just use the first one in the collection. */
   CollectionObject *cobject = collection->gobject.first;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = cobject ? BKE_view_layer_base_find(view_layer, cobject->ob) : NULL;
   if (base) {
     BLI_assert((base->flag & BASE_SELECTABLE) && (base->flag & BASE_ENABLED_VIEWPORT));

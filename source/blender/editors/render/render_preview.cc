@@ -827,6 +827,7 @@ static Scene *object_preview_scene_create(const struct ObjectPreviewData *previe
   scene->r.ysch = preview_data->sizey;
   scene->r.size = 100;
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *preview_base = BKE_view_layer_base_find(view_layer, preview_data->object);
   /* For 'view selected' below. */
   preview_base->flag |= BASE_SELECTED;

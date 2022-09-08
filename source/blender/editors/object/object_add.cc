@@ -2538,6 +2538,7 @@ static void make_object_duplilist_real(bContext *C,
     }
 
     BKE_collection_object_add_from(bmain, scene, base->object, ob_dst);
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Base *base_dst = BKE_view_layer_base_find(view_layer, ob_dst);
     BLI_assert(base_dst != nullptr);
 
@@ -2835,6 +2836,7 @@ static Base *duplibase_for_convert(
   DEG_id_tag_update(&obn->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY | ID_RECALC_ANIMATION);
   BKE_collection_object_add_from(bmain, scene, ob, obn);
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *basen = BKE_view_layer_base_find(view_layer, obn);
   ED_object_base_select(basen, BA_SELECT);
   ED_object_base_select(base, BA_DESELECT);
@@ -3579,7 +3581,7 @@ static Base *object_add_duplicate_internal(Main *bmain,
       *r_ob_new = obn;
     }
     DEG_id_tag_update(&obn->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY);
-
+    BKE_view_layer_ensure_sync(scene, view_layer);
     base = BKE_view_layer_base_find(view_layer, ob);
     if ((base != nullptr) && (base->flag & BASE_VISIBLE_DEPSGRAPH)) {
       BKE_collection_object_add_from(bmain, scene, ob, obn);
@@ -3589,6 +3591,7 @@ static Base *object_add_duplicate_internal(Main *bmain,
       BKE_collection_object_add(bmain, layer_collection->collection, obn);
     }
 
+    BKE_view_layer_ensure_sync(scene, view_layer);
     basen = BKE_view_layer_base_find(view_layer, obn);
     if (base != nullptr && basen != nullptr) {
       basen->local_view_bits = base->local_view_bits;
@@ -3709,6 +3712,7 @@ static int duplicate_exec(bContext *C, wmOperator *op)
   for (const auto &item : source_bases_new_objects) {
     Object *ob_new = item.second;
     Base *base_source = item.first;
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Base *base_new = BKE_view_layer_base_find(view_layer, ob_new);
     if (base_new == nullptr) {
       continue;

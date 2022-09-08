@@ -201,6 +201,7 @@ static void editselect_buf_cache_init(ViewContext *vc, short select_mode)
   else {
     /* Use for paint modes, currently only a single object at a time. */
     if (vc->obact) {
+      BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
       Base *base = BKE_view_layer_base_find(vc->view_layer, vc->obact);
       DRW_select_buffer_context_create(&base, 1, select_mode);
     }
