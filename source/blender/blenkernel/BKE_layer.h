@@ -196,10 +196,12 @@ bool BKE_scene_has_object(struct Scene *scene, struct Object *ob);
  * It also select the objects that are in nested collections.
  * \note Recursive.
  */
-bool BKE_layer_collection_objects_select(struct ViewLayer *view_layer,
+bool BKE_layer_collection_objects_select(const struct Scene *scene,
+                                         struct ViewLayer *view_layer,
                                          struct LayerCollection *lc,
                                          bool deselect);
-bool BKE_layer_collection_has_selected_objects(struct ViewLayer *view_layer,
+bool BKE_layer_collection_has_selected_objects(const struct Scene *scene,
+                                               struct ViewLayer *view_layer,
                                                struct LayerCollection *lc);
 bool BKE_layer_collection_has_layer_collection(struct LayerCollection *lc_parent,
                                                struct LayerCollection *lc_child);
@@ -240,7 +242,8 @@ void BKE_layer_collection_isolate_local(const struct Scene *scene,
  * Don't change the collection children enable/disable state,
  * but it may change it for the collection itself.
  */
-void BKE_layer_collection_set_visible(struct ViewLayer *view_layer,
+void BKE_layer_collection_set_visible(const struct Scene *scene,
+                                      struct ViewLayer *view_layer,
                                       struct LayerCollection *lc,
                                       bool visible,
                                       bool hierarchy);

@@ -358,6 +358,7 @@ BMVert *EDBM_vert_find_nearest_ex(ViewContext *vc,
 
 BMVert *EDBM_vert_find_nearest(ViewContext *vc, float *dist_px_manhattan_p)
 {
+  BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
   Base *base = BKE_view_layer_base_find(vc->view_layer, vc->obact);
   return EDBM_vert_find_nearest_ex(vc, dist_px_manhattan_p, false, false, &base, 1, NULL);
 }
@@ -612,6 +613,7 @@ BMEdge *EDBM_edge_find_nearest_ex(ViewContext *vc,
 
 BMEdge *EDBM_edge_find_nearest(ViewContext *vc, float *dist_px_manhattan_p)
 {
+  BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
   Base *base = BKE_view_layer_base_find(vc->view_layer, vc->obact);
   return EDBM_edge_find_nearest_ex(
       vc, dist_px_manhattan_p, NULL, false, false, NULL, &base, 1, NULL);
@@ -831,6 +833,7 @@ BMFace *EDBM_face_find_nearest_ex(ViewContext *vc,
 
 BMFace *EDBM_face_find_nearest(ViewContext *vc, float *dist_px_manhattan_p)
 {
+  BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
   Base *base = BKE_view_layer_base_find(vc->view_layer, vc->obact);
   return EDBM_face_find_nearest_ex(
       vc, dist_px_manhattan_p, NULL, false, false, false, NULL, &base, 1, NULL);

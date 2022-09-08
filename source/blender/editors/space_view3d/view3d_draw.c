@@ -2122,6 +2122,7 @@ bool ED_view3d_clipping_test(const RegionView3D *rv3d, const float co[3], const 
  * \note Only use in object mode.
  */
 static void validate_object_select_id(struct Depsgraph *depsgraph,
+                                      const Scene *scene,
                                       ViewLayer *view_layer,
                                       ARegion *region,
                                       View3D *v3d,
@@ -2154,6 +2155,7 @@ static void validate_object_select_id(struct Depsgraph *depsgraph,
   }
 
   if (obact_eval && ((obact_eval->base_flag & BASE_VISIBLE_DEPSGRAPH) != 0)) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     Base *base = BKE_view_layer_base_find(view_layer, obact);
     DRW_select_buffer_context_create(&base, 1, -1);
   }
@@ -2189,7 +2191,8 @@ static void view3d_opengl_read_Z_pixels(GPUViewport *viewport, rcti *rect, void 
 
 void ED_view3d_select_id_validate(ViewContext *vc)
 {
-  validate_object_select_id(vc->depsgraph, vc->view_layer, vc->region, vc->v3d, vc->obact);
+  validate_object_select_id(
+      vc->depsgraph, vc->scene, vc->view_layer, vc->region, vc->v3d, vc->obact);
 }
 
 int ED_view3d_backbuf_sample_size_clamp(ARegion *region, const float dist)

@@ -867,6 +867,7 @@ static bool select_grouped_collection(bContext *C, Object *ob)
 
 static bool select_grouped_object_hooks(bContext *C, Object *ob)
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -879,6 +880,7 @@ static bool select_grouped_object_hooks(bContext *C, Object *ob)
     if (md->type == eModifierType_Hook) {
       hmd = (HookModifierData *)md;
       if (hmd->object) {
+        BKE_view_layer_ensure_sync(scene, view_layer);
         base = BKE_view_layer_base_find(view_layer, hmd->object);
         if (base && ((base->flag & BASE_SELECTED) == 0) && (BASE_SELECTABLE(v3d, base))) {
           ED_object_base_select(base, BA_SELECT);
@@ -1250,6 +1252,7 @@ static int object_select_mirror_exec(bContext *C, wmOperator *op)
     if (!STREQ(name_flip, primbase->object->id.name + 2)) {
       Object *ob = (Object *)BKE_libblock_find_name(bmain, ID_OB, name_flip);
       if (ob) {
+        BKE_view_layer_ensure_sync(scene, view_layer);
         Base *secbase = BKE_view_layer_base_find(view_layer, ob);
 
         if (secbase) {

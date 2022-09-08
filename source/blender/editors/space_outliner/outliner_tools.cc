@@ -783,8 +783,10 @@ static void object_select_fn(bContext *C,
                              TreeStoreElem *tselem,
                              void *UNUSED(user_data))
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob = (Object *)tselem->id;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base) {
@@ -821,8 +823,10 @@ static void object_deselect_fn(bContext *C,
                                TreeStoreElem *tselem,
                                void *UNUSED(user_data))
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob = (Object *)tselem->id;
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base) {
@@ -2168,6 +2172,7 @@ static void object_batch_delete_hierarchy_fn(bContext *C,
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *obedit = CTX_data_edit_object(C);
 
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base) {

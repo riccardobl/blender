@@ -1508,6 +1508,7 @@ static bool jump_to_target_ptr(bContext *C, PointerRNA ptr, const bool poll)
   Base *base = nullptr;
   const short id_type = GS(ptr.owner_id->name);
   if (id_type == ID_OB) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     base = BKE_view_layer_base_find(view_layer, (Object *)ptr.owner_id);
   }
   else if (OB_DATA_SUPPORT_ID(id_type)) {

@@ -453,6 +453,7 @@ using namespace blender::ed::outliner;
 Base *ED_outliner_give_base_under_cursor(bContext *C, const int mval[2])
 {
   ARegion *region = CTX_wm_region(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   SpaceOutliner *space_outliner = CTX_wm_space_outliner(C);
   TreeElement *te;
@@ -466,6 +467,7 @@ Base *ED_outliner_give_base_under_cursor(bContext *C, const int mval[2])
     TreeStoreElem *tselem = TREESTORE(te);
     if ((tselem->type == TSE_SOME_ID) && (te->idcode == ID_OB)) {
       Object *ob = (Object *)tselem->id;
+      BKE_view_layer_ensure_sync(scene, view_layer);
       base = (te->directdata) ? (Base *)te->directdata : BKE_view_layer_base_find(view_layer, ob);
     }
   }

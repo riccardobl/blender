@@ -285,6 +285,7 @@ void BKE_object_matrix_local_get(struct Object *ob, float r_mat[4][4]);
 bool BKE_object_pose_context_check(const struct Object *ob);
 struct Object *BKE_object_pose_armature_get(struct Object *ob);
 struct Object *BKE_object_pose_armature_get_visible(struct Object *ob,
+                                                    const struct Scene *scene,
                                                     struct ViewLayer *view_layer,
                                                     struct View3D *v3d);
 

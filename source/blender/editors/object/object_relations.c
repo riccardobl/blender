@@ -2073,6 +2073,7 @@ static void tag_localizable_objects(bContext *C, const int mode)
  * otherwise they're lost on reload, see T40595.
  */
 static bool make_local_all__instance_indirect_unused(Main *bmain,
+                                                     const Scene *scene,
                                                      ViewLayer *view_layer,
                                                      Collection *collection)
 {
@@ -2086,6 +2087,7 @@ static bool make_local_all__instance_indirect_unused(Main *bmain,
       id_us_plus(&ob->id);
 
       BKE_collection_object_add(bmain, collection, ob);
+      BKE_view_layer_ensure_sync(scene, view_layer);
       base = BKE_view_layer_base_find(view_layer, ob);
       ED_object_base_select(base, BA_SELECT);
       DEG_id_tag_update(&ob->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY | ID_RECALC_ANIMATION);
@@ -2162,7 +2164,7 @@ static int make_local_exec(bContext *C, wmOperator *op)
     /* De-select so the user can differentiate newly instanced from existing objects. */
     BKE_view_layer_base_deselect_all(scene, view_layer);
 
-    if (make_local_all__instance_indirect_unused(bmain, view_layer, collection)) {
+    if (make_local_all__instance_indirect_unused(bmain, scene, view_layer, collection)) {
       BKE_report(op->reports,
                  RPT_INFO,
                  "Orphan library objects added to the current scene to avoid loss");
