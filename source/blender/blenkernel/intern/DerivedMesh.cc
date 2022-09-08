@@ -1759,7 +1759,7 @@ static void object_get_datamask(const Depsgraph *depsgraph,
     return;
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *actob = BKE_view_layer_active_object_get(view_layer);
   if (actob) {
     actob = DEG_get_original_object(actob);

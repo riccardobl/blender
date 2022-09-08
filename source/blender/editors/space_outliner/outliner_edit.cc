@@ -1267,7 +1267,7 @@ static TreeElement *outliner_show_active_get_element(bContext *C,
 {
   TreeElement *te;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (!obact) {

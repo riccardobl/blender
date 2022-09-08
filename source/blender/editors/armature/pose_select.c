@@ -159,7 +159,7 @@ bool ED_armature_pose_select_pick_bone(const Scene *scene,
   }
 
   if (found) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Object *ob_act = BKE_view_layer_active_object_get(view_layer);
     BLI_assert(BKE_view_layer_edit_object_get(view_layer) == NULL);
 
@@ -274,7 +274,7 @@ void ED_armature_pose_select_in_wpaint_mode(const Scene *scene,
                                             Base *base_select)
 {
   BLI_assert(base_select && (base_select->object->type == OB_ARMATURE));
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
   BLI_assert(ob_active && (ob_active->mode & OB_MODE_ALL_WEIGHT_PAINT));
 

@@ -62,7 +62,7 @@ void ED_editors_init_for_undo(Main *bmain)
   LISTBASE_FOREACH (wmWindow *, win, &wm->windows) {
     Scene *scene = WM_window_get_active_scene(win);
     ViewLayer *view_layer = WM_window_get_active_view_layer(win);
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Object *ob = BKE_view_layer_active_object_get(view_layer);
     if (ob && (ob->mode & OB_MODE_TEXTURE_PAINT)) {
       BKE_texpaint_slots_refresh_object(scene, ob);

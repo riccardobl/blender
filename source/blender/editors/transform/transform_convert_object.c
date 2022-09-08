@@ -293,7 +293,7 @@ static void ObjectToTransData(TransInfo *t, TransData *td, Object *ob)
 
 static void trans_object_base_deps_flag_prepare(const Scene *scene, ViewLayer *view_layer)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
@@ -330,7 +330,7 @@ static void trans_object_base_deps_flag_finish(const TransInfo *t,
 {
 
   if ((t->options & CTX_OBMODE_XFORM_OBDATA) == 0) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       if (base->object->id.tag & LIB_TAG_DOIT) {
         base->flag_legacy |= BA_SNAP_FIX_DEPS_FIASCO;
@@ -362,7 +362,7 @@ static void set_trans_object_base_flags(TransInfo *t)
   /* Clear all flags we need. It will be used to detect dependencies. */
   trans_object_base_deps_flag_prepare(scene, view_layer);
   /* Traverse all bases and set all possible flags. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->flag_legacy &= ~(BA_WAS_SEL | BA_TRANSFORM_LOCKED_IN_PLACE);
     if (BASE_SELECTED_EDITABLE(v3d, base)) {
@@ -474,7 +474,7 @@ static void clear_trans_object_base_flags(TransInfo *t)
   Scene *scene = t->scene;
   ViewLayer *view_layer = t->view_layer;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->flag_legacy & BA_WAS_SEL) {
       ED_object_base_select(base, BA_SELECT);
@@ -569,7 +569,7 @@ static void createTransObject(bContext *C, TransInfo *t)
     ViewLayer *view_layer = t->view_layer;
     View3D *v3d = t->view;
 
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
 
@@ -603,7 +603,7 @@ static void createTransObject(bContext *C, TransInfo *t)
     ViewLayer *view_layer = t->view_layer;
     View3D *v3d = t->view;
 
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
 
@@ -652,7 +652,7 @@ static void createTransObject(bContext *C, TransInfo *t)
     Scene *scene = t->scene;
     ViewLayer *view_layer = t->view_layer;
 
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
       if (ob->parent != NULL) {
@@ -793,7 +793,7 @@ static void autokeyframe_object(
       }
       else if (ELEM(tmode, TFM_ROTATION, TFM_TRACKBALL)) {
         if (scene->toolsettings->transform_pivot_point == V3D_AROUND_ACTIVE) {
-          BKE_view_layer_ensure_sync(scene, view_layer);
+          BKE_view_layer_synced_ensure(scene, view_layer);
           if (ob != BKE_view_layer_active_object_get(view_layer)) {
             do_loc = true;
           }
@@ -808,7 +808,7 @@ static void autokeyframe_object(
       }
       else if (tmode == TFM_RESIZE) {
         if (scene->toolsettings->transform_pivot_point == V3D_AROUND_ACTIVE) {
-          BKE_view_layer_ensure_sync(scene, view_layer);
+          BKE_view_layer_synced_ensure(scene, view_layer);
           if (ob != BKE_view_layer_active_object_get(view_layer)) {
             do_loc = true;
           }

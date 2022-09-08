@@ -371,7 +371,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
     data_.object_type = _object_type; \
     data_.view_layer = _view_layer; \
     data_.v3d = _v3d; \
-    BKE_view_layer_ensure_sync(_scene, _view_layer); \
+    BKE_view_layer_synced_ensure(_scene, _view_layer); \
     data_.base_active = BKE_view_layer_active_base_get(_view_layer); \
     ITER_BEGIN (BKE_view_layer_bases_in_mode_iterator_begin, \
                 BKE_view_layer_bases_in_mode_iterator_next, \
@@ -422,7 +422,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
     struct ObjectsVisibleIteratorData data_ = {NULL}; \
     data_.view_layer = _view_layer; \
     data_.v3d = _v3d; \
-    BKE_view_layer_ensure_sync(_scene, _view_layer); \
+    BKE_view_layer_synced_ensure(_scene, _view_layer); \
     ITER_BEGIN (BKE_view_layer_visible_bases_iterator_begin, \
                 BKE_view_layer_visible_bases_iterator_next, \
                 BKE_view_layer_visible_bases_iterator_end, \
@@ -439,7 +439,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
   { \
     Object *_instance; \
     Base *_base; \
-    BKE_view_layer_ensure_sync(scene, view_layer); \
+    BKE_view_layer_synced_ensure(scene, view_layer); \
     for (_base = (Base *)BKE_view_layer_object_bases_get(view_layer)->first; _base; \
          _base = _base->next) { \
       _instance = _base->object;
@@ -582,11 +582,8 @@ struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer);
 
 struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer);
 
-void BKE_view_layer_tag_out_of_sync(struct ViewLayer *view_layer);
-void BKE_view_layer_ensure_sync(const struct Scene *scene, struct ViewLayer *view_layer);
-// This should not exist in the final solution.
-const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
-                                                             const char *name);
+void BKE_view_layer_need_resync_tag(struct ViewLayer *view_layer);
+void BKE_view_layer_synced_ensure(const struct Scene *scene, struct ViewLayer *view_layer);
 
 struct ViewLayerAOV *BKE_view_layer_add_aov(struct ViewLayer *view_layer);
 void BKE_view_layer_remove_aov(struct ViewLayer *view_layer, struct ViewLayerAOV *aov);

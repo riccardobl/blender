@@ -448,7 +448,7 @@ Paint *BKE_paint_get_active(Scene *sce, ViewLayer *view_layer)
 {
   if (sce && view_layer) {
     ToolSettings *ts = sce->toolsettings;
-    BKE_view_layer_ensure_sync(sce, view_layer);
+    BKE_view_layer_synced_ensure(sce, view_layer);
     Object *actob = BKE_view_layer_active_object_get(view_layer);
 
     if (actob) {
@@ -493,7 +493,7 @@ Paint *BKE_paint_get_active_from_context(const bContext *C)
 
   if (sce && view_layer) {
     ToolSettings *ts = sce->toolsettings;
-    BKE_view_layer_ensure_sync(sce, view_layer);
+    BKE_view_layer_synced_ensure(sce, view_layer);
     Object *obact = BKE_view_layer_active_object_get(view_layer);
 
     if ((sima = CTX_wm_space_image(C)) != nullptr) {
@@ -524,7 +524,7 @@ ePaintMode BKE_paintmode_get_active_from_context(const bContext *C)
   SpaceImage *sima;
 
   if (sce && view_layer) {
-    BKE_view_layer_ensure_sync(sce, view_layer);
+    BKE_view_layer_synced_ensure(sce, view_layer);
     Object *obact = BKE_view_layer_active_object_get(view_layer);
 
     if ((sima = CTX_wm_space_image(C)) != nullptr) {

@@ -1451,7 +1451,7 @@ static bool outliner_element_visible_get(const Scene *scene,
 
     if (exclude_filter & SO_FILTER_OB_STATE) {
       if (base == nullptr) {
-        BKE_view_layer_ensure_sync(scene, view_layer);
+        BKE_view_layer_synced_ensure(scene, view_layer);
         base = BKE_view_layer_base_find(view_layer, ob);
 
         if (base == nullptr) {
@@ -1477,7 +1477,7 @@ static bool outliner_element_visible_get(const Scene *scene,
       }
       else {
         BLI_assert(exclude_filter & SO_FILTER_OB_STATE_ACTIVE);
-        BKE_view_layer_ensure_sync(scene, view_layer);
+        BKE_view_layer_synced_ensure(scene, view_layer);
         if (base != BKE_view_layer_active_base_get(view_layer)) {
           is_visible = false;
         }

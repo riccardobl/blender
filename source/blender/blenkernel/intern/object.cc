@@ -2280,7 +2280,7 @@ Object *BKE_object_add(
 
   /* NOTE: There is no way to be sure that #BKE_collection_viewlayer_object_add will actually
    * manage to find a valid collection in given `view_layer` to add the new object to. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
   if (base != nullptr) {
     BKE_view_layer_base_select_and_set_active(view_layer, base);
@@ -2295,7 +2295,7 @@ Object *BKE_object_add_from(
   Object *ob = object_add_common(bmain, scene, view_layer, type, name);
   BKE_collection_object_add_from(bmain, scene, ob_src, ob);
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
   BKE_view_layer_base_select_and_set_active(view_layer, base);
 
@@ -2324,7 +2324,7 @@ Object *BKE_object_add_for_data(Main *bmain,
   LayerCollection *layer_collection = BKE_layer_collection_get_active(view_layer);
   BKE_collection_object_add(bmain, layer_collection->collection, ob);
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
   BKE_view_layer_base_select_and_set_active(view_layer, base);
 
@@ -2547,7 +2547,7 @@ Object *BKE_object_pose_armature_get_visible(Object *ob,
 {
   Object *ob_armature = BKE_object_pose_armature_get(ob);
   if (ob_armature) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Base *base = BKE_view_layer_base_find(view_layer, ob_armature);
     if (base) {
       if (BASE_VISIBLE(v3d, base)) {
@@ -2561,7 +2561,7 @@ Object *BKE_object_pose_armature_get_visible(Object *ob,
 Object **BKE_object_pose_array_get_ex(
     const Scene *scene, ViewLayer *view_layer, View3D *v3d, uint *r_objects_len, bool unique)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
   Object *ob_pose = BKE_object_pose_armature_get(ob_active);
   Object **objects = nullptr;
@@ -2602,7 +2602,7 @@ Object **BKE_object_pose_array_get(const Scene *scene,
 Base **BKE_object_pose_base_array_get_ex(
     const Scene *scene, ViewLayer *view_layer, View3D *v3d, uint *r_bases_len, bool unique)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base_active = BKE_view_layer_active_base_get(view_layer);
   Object *ob_pose = base_active ? BKE_object_pose_armature_get(base_active->object) : nullptr;
   Base *base_pose = nullptr;
@@ -5168,7 +5168,7 @@ LinkNode *BKE_object_relational_superset(const Scene *scene,
   LinkNode *links = nullptr;
 
   /* Remove markers from all objects */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }

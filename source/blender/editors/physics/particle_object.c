@@ -119,7 +119,7 @@ static int particle_system_remove_exec(bContext *C, wmOperator *UNUSED(op))
    */
   if (mode_orig & OB_MODE_PARTICLE_EDIT) {
     if ((ob->mode & OB_MODE_PARTICLE_EDIT) == 0) {
-      BKE_view_layer_ensure_sync(scene, view_layer);
+      BKE_view_layer_synced_ensure(scene, view_layer);
       if (BKE_view_layer_active_object_get(view_layer) == ob) {
         WM_event_add_notifier(C, NC_SCENE | ND_MODE | NS_MODE_OBJECT, NULL);
       }

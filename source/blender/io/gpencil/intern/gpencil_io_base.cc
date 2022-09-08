@@ -135,7 +135,7 @@ void GpencilIO::create_object_list()
   copy_v3_v3(camera_z_axis, rv3d_->viewinv[2]);
   ob_list_.clear();
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *object = base->object;
 

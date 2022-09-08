@@ -215,30 +215,23 @@ struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(const Scen
   return BKE_view_layer_array_from_objects_in_mode_params(scene, view_layer, v3d, r_len, &params);
 }
 
-struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer)
+ListBase *BKE_view_layer_object_bases_get(ViewLayer *view_layer)
 {
   BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, "Object Bases out of sync.");
   return &view_layer->object_bases;
 }
 
-struct Base *BKE_view_layer_active_base_get(struct ViewLayer *view_layer)
+Base *BKE_view_layer_active_base_get(ViewLayer *view_layer)
 {
   BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, "Active Base out of sync.");
   return view_layer->basact;
 }
 
-struct LayerCollection *BKE_view_layer_active_collection_get(struct ViewLayer *view_layer)
+LayerCollection *BKE_view_layer_active_collection_get(ViewLayer *view_layer)
 {
   BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
                  "Active Collection out of sync.");
   return view_layer->active_collection;
-}
-
-const struct ListBase *BKE_view_layer_object_bases_get_const(const struct ViewLayer *view_layer,
-                                                             const char *name)
-{
-  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, name);
-  return &view_layer->object_bases;
 }
 
 /** \} */
@@ -279,7 +272,7 @@ Object *BKE_view_layer_non_active_selected_object(const struct Scene *scene,
                                                   struct ViewLayer *view_layer,
                                                   const struct View3D *v3d)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
   Object *ob_result = NULL;
   FOREACH_SELECTED_OBJECT_BEGIN (view_layer, v3d, ob_iter) {

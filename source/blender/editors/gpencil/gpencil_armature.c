@@ -538,7 +538,7 @@ static bool gpencil_generate_weights_poll(bContext *C)
   }
 
   /* need some armature in the view layer */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->object->type == OB_ARMATURE) {
       return true;
@@ -570,7 +570,7 @@ static int gpencil_generate_weights_exec(bContext *C, wmOperator *op)
   /* get armature */
   const int arm_idx = RNA_enum_get(op->ptr, "armature");
   if (arm_idx > 0) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Base *base = BLI_findlink(BKE_view_layer_object_bases_get(view_layer), arm_idx - 1);
     ob_arm = base->object;
   }
@@ -629,7 +629,7 @@ static const EnumPropertyItem *gpencil_armatures_enum_itemf(bContext *C,
   RNA_enum_item_add(&item, &totitem, &item_tmp);
   i++;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *ob = base->object;
     if (ob->type == OB_ARMATURE) {

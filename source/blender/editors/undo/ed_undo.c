@@ -436,7 +436,7 @@ bool ED_undo_is_memfile_compatible(const bContext *C)
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   if (view_layer != NULL) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Object *obact = BKE_view_layer_active_object_get(view_layer);
     if (obact != NULL) {
       if (obact->mode & OB_MODE_EDIT) {
@@ -452,7 +452,7 @@ bool ED_undo_is_legacy_compatible_for_property(struct bContext *C, ID *id)
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   if (view_layer != NULL) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Object *obact = BKE_view_layer_active_object_get(view_layer);
     if (obact != NULL) {
       if (obact->mode & OB_MODE_ALL_PAINT) {
@@ -804,7 +804,7 @@ void ED_OT_undo_history(wmOperatorType *ot)
 void ED_undo_object_set_active_or_warn(
     Scene *scene, ViewLayer *view_layer, Object *ob, const char *info, CLG_LogRef *log)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob_prev = BKE_view_layer_active_object_get(view_layer);
   if (ob_prev != ob) {
     Base *base = BKE_view_layer_base_find(view_layer, ob);
@@ -869,7 +869,7 @@ static int undo_editmode_objects_from_view_layer_prepare(const Scene *scene,
                                                          Object *obact)
 {
   const short object_type = obact->type;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   LISTBASE_FOREACH (Base *, base, object_bases) {
     Object *ob = base->object;
@@ -897,7 +897,7 @@ Object **ED_undo_editmode_objects_from_view_layer(const Scene *scene,
                                                   ViewLayer *view_layer,
                                                   uint *r_len)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *baseact = BKE_view_layer_active_base_get(view_layer);
   if ((baseact == NULL) || (baseact->object->mode & OB_MODE_EDIT) == 0) {
     return MEM_mallocN(0, __func__);
@@ -930,7 +930,7 @@ Base **ED_undo_editmode_bases_from_view_layer(const Scene *scene,
                                               ViewLayer *view_layer,
                                               uint *r_len)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *baseact = BKE_view_layer_active_base_get(view_layer);
   if ((baseact == NULL) || (baseact->object->mode & OB_MODE_EDIT) == 0) {
     return MEM_mallocN(0, __func__);

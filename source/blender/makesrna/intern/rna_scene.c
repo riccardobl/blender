@@ -708,7 +708,7 @@ static void rna_Gpencil_extend_selection(bContext *C, PointerRNA *UNUSED(ptr))
   /* Extend selection to all points in all selected strokes. */
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   if ((ob) && (ob->type == OB_GPENCIL)) {
     bGPdata *gpd = (bGPdata *)ob->data;
@@ -1868,7 +1868,7 @@ static void rna_Scene_editmesh_select_mode_set(PointerRNA *ptr, const bool *valu
       const Scene *scene = WM_window_get_active_scene(win);
       ViewLayer *view_layer = WM_window_get_active_view_layer(win);
       if (view_layer) {
-        BKE_view_layer_ensure_sync(scene, view_layer);
+        BKE_view_layer_synced_ensure(scene, view_layer);
         Object *object = BKE_view_layer_active_object_get(view_layer);
         if (object) {
           Mesh *me = BKE_mesh_from_object(object);
@@ -1888,7 +1888,7 @@ static void rna_Scene_editmesh_select_mode_update(bContext *C, PointerRNA *UNUSE
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Mesh *me = NULL;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *object = BKE_view_layer_active_object_get(view_layer);
   if (object) {
     me = BKE_mesh_from_object(object);
@@ -2234,7 +2234,7 @@ static void rna_EditMesh_update(bContext *C, PointerRNA *UNUSED(ptr))
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Mesh *me = NULL;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *object = BKE_view_layer_active_object_get(view_layer);
   if (object) {
     me = BKE_mesh_from_object(object);
@@ -2263,7 +2263,7 @@ static void rna_Scene_update_active_object_data(bContext *C, PointerRNA *UNUSED(
 {
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
 
   if (ob) {

@@ -47,7 +47,7 @@ static bool WIDGETGROUP_light_spot_poll(const bContext *C, wmGizmoGroupType *UNU
 
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_active_base_get(view_layer);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;
@@ -80,7 +80,7 @@ static void WIDGETGROUP_light_spot_refresh(const bContext *C, wmGizmoGroup *gzgr
   wmGizmo *gz = wwrapper->gizmo;
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Light *la = ob->data;
   float dir[3];
@@ -162,7 +162,7 @@ static bool WIDGETGROUP_light_area_poll(const bContext *C, wmGizmoGroupType *UNU
 
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_active_base_get(view_layer);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;
@@ -194,7 +194,7 @@ static void WIDGETGROUP_light_area_refresh(const bContext *C, wmGizmoGroup *gzgr
   wmGizmoWrapper *wwrapper = gzgroup->customdata;
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Light *la = ob->data;
   wmGizmo *gz = wwrapper->gizmo;
@@ -249,7 +249,7 @@ static bool WIDGETGROUP_light_target_poll(const bContext *C, wmGizmoGroupType *U
 
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_active_base_get(view_layer);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;
@@ -292,7 +292,7 @@ static void WIDGETGROUP_light_target_draw_prepare(const bContext *C, wmGizmoGrou
   wmGizmoWrapper *wwrapper = gzgroup->customdata;
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   wmGizmo *gz = wwrapper->gizmo;
 

@@ -33,7 +33,7 @@ static void createTransSculpt(bContext *C, TransInfo *t)
     BKE_report(t->reports, RPT_ERROR, "Linked data can't text-space transform");
     return;
   }
-  BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+  BKE_view_layer_synced_ensure(t->scene, t->view_layer);
   Object *ob = BKE_view_layer_active_object_get(t->view_layer);
   SculptSession *ss = ob->sculpt;
 
@@ -97,7 +97,7 @@ static void createTransSculpt(bContext *C, TransInfo *t)
 
 static void recalcData_sculpt(TransInfo *t)
 {
-  BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+  BKE_view_layer_synced_ensure(t->scene, t->view_layer);
   Object *ob = BKE_view_layer_active_object_get(t->view_layer);
   ED_sculpt_update_modal_transform(t->context, ob);
 }
@@ -109,7 +109,7 @@ static void special_aftertrans_update__sculpt(bContext *C, TransInfo *t)
     /* `ED_sculpt_init_transform` was not called in this case. */
     return;
   }
-  BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+  BKE_view_layer_synced_ensure(t->scene, t->view_layer);
   Object *ob = BKE_view_layer_active_object_get(t->view_layer);
   BLI_assert(!(t->options & CTX_PAINT_CURVE));
   ED_sculpt_end_transform(C, ob);

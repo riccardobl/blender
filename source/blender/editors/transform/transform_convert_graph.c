@@ -908,7 +908,7 @@ static void recalcData_graphedit(TransInfo *t)
   bAnimListElem *ale;
   int dosort = 0;
 
-  BKE_view_layer_ensure_sync(t->scene, t->view_layer);
+  BKE_view_layer_synced_ensure(t->scene, t->view_layer);
 
   /* initialize relevant anim-context 'context' data from TransInfo data */
   /* NOTE: sync this with the code in ANIM_animdata_get_context() */

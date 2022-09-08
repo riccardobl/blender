@@ -90,7 +90,7 @@ void DepsgraphNodeBuilder::build_view_layer(Scene *scene,
    * but object is expected to be an original one. Hence we go into some
    * tricks here iterating over the view layer. */
   int base_index = 0;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     /* object itself */
     if (!need_pull_base_into_graph(base)) {

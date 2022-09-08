@@ -45,7 +45,7 @@ void outliner_viewcontext_init(const bContext *C, TreeViewContext *tvc)
   tvc->view_layer = CTX_data_view_layer(C);
 
   /* Objects. */
-  BKE_view_layer_ensure_sync(tvc->scene, tvc->view_layer);
+  BKE_view_layer_synced_ensure(tvc->scene, tvc->view_layer);
   tvc->obact = BKE_view_layer_active_object_get(tvc->view_layer);
   if (tvc->obact != nullptr) {
     tvc->ob_edit = OBEDIT_FROM_OBACT(tvc->obact);
@@ -467,7 +467,7 @@ Base *ED_outliner_give_base_under_cursor(bContext *C, const int mval[2])
     TreeStoreElem *tselem = TREESTORE(te);
     if ((tselem->type == TSE_SOME_ID) && (te->idcode == ID_OB)) {
       Object *ob = (Object *)tselem->id;
-      BKE_view_layer_ensure_sync(scene, view_layer);
+      BKE_view_layer_synced_ensure(scene, view_layer);
       base = (te->directdata) ? (Base *)te->directdata : BKE_view_layer_base_find(view_layer, ob);
     }
   }

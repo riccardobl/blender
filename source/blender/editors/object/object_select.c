@@ -121,7 +121,7 @@ void ED_object_base_activate_with_mode_exit_if_needed(bContext *C, Base *base)
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   /* Currently we only need to be concerned with edit-mode. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *obedit = BKE_view_layer_edit_object_get(view_layer);
   if (obedit) {
     Object *ob = base->object;
@@ -219,7 +219,7 @@ Base *ED_object_find_first_by_data_id(const Scene *scene, ViewLayer *view_layer,
   BLI_assert(OB_DATA_SUPPORT_ID(GS(id->name)));
 
   /* Try active object. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *basact = BKE_view_layer_active_base_get(view_layer);
 
   if (basact && basact->object && basact->object->data == id) {
@@ -253,7 +253,7 @@ bool ED_object_jump_to_object(bContext *C, Object *ob, const bool UNUSED(reveal_
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base == NULL) {
@@ -631,7 +631,7 @@ static int object_select_linked_exec(bContext *C, wmOperator *op)
     ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     BKE_report(op->reports, RPT_ERROR, "No active object");
@@ -797,7 +797,7 @@ static bool select_grouped_parent(bContext *C)
     return 0;
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   baspar = BKE_view_layer_base_find(view_layer, basact->object->parent);
 
   /* can be NULL if parent in other scene */
@@ -879,7 +879,7 @@ static bool select_grouped_object_hooks(bContext *C, Object *ob)
     if (md->type == eModifierType_Hook) {
       hmd = (HookModifierData *)md;
       if (hmd->object) {
-        BKE_view_layer_ensure_sync(scene, view_layer);
+        BKE_view_layer_synced_ensure(scene, view_layer);
         base = BKE_view_layer_base_find(view_layer, hmd->object);
         if (base && ((base->flag & BASE_SELECTED) == 0) && (BASE_SELECTABLE(v3d, base))) {
           ED_object_base_select(base, BA_SELECT);
@@ -1033,7 +1033,7 @@ static int object_select_grouped_exec(bContext *C, wmOperator *op)
     changed = ED_object_base_deselect_all(scene, view_layer, v3d, SEL_DESELECT);
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     BKE_report(op->reports, RPT_ERROR, "No active object");
@@ -1251,7 +1251,7 @@ static int object_select_mirror_exec(bContext *C, wmOperator *op)
     if (!STREQ(name_flip, primbase->object->id.name + 2)) {
       Object *ob = (Object *)BKE_libblock_find_name(bmain, ID_OB, name_flip);
       if (ob) {
-        BKE_view_layer_ensure_sync(scene, view_layer);
+        BKE_view_layer_synced_ensure(scene, view_layer);
         Base *secbase = BKE_view_layer_base_find(view_layer, ob);
 
         if (secbase) {
@@ -1306,7 +1306,7 @@ static bool object_select_more_less(bContext *C, const bool select)
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *ob = base->object;
     ob->flag &= ~OB_DONE;

@@ -786,7 +786,7 @@ static void object_select_fn(bContext *C,
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob = (Object *)tselem->id;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base) {
@@ -826,7 +826,7 @@ static void object_deselect_fn(bContext *C,
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob = (Object *)tselem->id;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base) {
@@ -1322,7 +1322,7 @@ static void id_override_library_clear_single_fn(bContext *C,
    * override. */
   if (BKE_lib_override_library_is_hierarchy_leaf(bmain, id)) {
     bool do_remap_active = false;
-    BKE_view_layer_ensure_sync(CTX_data_scene(C), view_layer);
+    BKE_view_layer_synced_ensure(CTX_data_scene(C), view_layer);
     if (BKE_view_layer_active_object_get(view_layer) == reinterpret_cast<Object *>(id)) {
       BLI_assert(GS(id->name) == ID_OB);
       do_remap_active = true;
@@ -2118,7 +2118,7 @@ static Base *outliner_batch_delete_hierarchy(
   if (!base) {
     return nullptr;
   }
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   object = base->object;
   for (child_base = static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer)->first);
        child_base;
@@ -2171,7 +2171,7 @@ static void object_batch_delete_hierarchy_fn(bContext *C,
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *obedit = CTX_data_edit_object(C);
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base) {
@@ -2396,7 +2396,7 @@ static int outliner_delete_exec(bContext *C, wmOperator *op)
   SpaceOutliner *space_outliner = CTX_wm_space_outliner(C);
   struct wmMsgBus *mbus = CTX_wm_message_bus(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const Base *basact_prev = BKE_view_layer_active_base_get(view_layer);
 
   const bool delete_hierarchy = RNA_boolean_get(op->ptr, "hierarchy");
@@ -2441,7 +2441,7 @@ static int outliner_delete_exec(bContext *C, wmOperator *op)
   DEG_id_tag_update(&scene->id, ID_RECALC_COPY_ON_WRITE);
   DEG_relations_tag_update(bmain);
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   if (basact_prev != BKE_view_layer_active_base_get(view_layer)) {
     WM_event_add_notifier(C, NC_SCENE | ND_OB_ACTIVE, scene);
     WM_msg_publish_rna_prop(mbus, &scene->id, view_layer, LayerObjects, active);

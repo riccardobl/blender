@@ -358,7 +358,7 @@ static void stats_update(Depsgraph *depsgraph,
                          View3D *v3d_local,
                          SceneStats *stats)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const Object *ob = BKE_view_layer_active_object_get(view_layer);
   const Object *obedit = BKE_view_layer_edit_object_get(view_layer);
 
@@ -498,7 +498,7 @@ static void get_stats_string(char *info,
                              ViewLayer *view_layer,
                              SceneStatsFmt *stats_fmt)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Object *obedit = OBEDIT_FROM_OBACT(ob);
   eObjectMode object_mode = ob ? (eObjectMode)ob->mode : OB_MODE_OBJECT;
@@ -691,7 +691,7 @@ void ED_info_draw_stats(
     return;
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Object *obedit = OBEDIT_FROM_OBACT(ob);
   eObjectMode object_mode = ob ? (eObjectMode)ob->mode : OB_MODE_OBJECT;

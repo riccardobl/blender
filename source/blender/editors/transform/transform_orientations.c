@@ -476,7 +476,7 @@ void ED_transform_calc_orientation_from_type(const bContext *C, float r_mat[3][3
   Object *obedit = CTX_data_edit_object(C);
   View3D *v3d = CTX_wm_view3d(C);
   RegionView3D *rv3d = region->regiondata;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   const short orient_index = BKE_scene_orientation_get_index(scene, SCE_ORIENT_DEFAULT);
   const int pivot_point = scene->toolsettings->transform_pivot_point;
@@ -1254,7 +1254,7 @@ int getTransformOrientation_ex(const Scene *scene,
         ok = true;
       }
       else {
-        BKE_view_layer_ensure_sync(scene, view_layer);
+        BKE_view_layer_synced_ensure(scene, view_layer);
         Base *base = BKE_view_layer_base_find(view_layer, ob);
         if (UNLIKELY(base == NULL)) {
           /* This is very unlikely, if it happens allow the value to be set since the caller

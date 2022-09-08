@@ -1306,7 +1306,7 @@ static void draw_selected_name(
   s += sprintf(s, "(%d)", cfra);
 
   if ((ob == NULL) || (ob->mode == OB_MODE_OBJECT)) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LayerCollection *layer_collection = BKE_view_layer_active_collection_get(view_layer);
     s += sprintf(s,
                  " %s%s",
@@ -1498,7 +1498,7 @@ void view3d_draw_region_info(const bContext *C, ARegion *region)
     }
 
     if (U.uiflag & USER_DRAWVIEWINFO) {
-      BKE_view_layer_ensure_sync(scene, view_layer);
+      BKE_view_layer_synced_ensure(scene, view_layer);
       Object *ob = BKE_view_layer_active_object_get(view_layer);
       draw_selected_name(scene, view_layer, ob, xoffset, &yoffset);
     }
@@ -2156,7 +2156,7 @@ static void validate_object_select_id(struct Depsgraph *depsgraph,
   }
 
   if (obact_eval && ((obact_eval->base_flag & BASE_VISIBLE_DEPSGRAPH) != 0)) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Base *base = BKE_view_layer_base_find(view_layer, obact);
     DRW_select_buffer_context_create(&base, 1, -1);
   }

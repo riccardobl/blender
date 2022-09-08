@@ -57,7 +57,7 @@ static bool WIDGETGROUP_camera_poll(const bContext *C, wmGizmoGroupType *UNUSED(
 
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_active_base_get(view_layer);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;
@@ -76,7 +76,7 @@ static void WIDGETGROUP_camera_setup(const bContext *C, wmGizmoGroup *gzgroup)
 {
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   float dir[3];
 
@@ -130,7 +130,7 @@ static void WIDGETGROUP_camera_refresh(const bContext *C, wmGizmoGroup *gzgroup)
   View3D *v3d = CTX_wm_view3d(C);
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Camera *ca = ob->data;
   PointerRNA camera_ptr;
@@ -248,7 +248,7 @@ static void WIDGETGROUP_camera_message_subscribe(const bContext *C,
   ARegion *region = CTX_wm_region(C);
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Camera *ca = ob->data;
 
@@ -377,7 +377,7 @@ static bool WIDGETGROUP_camera_view_poll(const bContext *C, wmGizmoGroupType *UN
    * We could change the rules for when to show. */
   {
     ViewLayer *view_layer = CTX_data_view_layer(C);
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     if (scene->camera != BKE_view_layer_active_object_get(view_layer)) {
       return false;
     }

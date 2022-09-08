@@ -425,7 +425,7 @@ static bool bake_object_check(const Scene *scene,
                               const eBakeTarget target,
                               ReportList *reports)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (base == NULL) {

@@ -859,7 +859,7 @@ Base *BKE_collection_or_layer_objects(const Scene *scene,
   if (collection) {
     return BKE_collection_object_cache_get(collection).first;
   }
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   return BKE_view_layer_object_bases_get(view_layer)->first;
 }
 
@@ -1755,7 +1755,7 @@ static bool collection_objects_select(const Scene *scene,
     return false;
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (CollectionObject *, cob, &collection->gobject) {
     Base *base = BKE_view_layer_base_find(view_layer, cob->ob);
 

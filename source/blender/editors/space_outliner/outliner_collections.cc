@@ -413,7 +413,7 @@ static int collection_hierarchy_delete_exec(bContext *C, wmOperator *op)
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   struct wmMsgBus *mbus = CTX_wm_message_bus(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const Base *basact_prev = BKE_view_layer_active_base_get(view_layer);
 
   outliner_collection_delete(C, bmain, scene, op->reports, true);
@@ -423,7 +423,7 @@ static int collection_hierarchy_delete_exec(bContext *C, wmOperator *op)
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER, nullptr);
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   if (basact_prev != BKE_view_layer_active_base_get(view_layer)) {
     WM_msg_publish_rna_prop(mbus, &scene->id, view_layer, LayerObjects, active);
   }
@@ -967,8 +967,7 @@ static int collection_view_layer_exec(bContext *C, wmOperator *op)
 
   BLI_gset_free(data.collections_to_edit, nullptr);
 
-  // BKE_layer_collection_sync(scene, view_layer);
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
   DEG_relations_tag_update(bmain);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER, nullptr);
@@ -1117,8 +1116,7 @@ static int collection_isolate_exec(bContext *C, wmOperator *op)
   }
   BLI_gset_free(data.collections_to_edit, nullptr);
 
-  // BKE_layer_collection_sync(scene, view_layer);
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
@@ -1202,8 +1200,7 @@ static int collection_visibility_exec(bContext *C, wmOperator *op)
   }
   BLI_gset_free(data.collections_to_edit, nullptr);
 
-  // BKE_layer_collection_sync(scene, view_layer);
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
@@ -1393,8 +1390,7 @@ static int collection_flag_exec(bContext *C, wmOperator *op)
     BLI_gset_free(data.collections_to_edit, nullptr);
   }
 
-  // BKE_layer_collection_sync(scene, view_layer);
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   if (!is_render) {
@@ -1503,7 +1499,7 @@ static TreeTraversalAction outliner_hide_collect_data_to_edit(TreeElement *te, v
   }
   else if ((tselem->type == TSE_SOME_ID) && (te->idcode == ID_OB)) {
     Object *ob = (Object *)tselem->id;
-    BKE_view_layer_ensure_sync(data->scene, data->view_layer);
+    BKE_view_layer_synced_ensure(data->scene, data->view_layer);
     Base *base = BKE_view_layer_base_find(data->view_layer, ob);
     BLI_gset_add(data->bases_to_edit, base);
   }
@@ -1545,8 +1541,7 @@ static int outliner_hide_exec(bContext *C, wmOperator *UNUSED(op))
   }
   BLI_gset_free(data.bases_to_edit, nullptr);
 
-  // BKE_layer_collection_sync(scene, view_layer);
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);
@@ -1580,13 +1575,12 @@ static int outliner_unhide_all_exec(bContext *C, wmOperator *UNUSED(op))
   }
 
   /* Unhide all objects. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->flag &= ~BASE_HIDDEN;
   }
 
-  // BKE_layer_collection_sync(scene, view_layer);
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
   DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
 
   WM_main_add_notifier(NC_SCENE | ND_LAYER_CONTENT, nullptr);

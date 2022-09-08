@@ -44,7 +44,7 @@ static bool WIDGETGROUP_forcefield_poll(const bContext *C, wmGizmoGroupType *UNU
 
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_active_base_get(view_layer);
   if (base && BASE_SELECTABLE(v3d, base)) {
     Object *ob = base->object;
@@ -77,7 +77,7 @@ static void WIDGETGROUP_forcefield_refresh(const bContext *C, wmGizmoGroup *gzgr
   wmGizmo *gz = wwrapper->gizmo;
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   PartDeflect *pd = ob->pd;
 

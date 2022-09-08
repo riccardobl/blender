@@ -123,7 +123,7 @@ static Key *actedit_get_shapekeys(bAnimContext *ac)
   Object *ob;
   Key *key;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   ob = BKE_view_layer_active_object_get(view_layer);
   if (ob == NULL) {
     return NULL;
@@ -398,7 +398,7 @@ bool ANIM_animdata_get_context(const bContext *C, bAnimContext *ac)
   ac->view_layer = CTX_data_view_layer(C);
   if (scene) {
     ac->markers = ED_context_get_markers(C);
-    BKE_view_layer_ensure_sync(ac->scene, ac->view_layer);
+    BKE_view_layer_synced_ensure(ac->scene, ac->view_layer);
   }
   ac->depsgraph = CTX_data_depsgraph_pointer(C);
   ac->obact = BKE_view_layer_active_object_get(ac->view_layer);
@@ -1862,7 +1862,7 @@ static size_t animdata_filter_gpencil(bAnimContext *ac,
     }
   }
   /* Objects in the scene */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     /* Only consider this object if it has got some GP data (saving on all the other tests) */
     if (base->object && (base->object->type == OB_GPENCIL)) {
@@ -3179,7 +3179,7 @@ static Base **animdata_filter_ds_sorted_bases(bDopeSheet *ads,
                                               size_t *r_usable_bases)
 {
   /* Create an array with space for all the bases, but only containing the usable ones */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   size_t tot_bases = BLI_listbase_count(object_bases);
   size_t num_bases = 0;
@@ -3255,7 +3255,7 @@ static size_t animdata_filter_dopesheet(bAnimContext *ac,
    * - Don't do this if this behavior has been turned off (i.e. due to it being too slow)
    * - Don't do this if there's just a single object
    */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   if ((filter_mode & ANIMFILTER_LIST_CHANNELS) && !(ads->flag & ADS_FLAG_NO_DB_SORT) &&
       (object_bases->first != object_bases->last)) {

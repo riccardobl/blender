@@ -507,7 +507,7 @@ static void loose_data_instantiate_object_base_instance_init(Main *bmain,
   }
 
   BKE_collection_object_add(bmain, collection, ob);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, ob);
 
   if (v3d != NULL) {
@@ -705,7 +705,7 @@ static void loose_data_instantiate_collection_process(
     else {
       /* Add collection as child of active collection. */
       BKE_collection_child_add(bmain, active_collection, collection);
-      BKE_view_layer_ensure_sync(scene, view_layer);
+      BKE_view_layer_synced_ensure(scene, view_layer);
 
       if ((lapp_context->params->flag & FILE_AUTOSELECT) != 0) {
         LISTBASE_FOREACH (CollectionObject *, coll_ob, &collection->gobject) {

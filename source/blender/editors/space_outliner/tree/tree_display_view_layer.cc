@@ -97,7 +97,7 @@ void TreeDisplayViewLayer::add_view_layer(Scene &scene, ListBase &tree, TreeElem
 
   if (space_outliner_.filter & SO_FILTER_NO_COLLECTION) {
     /* Show objects in the view layer. */
-    BKE_view_layer_ensure_sync(&scene, view_layer_);
+    BKE_view_layer_synced_ensure(&scene, view_layer_);
     for (Base *base : List<Base>(*BKE_view_layer_object_bases_get(view_layer_))) {
       TreeElement *te_object = outliner_add_element(
           &space_outliner_, &tree, base->object, parent, TSE_SOME_ID, 0);
@@ -168,7 +168,7 @@ void TreeDisplayViewLayer::add_layer_collection_objects(ListBase &tree,
                                                         LayerCollection &lc,
                                                         TreeElement &ten)
 {
-  BKE_view_layer_ensure_sync(scene_, view_layer_);
+  BKE_view_layer_synced_ensure(scene_, view_layer_);
   for (CollectionObject *cob : List<CollectionObject>(lc.collection->gobject)) {
     Base *base = BKE_view_layer_base_find(view_layer_, cob->ob);
     TreeElement *te_object = outliner_add_element(

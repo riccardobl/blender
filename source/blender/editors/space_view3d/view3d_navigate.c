@@ -167,7 +167,7 @@ bool view3d_orbit_calc_center(bContext *C, float r_dyn_ofs[3])
   Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
   View3D *v3d = CTX_wm_view3d(C);
-  BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
+  BKE_view_layer_synced_ensure(scene_eval, view_layer_eval);
   Object *ob_act_eval = BKE_view_layer_active_object_get(view_layer_eval);
   Object *ob_act = DEG_get_original_object(ob_act_eval);
 
@@ -780,7 +780,7 @@ static int view3d_all_exec(bContext *C, wmOperator *op)
     INIT_MINMAX(min, max);
   }
 
-  BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
+  BKE_view_layer_synced_ensure(scene_eval, view_layer_eval);
   LISTBASE_FOREACH (Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval)) {
     if (BASE_VISIBLE(v3d, base_eval)) {
       bool only_center = false;
@@ -867,7 +867,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
   Scene *scene_eval = DEG_get_evaluated_scene(depsgraph);
   ViewLayer *view_layer_eval = DEG_get_evaluated_view_layer(depsgraph);
-  BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
+  BKE_view_layer_synced_ensure(scene_eval, view_layer_eval);
   Object *ob_eval = BKE_view_layer_active_object_get(view_layer_eval);
   Object *obedit = CTX_data_edit_object(C);
   const bGPdata *gpd_eval = ob_eval && (ob_eval->type == OB_GPENCIL) ? ob_eval->data : NULL;
@@ -1314,7 +1314,7 @@ static int view_camera_exec(bContext *C, wmOperator *op)
     Scene *scene = CTX_data_scene(C);
 
     if (rv3d->persp != RV3D_CAMOB) {
-      BKE_view_layer_ensure_sync(scene, view_layer);
+      BKE_view_layer_synced_ensure(scene, view_layer);
       Object *ob = BKE_view_layer_active_object_get(view_layer);
 
       if (!rv3d->smooth_timer) {

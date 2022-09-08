@@ -285,7 +285,7 @@ void BKE_view_layer_free_ex(ViewLayer *view_layer, const bool do_id_user)
 
 void BKE_view_layer_selected_objects_tag(const Scene *scene, ViewLayer *view_layer, const int tag)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if ((base->flag & BASE_SELECTED) != 0) {
       base->object->flag |= tag;
@@ -311,7 +311,7 @@ static bool find_scene_collection_in_scene_collections(ListBase *lb, const Layer
 
 Object *BKE_view_layer_camera_find(const Scene *scene, ViewLayer *view_layer)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->object->type == OB_CAMERA) {
       return base->object;
@@ -381,7 +381,7 @@ static void view_layer_bases_hash_create(ViewLayer *view_layer, const bool do_ba
 Base *BKE_view_layer_base_find(ViewLayer *view_layer, Object *ob)
 {
   BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
-                 "View layer out of sync, invoke BKE_view_layer_ensure_sync.");
+                 "View layer out of sync, invoke BKE_view_layer_synced_ensure.");
   if (!view_layer->object_bases_hash) {
     view_layer_bases_hash_create(view_layer, false);
   }
@@ -391,7 +391,7 @@ Base *BKE_view_layer_base_find(ViewLayer *view_layer, Object *ob)
 
 void BKE_view_layer_base_deselect_all(const Scene *scene, ViewLayer *view_layer)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->flag &= ~BASE_SELECTED;
   }
@@ -504,9 +504,9 @@ void BKE_view_layer_copy_data(Scene *scene_dst,
   /* Copy layer collections and object bases. */
   /* Inline 'BLI_duplicatelist' and update the active base. */
   BLI_listbase_clear(&view_layer_dst->object_bases);
-  // TODO: perhaps a const cast? BKE_view_layer_ensure_sync(scene_src, view_layer_src);
-  LISTBASE_FOREACH (
-      const Base *, base_src, BKE_view_layer_object_bases_get_const(view_layer_src, __func__)) {
+  BLI_assert_msg((view_layer_src->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
+                 "View Layer Object Base out of sync.");
+  LISTBASE_FOREACH (const Base *, base_src, &view_layer_src->object_bases) {
     Base *base_dst = MEM_dupallocN(base_src);
     BLI_addtail(&view_layer_dst->object_bases, base_dst);
     if (view_layer_src->basact == base_src) {
@@ -961,13 +961,13 @@ static void layer_collection_resync_unused_layers_free(ViewLayer *view_layer,
   }
 }
 
-void BKE_view_layer_tag_out_of_sync(struct ViewLayer *view_layer)
+void BKE_view_layer_need_resync_tag(struct ViewLayer *view_layer)
 {
   printf("%s: %s\n", __func__, view_layer->name);
   view_layer->flag |= VIEW_LAYER_OUT_OF_SYNC;
 }
 
-void BKE_view_layer_ensure_sync(const Scene *scene, struct ViewLayer *view_layer)
+void BKE_view_layer_synced_ensure(const Scene *scene, struct ViewLayer *view_layer)
 {
   if (view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) {
     BKE_layer_collection_sync(scene, view_layer);
@@ -1365,8 +1365,7 @@ void BKE_scene_collection_sync(const Scene *scene)
   }
 
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
-    // BKE_layer_collection_sync(scene, view_layer);
-    BKE_view_layer_tag_out_of_sync(view_layer);
+    BKE_view_layer_need_resync_tag(view_layer);
   }
 }
 
@@ -1444,7 +1443,7 @@ bool BKE_layer_collection_objects_select(const Scene *scene,
   bool changed = false;
 
   if (!(lc->flag & LAYER_COLLECTION_EXCLUDE)) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (CollectionObject *, cob, &lc->collection->gobject) {
       Base *base = BKE_view_layer_base_find(view_layer, cob->ob);
 
@@ -1481,7 +1480,7 @@ bool BKE_layer_collection_has_selected_objects(const Scene *scene,
   }
 
   if (!(lc->flag & LAYER_COLLECTION_EXCLUDE)) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (CollectionObject *, cob, &lc->collection->gobject) {
       Base *base = BKE_view_layer_base_find(view_layer, cob->ob);
 
@@ -1525,7 +1524,7 @@ void BKE_base_set_visible(Scene *scene, ViewLayer *view_layer, Base *base, bool 
 {
   if (!extend) {
     /* Make only one base visible. */
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (Base *, other, BKE_view_layer_object_bases_get(view_layer)) {
       other->flag |= BASE_HIDDEN;
     }
@@ -1537,7 +1536,7 @@ void BKE_base_set_visible(Scene *scene, ViewLayer *view_layer, Base *base, bool 
     base->flag ^= BASE_HIDDEN;
   }
 
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
 }
 
 bool BKE_base_is_visible(const View3D *v3d, const Base *base)
@@ -1661,7 +1660,7 @@ void BKE_layer_collection_isolate_global(Scene *UNUSED(scene),
     BKE_layer_collection_activate(view_layer, lc);
   }
 
-  BKE_view_layer_tag_out_of_sync(view_layer);
+  BKE_view_layer_need_resync_tag(view_layer);
 }
 
 static void layer_collection_local_visibility_set_recursive(LayerCollection *layer_collection,
@@ -1698,7 +1697,7 @@ static void layer_collection_local_sync(const Scene *scene,
         continue;
       }
 
-      BKE_view_layer_ensure_sync(scene, view_layer);
+      BKE_view_layer_synced_ensure(scene, view_layer);
       Base *base = BKE_view_layer_base_find(view_layer, cob->ob);
       base->local_collections_bits |= local_collections_uuid;
     }
@@ -1720,7 +1719,7 @@ void BKE_layer_collection_local_sync(const Scene *scene, ViewLayer *view_layer, 
   const unsigned short local_collections_uuid = v3d->local_collections_uuid;
 
   /* Reset flags and set the bases visible by default. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->local_collections_bits &= ~local_collections_uuid;
   }
@@ -1802,7 +1801,7 @@ static void layer_collection_bases_show_recursive(const Scene *scene,
                                                   LayerCollection *lc)
 {
   if ((lc->flag & LAYER_COLLECTION_EXCLUDE) == 0) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (CollectionObject *, cob, &lc->collection->gobject) {
       Base *base = BKE_view_layer_base_find(view_layer, cob->ob);
       base->flag &= ~BASE_HIDDEN;
@@ -1818,7 +1817,7 @@ static void layer_collection_bases_hide_recursive(const Scene *scene,
                                                   LayerCollection *lc)
 {
   if ((lc->flag & LAYER_COLLECTION_EXCLUDE) == 0) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     LISTBASE_FOREACH (CollectionObject *, cob, &lc->collection->gobject) {
       Base *base = BKE_view_layer_base_find(view_layer, cob->ob);
       base->flag |= BASE_HIDDEN;
@@ -1937,7 +1936,7 @@ bool BKE_view_layer_has_collection(const ViewLayer *view_layer, const Collection
 bool BKE_scene_has_object(Scene *scene, Object *ob)
 {
   LISTBASE_FOREACH (ViewLayer *, view_layer, &scene->view_layers) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Base *base = BKE_view_layer_base_find(view_layer, ob);
     if (base) {
       return true;
@@ -2278,7 +2277,7 @@ static void layer_eval_view_layer(struct Depsgraph *depsgraph,
   DEG_debug_print_eval(depsgraph, __func__, view_layer->name, view_layer);
 
   /* Create array of bases, for fast index-based lookup. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const int num_object_bases = BLI_listbase_count(BKE_view_layer_object_bases_get(view_layer));
   MEM_SAFE_FREE(view_layer->object_bases_array);
   view_layer->object_bases_array = MEM_malloc_arrayN(
@@ -2316,7 +2315,7 @@ static void write_layer_collections(BlendWriter *writer, ListBase *lb)
 
 void BKE_view_layer_blend_write(BlendWriter *writer, const Scene *scene, ViewLayer *view_layer)
 {
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   BLO_write_struct(writer, ViewLayer, view_layer);
   BLO_write_struct_list(writer, Base, BKE_view_layer_object_bases_get(view_layer));
 

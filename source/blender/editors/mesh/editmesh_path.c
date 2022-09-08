@@ -679,7 +679,7 @@ static int edbm_shortest_path_pick_invoke(bContext *C, wmOperator *op, const wmE
 
   em_setup_viewcontext(C, &vc);
   copy_v2_v2_int(vc.mval, event->mval);
-  BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
+  BKE_view_layer_synced_ensure(vc.scene, vc.view_layer);
   Base *basact = BKE_view_layer_active_base_get(vc.view_layer);
   BMEditMesh *em = vc.em;
 
@@ -734,7 +734,7 @@ static int edbm_shortest_path_pick_invoke(bContext *C, wmOperator *op, const wmE
     return OPERATOR_PASS_THROUGH;
   }
 
-  BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
+  BKE_view_layer_synced_ensure(vc.scene, vc.view_layer);
   if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
     ED_object_base_activate(C, basact);
   }

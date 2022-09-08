@@ -440,7 +440,7 @@ static int ctx_data_base_collection_get(const bContext *C, const char *member, L
 
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
 
   bool ok = false;
 
@@ -1365,7 +1365,7 @@ struct Base *CTX_data_active_base(const bContext *C)
   }
   const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   return BKE_view_layer_base_find(view_layer, ob);
 }
 

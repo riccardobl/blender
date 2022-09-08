@@ -1273,7 +1273,7 @@ static void lib_override_library_create_post_process(Main *bmain,
     }
   }
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
 
   /* We need to ensure all new overrides of objects are properly instantiated. */
   Collection *default_instantiating_collection = residual_storage;
@@ -1383,7 +1383,7 @@ bool BKE_lib_override_library_create(Main *bmain,
   if (id_hierarchy_root_reference == nullptr) {
     id_hierarchy_root_reference = id_root_reference;
   }
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const Object *old_active_object = BKE_view_layer_active_object_get(view_layer);
 
   const bool success = lib_override_library_create_do(bmain,
@@ -1722,7 +1722,7 @@ static bool lib_override_library_resync(Main *bmain,
 
   ID *id_root_reference = id_root->override_library->reference;
   ID *id;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const Object *old_active_object = BKE_view_layer_active_object_get(view_layer);
 
   if (id_root_reference->tag & LIB_TAG_MISSING) {
@@ -2704,7 +2704,7 @@ void BKE_lib_override_library_main_resync(Main *bmain,
     override_resync_residual_storage->flag |= COLLECTION_HIDE_VIEWPORT | COLLECTION_HIDE_RENDER;
   }
   /* BKE_collection_add above could have tagged the view_layer out of sync. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   const Object *old_active_object = BKE_view_layer_active_object_get(view_layer);
 
   /* Necessary to improve performances, and prevent layers matching override sub-collections to be

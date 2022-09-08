@@ -251,7 +251,7 @@ static void outliner_select_sync_to_edit_bone(const Scene *scene,
 
   /* Tag if selection changed */
   if (bone_flag != ebone->flag) {
-    BKE_view_layer_ensure_sync(scene, view_layer);
+    BKE_view_layer_synced_ensure(scene, view_layer);
     Object *obedit = BKE_view_layer_edit_object_get(view_layer);
     DEG_id_tag_update(&arm->id, ID_RECALC_SELECT);
     WM_main_add_notifier(NC_OBJECT | ND_BONE_SELECT, obedit);
@@ -398,7 +398,7 @@ static void outliner_select_sync_from_object(const Scene *scene,
                                              TreeStoreElem *tselem)
 {
   Object *ob = (Object *)tselem->id;
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = (te->directdata) ? (Base *)te->directdata :
                                   BKE_view_layer_base_find(view_layer, ob);
   const bool is_selected = (base != nullptr) && ((base->flag & BASE_SELECTED) != 0);
@@ -537,7 +537,7 @@ static void get_sync_select_active_data(const bContext *C, SyncSelectActiveData 
 {
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   active_data->object = BKE_view_layer_active_object_get(view_layer);
   active_data->edit_bone = CTX_data_active_bone(C);
   active_data->pose_channel = CTX_data_active_pose_bone(C);

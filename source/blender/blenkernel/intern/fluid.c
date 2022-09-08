@@ -561,7 +561,7 @@ static int get_light(Scene *scene, ViewLayer *view_layer, float *light)
   int found_light = 0;
 
   /* Try to find a lamp, preferably local. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base_tmp, BKE_view_layer_object_bases_get(view_layer)) {
     if (base_tmp->object->type == OB_LAMP) {
       Light *la = base_tmp->object->data;

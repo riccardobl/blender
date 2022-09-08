@@ -2050,7 +2050,7 @@ static int edcu_shortest_path_pick_invoke(bContext *C, wmOperator *op, const wmE
 
   BKE_curve_nurb_vert_active_set(cu, nu_dst, vert_dst_p);
 
-  BKE_view_layer_ensure_sync(vc.scene, vc.view_layer);
+  BKE_view_layer_synced_ensure(vc.scene, vc.view_layer);
   if (BKE_view_layer_active_base_get(vc.view_layer) != basact) {
     ED_object_base_activate(C, basact);
   }

@@ -307,7 +307,7 @@ static void switch_preview_floor_visibility(Main *pr_main,
                                             const ePreviewRenderMethod pr_method)
 {
   /* Hide floor for icon renders. */
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (STREQ(base->object->id.name + 2, "Floor")) {
       base->object->visibility_flag &= ~OB_HIDE_RENDER;
@@ -534,7 +534,7 @@ static Scene *preview_prepare_scene(
       else {
         sce->display.render_aa = SCE_DISPLAY_AA_OFF;
       }
-      BKE_view_layer_ensure_sync(sce, view_layer);
+      BKE_view_layer_synced_ensure(sce, view_layer);
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
         if (base->object->id.name[2] == 'p') {
           /* copy over object color, in case material uses it */
@@ -587,7 +587,7 @@ static Scene *preview_prepare_scene(
         sce->world->horb = 0.0f;
       }
 
-      BKE_view_layer_ensure_sync(sce, view_layer);
+      BKE_view_layer_synced_ensure(sce, view_layer);
       LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
         if (base->object->id.name[2] == 'p') {
           if (base->object->type == OB_LAMP) {
@@ -827,7 +827,7 @@ static Scene *object_preview_scene_create(const struct ObjectPreviewData *previe
   scene->r.ysch = preview_data->sizey;
   scene->r.size = 100;
 
-  BKE_view_layer_ensure_sync(scene, view_layer);
+  BKE_view_layer_synced_ensure(scene, view_layer);
   Base *preview_base = BKE_view_layer_base_find(view_layer, preview_data->object);
   /* For 'view selected' below. */
   preview_base->flag |= BASE_SELECTED;
