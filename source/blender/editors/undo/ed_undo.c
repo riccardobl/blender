@@ -870,7 +870,7 @@ static int undo_editmode_objects_from_view_layer_prepare(const Scene *scene,
 {
   const short object_type = obact->type;
   BKE_view_layer_ensure_sync(scene, view_layer);
-  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
+  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   LISTBASE_FOREACH (Base *, base, object_bases) {
     Object *ob = base->object;
     if ((ob->type == object_type) && (ob->mode & OB_MODE_EDIT)) {
@@ -909,9 +909,7 @@ Object **ED_undo_editmode_objects_from_view_layer(const Scene *scene,
   Object **objects = MEM_malloc_arrayN(len, sizeof(*objects), __func__);
   /* Base iteration, starting with the active-base to ensure it's the first item in the array.
    * Looping over the active-base twice is OK as the tag check prevents it being handled twice. */
-  for (Base *base = baseact,
-            *base_next = BKE_view_layer_object_bases_get(view_layer, __func__)->first;
-       base;
+  for (Base *base = baseact, *base_next = BKE_view_layer_object_bases_get(view_layer)->first; base;
        base = base_next, base_next = base_next ? base_next->next : NULL) {
     Object *ob = base->object;
     if ((ob->type == object_type) && (ob->mode & OB_MODE_EDIT)) {
@@ -945,7 +943,7 @@ Base **ED_undo_editmode_bases_from_view_layer(const Scene *scene,
   /* Base iteration, starting with the active-base to ensure it's the first item in the array.
    * Looping over the active-base twice is OK as the tag check prevents it being handled twice. */
   for (Base *base = BKE_view_layer_active_base_get(view_layer, __func__),
-            *base_next = BKE_view_layer_object_bases_get(view_layer, __func__)->first;
+            *base_next = BKE_view_layer_object_bases_get(view_layer)->first;
        base;
        base = base_next, base_next = base_next ? base_next->next : NULL) {
     Object *ob = base->object;

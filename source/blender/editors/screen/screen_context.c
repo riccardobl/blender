@@ -133,7 +133,7 @@ static eContextResult screen_ctx_visible_objects(const bContext *C, bContextData
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   BKE_view_layer_ensure_sync(scene, view_layer);
 
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (BASE_VISIBLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -149,7 +149,7 @@ static eContextResult screen_ctx_selectable_objects(const bContext *C, bContextD
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   BKE_view_layer_ensure_sync(scene, view_layer);
 
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (BASE_SELECTABLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -165,7 +165,7 @@ static eContextResult screen_ctx_selected_objects(const bContext *C, bContextDat
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   BKE_view_layer_ensure_sync(scene, view_layer);
 
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (BASE_SELECTED(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -182,7 +182,7 @@ static eContextResult screen_ctx_selected_editable_objects(const bContext *C,
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   BKE_view_layer_ensure_sync(scene, view_layer);
 
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (BASE_SELECTED_EDITABLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }
@@ -199,7 +199,7 @@ static eContextResult screen_ctx_editable_objects(const bContext *C, bContextDat
   BKE_view_layer_ensure_sync(scene, view_layer);
 
   /* Visible + Editable, but not necessarily selected */
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (BASE_EDITABLE(v3d, base)) {
       CTX_data_id_list_add(result, &base->object->id);
     }

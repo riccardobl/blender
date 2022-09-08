@@ -2976,7 +2976,7 @@ static int click_select_channel_object(bContext *C,
     /* deselect all */
     BKE_view_layer_ensure_sync(scene, view_layer);
     /* TODO: should this deselect all other types of channels too? */
-    LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer)) {
       ED_object_base_select(b, BA_DESELECT);
       if (b->object->adt) {
         b->object->adt->flag &= ~(ADT_UI_SELECTED | ADT_UI_ACTIVE);

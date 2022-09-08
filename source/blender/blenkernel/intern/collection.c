@@ -860,7 +860,7 @@ Base *BKE_collection_or_layer_objects(const Scene *scene,
     return BKE_collection_object_cache_get(collection).first;
   }
   BKE_view_layer_ensure_sync(scene, view_layer);
-  return BKE_view_layer_object_bases_get(view_layer, __func__)->first;
+  return BKE_view_layer_object_bases_get(view_layer)->first;
 }
 
 /** \} */

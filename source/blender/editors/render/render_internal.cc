@@ -888,7 +888,7 @@ static void clean_viewport_memory(Main *bmain, Scene *scene)
       ViewLayer *view_layer = WM_window_get_active_view_layer(win);
       BKE_view_layer_ensure_sync(scene, view_layer);
 
-      LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+      LISTBASE_FOREACH (Base *, b, BKE_view_layer_object_bases_get(view_layer)) {
         clean_viewport_memory_base(b);
       }
     }

@@ -1021,8 +1021,7 @@ int ED_transform_calc_gizmo_stats(const bContext *C,
       ob = NULL;
     }
 
-    for (base = BKE_view_layer_object_bases_get(view_layer, __func__)->first; base;
-         base = base->next) {
+    for (base = BKE_view_layer_object_bases_get(view_layer)->first; base; base = base->next) {
       if (!BASE_SELECTED_EDITABLE(v3d, base)) {
         continue;
       }

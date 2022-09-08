@@ -215,9 +215,9 @@ struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(const Scen
   return BKE_view_layer_array_from_objects_in_mode_params(scene, view_layer, v3d, r_len, &params);
 }
 
-struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer, const char *name)
+struct ListBase *BKE_view_layer_object_bases_get(struct ViewLayer *view_layer)
 {
-  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, name);
+  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, "Object Bases out of sync");
   return &view_layer->object_bases;
 }
 

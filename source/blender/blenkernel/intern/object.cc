@@ -5169,12 +5169,12 @@ LinkNode *BKE_object_relational_superset(const Scene *scene,
 
   /* Remove markers from all objects */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
 
   /* iterate over all selected and visible objects */
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (objectSet == OB_SET_ALL) {
       /* as we get all anyways just add it */
       Object *ob = base->object;
@@ -5210,8 +5210,7 @@ LinkNode *BKE_object_relational_superset(const Scene *scene,
 
         /* child relationship */
         if (includeFilter & (OB_REL_CHILDREN | OB_REL_CHILDREN_RECURSIVE)) {
-          LISTBASE_FOREACH (
-              Base *, local_base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+          LISTBASE_FOREACH (Base *, local_base, BKE_view_layer_object_bases_get(view_layer)) {
             if (BASE_EDITABLE(((View3D *)nullptr), local_base)) {
 
               Object *child = local_base->object;

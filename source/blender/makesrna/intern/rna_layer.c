@@ -196,9 +196,8 @@ static PointerRNA rna_ViewLayer_depsgraph_get(PointerRNA *ptr)
 static void rna_LayerObjects_selected_begin(CollectionPropertyIterator *iter, PointerRNA *ptr)
 {
   ViewLayer *view_layer = (ViewLayer *)ptr->data;
-  rna_iterator_listbase_begin(iter,
-                              BKE_view_layer_object_bases_get(view_layer, __func__),
-                              rna_ViewLayer_objects_selected_skip);
+  rna_iterator_listbase_begin(
+      iter, BKE_view_layer_object_bases_get(view_layer), rna_ViewLayer_objects_selected_skip);
 }
 
 static void rna_ViewLayer_update_tagged(ID *id_ptr,

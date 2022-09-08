@@ -209,8 +209,7 @@ bool view3d_orbit_calc_center(bContext *C, float r_dyn_ofs[3])
     float select_center[3];
 
     zero_v3(select_center);
-    LISTBASE_FOREACH (
-        Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
+    LISTBASE_FOREACH (Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval)) {
       if (BASE_SELECTED(v3d, base_eval)) {
         /* use the boundbox if we can */
         Object *ob_eval = base_eval->object;
@@ -782,8 +781,7 @@ static int view3d_all_exec(bContext *C, wmOperator *op)
   }
 
   BKE_view_layer_ensure_sync(scene_eval, view_layer_eval);
-  LISTBASE_FOREACH (
-      Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
+  LISTBASE_FOREACH (Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval)) {
     if (BASE_VISIBLE(v3d, base_eval)) {
       bool only_center = false;
       Object *ob = DEG_get_original_object(base_eval->object);
@@ -894,7 +892,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     /* this is weak code this way, we should make a generic
      * active/selection callback interface once... */
     Base *base_eval;
-    for (base_eval = BKE_view_layer_object_bases_get(view_layer_eval, __func__)->first; base_eval;
+    for (base_eval = BKE_view_layer_object_bases_get(view_layer_eval)->first; base_eval;
          base_eval = base_eval->next) {
       if (BASE_SELECTED_EDITABLE(v3d, base_eval)) {
         if (base_eval->object->type == OB_ARMATURE) {
@@ -972,8 +970,7 @@ static int viewselected_exec(bContext *C, wmOperator *op)
     ok_dist = 0; /* don't zoom */
   }
   else {
-    LISTBASE_FOREACH (
-        Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval, __func__)) {
+    LISTBASE_FOREACH (Base *, base_eval, BKE_view_layer_object_bases_get(view_layer_eval)) {
       if (BASE_SELECTED(v3d, base_eval)) {
         bool only_center = false;
         Object *ob = DEG_get_original_object(base_eval->object);

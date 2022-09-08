@@ -181,7 +181,7 @@ void ED_object_xform_skip_child_container_item_ensure_from_array(
     BLI_gset_add(objects_in_transdata, ob);
   }
   BKE_view_layer_ensure_sync(scene, view_layer);
-  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
+  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   LISTBASE_FOREACH (Base *, base, object_bases) {
     Object *ob = base->object;
     if (ob->parent != NULL) {

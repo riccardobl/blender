@@ -1306,6 +1306,7 @@ static void draw_selected_name(
   s += sprintf(s, "(%d)", cfra);
 
   if ((ob == NULL) || (ob->mode == OB_MODE_OBJECT)) {
+    BKE_view_layer_ensure_sync(scene, view_layer);
     LayerCollection *layer_collection = BKE_view_layer_active_collection_get(view_layer, __func__);
     s += sprintf(s,
                  " %s%s",

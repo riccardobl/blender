@@ -144,7 +144,7 @@ static bool object_deselect_all_visible(const Scene *scene, ViewLayer *view_laye
 {
   bool changed = false;
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->flag & BASE_SELECTED) {
       if (BASE_SELECTABLE(v3d, base)) {
         ED_object_base_select(base, BA_DESELECT);
@@ -160,7 +160,7 @@ static bool object_deselect_all_except(const Scene *scene, ViewLayer *view_layer
 {
   bool changed = false;
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->flag & BASE_SELECTED) {
       if (b != base) {
         ED_object_base_select(base, BA_DESELECT);
@@ -568,7 +568,7 @@ static bool do_lasso_select_objects(ViewContext *vc,
     changed |= object_deselect_all_visible(vc->scene, vc->view_layer, vc->v3d);
   }
   BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer)) {
     if (BASE_SELECTABLE(v3d, base)) { /* Use this to avoid unnecessary lasso look-ups. */
       const bool is_select = base->flag & BASE_SELECTED;
       const bool is_inside = ((ED_view3d_project_base(vc->region, base) == V3D_PROJ_RET_OK) &&
@@ -2201,7 +2201,7 @@ static Base *mouse_select_eval_buffer(ViewContext *vc,
   Base *basact = nullptr;
   if (found) {
     BKE_view_layer_ensure_sync(scene, view_layer);
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       if (has_bones ? BASE_VISIBLE(v3d, base) : BASE_SELECTABLE(v3d, base)) {
         if (base->object->runtime.select_id == select_id) {
           basact = base;
@@ -2254,7 +2254,7 @@ static Base *mouse_select_object_center(ViewContext *vc, Base *startbase, const 
     base = base->next;
 
     if (base == nullptr) {
-      base = static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer, __func__)->first);
+      base = static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer)->first);
     }
     if (base == startbase) {
       break;
@@ -2547,8 +2547,7 @@ static bool ed_object_select_pick(bContext *C,
   /* Always start list from `basact` when cycling the selection. */
   Base *startbase = (oldbasact && oldbasact->next) ?
                         oldbasact->next :
-                        static_cast<Base *>(
-                            BKE_view_layer_object_bases_get(view_layer, __func__)->first);
+                        static_cast<Base *>(BKE_view_layer_object_bases_get(view_layer)->first);
 
   /* The next object's base to make active. */
   Base *basact = nullptr;
@@ -3657,7 +3656,7 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
   const int hits = view3d_opengl_select(
       vc, buffer, (totobj + MAXPICKELEMS), rect, VIEW3D_SELECT_ALL, select_filter);
   BKE_view_layer_ensure_sync(vc->scene, vc->view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(vc->view_layer)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
 
@@ -3668,7 +3667,7 @@ static bool do_object_box_select(bContext *C, ViewContext *vc, rcti *rect, const
     changed |= object_deselect_all_visible(vc->scene, vc->view_layer, vc->v3d);
   }
 
-  ListBase *object_bases = BKE_view_layer_object_bases_get(vc->view_layer, __func__);
+  ListBase *object_bases = BKE_view_layer_object_bases_get(vc->view_layer);
   if ((hits == -1) && !SEL_OP_USE_OUTSIDE(sel_op)) {
     goto finally;
   }
@@ -4632,7 +4631,7 @@ static bool object_circle_select(ViewContext *vc,
   const bool select = (sel_op != SEL_OP_SUB);
   const int select_flag = select ? BASE_SELECTED : 0;
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (BASE_SELECTABLE(v3d, base) && ((base->flag & BASE_SELECTED) != select_flag)) {
       float screen_co[2];
       if (ED_view3d_project_float_global(

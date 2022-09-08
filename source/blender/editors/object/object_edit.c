@@ -237,7 +237,7 @@ static int object_hide_view_clear_exec(bContext *C, wmOperator *op)
   bool changed = false;
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->flag & BASE_HIDDEN) {
       base->flag &= ~BASE_HIDDEN;
       changed = true;
@@ -291,7 +291,7 @@ static int object_hide_view_set_exec(bContext *C, wmOperator *op)
 
   /* Hide selected or unselected objects. */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (!(base->flag & BASE_VISIBLE_VIEWLAYER)) {
       continue;
     }
@@ -717,7 +717,7 @@ bool ED_object_editmode_exit_multi_ex(Main *bmain, Scene *scene, ViewLayer *view
   const short obedit_type = obedit->type;
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *ob = base->object;
     if ((ob->type == obedit_type) && (ob->mode & OB_MODE_EDIT)) {
       changed |= ED_object_editmode_exit_ex(bmain, scene, base->object, flag);

@@ -294,7 +294,7 @@ static void ObjectToTransData(TransInfo *t, TransData *td, Object *ob)
 static void trans_object_base_deps_flag_prepare(const Scene *scene, ViewLayer *view_layer)
 {
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->object->id.tag &= ~LIB_TAG_DOIT;
   }
 }
@@ -331,7 +331,7 @@ static void trans_object_base_deps_flag_finish(const TransInfo *t,
 
   if ((t->options & CTX_OBMODE_XFORM_OBDATA) == 0) {
     BKE_view_layer_ensure_sync(scene, view_layer);
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       if (base->object->id.tag & LIB_TAG_DOIT) {
         base->flag_legacy |= BA_SNAP_FIX_DEPS_FIASCO;
       }
@@ -363,7 +363,7 @@ static void set_trans_object_base_flags(TransInfo *t)
   trans_object_base_deps_flag_prepare(scene, view_layer);
   /* Traverse all bases and set all possible flags. */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->flag_legacy &= ~(BA_WAS_SEL | BA_TRANSFORM_LOCKED_IN_PLACE);
     if (BASE_SELECTED_EDITABLE(v3d, base)) {
       Object *ob = base->object;
@@ -429,7 +429,7 @@ static int count_proportional_objects(TransInfo *t)
   /* Rotations around local centers are allowed to propagate, so we take all objects. */
   if (!((t->around == V3D_AROUND_LOCAL_ORIGINS) && (ELEM(t->mode, TFM_ROTATION, TFM_TRACKBALL)))) {
     /* Mark all parents. */
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       if (BASE_SELECTED_EDITABLE(v3d, base) && BASE_SELECTABLE(v3d, base)) {
         Object *parent = base->object->parent;
         /* flag all parents */
@@ -440,7 +440,7 @@ static int count_proportional_objects(TransInfo *t)
       }
     }
     /* Mark all children. */
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       /* all base not already selected or marked that is editable */
       if ((base->object->flag & (BA_TRANSFORM_CHILD | BA_TRANSFORM_PARENT)) == 0 &&
           (base->flag & BASE_SELECTED) == 0 &&
@@ -450,7 +450,7 @@ static int count_proportional_objects(TransInfo *t)
     }
   }
   /* Flush changed flags to all dependencies. */
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *ob = base->object;
     /* If base is not selected, not a parent of selection or not a child of
      * selection and it is editable and selectable.
@@ -475,7 +475,7 @@ static void clear_trans_object_base_flags(TransInfo *t)
   ViewLayer *view_layer = t->view_layer;
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->flag_legacy & BA_WAS_SEL) {
       ED_object_base_select(base, BA_SELECT);
     }
@@ -570,7 +570,7 @@ static void createTransObject(bContext *C, TransInfo *t)
     View3D *v3d = t->view;
 
     BKE_view_layer_ensure_sync(scene, view_layer);
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
 
       /* if base is not selected, not a parent of selection
@@ -604,7 +604,7 @@ static void createTransObject(bContext *C, TransInfo *t)
     View3D *v3d = t->view;
 
     BKE_view_layer_ensure_sync(scene, view_layer);
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
 
       /* if base is not selected, not a parent of selection
@@ -653,7 +653,7 @@ static void createTransObject(bContext *C, TransInfo *t)
     ViewLayer *view_layer = t->view_layer;
 
     BKE_view_layer_ensure_sync(scene, view_layer);
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
       if (ob->parent != NULL) {
         if (ob->parent && !BLI_gset_haskey(objects_in_transdata, ob->parent) &&
@@ -683,7 +683,7 @@ static void createTransObject(bContext *C, TransInfo *t)
       }
     }
 
-    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
       Object *ob = base->object;
 
       if (BASE_XFORM_INDIRECT(base) || BLI_gset_haskey(objects_in_transdata, ob)) {

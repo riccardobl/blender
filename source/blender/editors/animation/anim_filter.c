@@ -1863,7 +1863,7 @@ static size_t animdata_filter_gpencil(bAnimContext *ac,
   }
   /* Objects in the scene */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     /* Only consider this object if it has got some GP data (saving on all the other tests) */
     if (base->object && (base->object->type == OB_GPENCIL)) {
       Object *ob = base->object;
@@ -3180,7 +3180,7 @@ static Base **animdata_filter_ds_sorted_bases(bDopeSheet *ads,
 {
   /* Create an array with space for all the bases, but only containing the usable ones */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
+  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   size_t tot_bases = BLI_listbase_count(object_bases);
   size_t num_bases = 0;
 
@@ -3256,7 +3256,7 @@ static size_t animdata_filter_dopesheet(bAnimContext *ac,
    * - Don't do this if there's just a single object
    */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer, __func__);
+  ListBase *object_bases = BKE_view_layer_object_bases_get(view_layer);
   if ((filter_mode & ANIMFILTER_LIST_CHANNELS) && !(ads->flag & ADS_FLAG_NO_DB_SORT) &&
       (object_bases->first != object_bases->last)) {
     /* Filter list of bases (i.e. objects), sort them, then add their contents normally... */

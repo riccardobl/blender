@@ -230,7 +230,7 @@ Base *ED_object_find_first_by_data_id(const Scene *scene, ViewLayer *view_layer,
   Base *base_best = NULL;
   int priority_best = 0;
 
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->object && base->object->data == id) {
       if (base->flag & BASE_SELECTED) {
         return base;
@@ -1308,7 +1308,7 @@ static bool object_select_more_less(bContext *C, const bool select)
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *ob = base->object;
     ob->flag &= ~OB_DONE;
     ob->id.tag &= ~LIB_TAG_DOIT;

@@ -286,7 +286,7 @@ void BKE_view_layer_free_ex(ViewLayer *view_layer, const bool do_id_user)
 void BKE_view_layer_selected_objects_tag(const Scene *scene, ViewLayer *view_layer, const int tag)
 {
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if ((base->flag & BASE_SELECTED) != 0) {
       base->object->flag |= tag;
     }
@@ -312,7 +312,7 @@ static bool find_scene_collection_in_scene_collections(ListBase *lb, const Layer
 Object *BKE_view_layer_camera_find(const Scene *scene, ViewLayer *view_layer)
 {
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     if (base->object->type == OB_CAMERA) {
       return base->object;
     }
@@ -392,7 +392,7 @@ Base *BKE_view_layer_base_find(ViewLayer *view_layer, Object *ob)
 void BKE_view_layer_base_deselect_all(const Scene *scene, ViewLayer *view_layer)
 {
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->flag &= ~BASE_SELECTED;
   }
 }
@@ -1526,7 +1526,7 @@ void BKE_base_set_visible(Scene *scene, ViewLayer *view_layer, Base *base, bool 
   if (!extend) {
     /* Make only one base visible. */
     BKE_view_layer_ensure_sync(scene, view_layer);
-    LISTBASE_FOREACH (Base *, other, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+    LISTBASE_FOREACH (Base *, other, BKE_view_layer_object_bases_get(view_layer)) {
       other->flag |= BASE_HIDDEN;
     }
 
@@ -1721,7 +1721,7 @@ void BKE_layer_collection_local_sync(const Scene *scene, ViewLayer *view_layer, 
 
   /* Reset flags and set the bases visible by default. */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     base->local_collections_bits &= ~local_collections_uuid;
   }
 
@@ -1977,7 +1977,7 @@ static void object_bases_iterator_begin(BLI_Iterator *iter, void *data_in_v, con
   ObjectsVisibleIteratorData *data_in = data_in_v;
   ViewLayer *view_layer = data_in->view_layer;
   const View3D *v3d = data_in->v3d;
-  Base *base = BKE_view_layer_object_bases_get(view_layer, __func__)->first;
+  Base *base = BKE_view_layer_object_bases_get(view_layer)->first;
 
   /* when there are no objects */
   if (base == NULL) {
@@ -2279,13 +2279,12 @@ static void layer_eval_view_layer(struct Depsgraph *depsgraph,
 
   /* Create array of bases, for fast index-based lookup. */
   BKE_view_layer_ensure_sync(scene, view_layer);
-  const int num_object_bases = BLI_listbase_count(
-      BKE_view_layer_object_bases_get(view_layer, __func__));
+  const int num_object_bases = BLI_listbase_count(BKE_view_layer_object_bases_get(view_layer));
   MEM_SAFE_FREE(view_layer->object_bases_array);
   view_layer->object_bases_array = MEM_malloc_arrayN(
       num_object_bases, sizeof(Base *), "view_layer->object_bases_array");
   int base_index = 0;
-  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer, __func__)) {
+  LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     view_layer->object_bases_array[base_index++] = base;
   }
 }
@@ -2319,7 +2318,7 @@ void BKE_view_layer_blend_write(BlendWriter *writer, const Scene *scene, ViewLay
 {
   BKE_view_layer_ensure_sync(scene, view_layer);
   BLO_write_struct(writer, ViewLayer, view_layer);
-  BLO_write_struct_list(writer, Base, BKE_view_layer_object_bases_get(view_layer, __func__));
+  BLO_write_struct_list(writer, Base, BKE_view_layer_object_bases_get(view_layer));
 
   if (view_layer->id_properties) {
     IDP_BlendWrite(writer, view_layer->id_properties);
