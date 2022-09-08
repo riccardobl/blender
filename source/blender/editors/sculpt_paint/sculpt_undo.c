@@ -399,7 +399,9 @@ static bool sculpt_undo_restore_hidden(bContext *C, SculptUndoNode *unode, bool 
 
 static bool sculpt_undo_restore_color(bContext *C, SculptUndoNode *unode, bool *modified_vertices)
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
+  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   SculptSession *ss = ob->sculpt;
 

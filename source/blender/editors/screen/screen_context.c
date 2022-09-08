@@ -233,7 +233,6 @@ static eContextResult screen_ctx_objects_in_mode_unique_data(const bContext *C,
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   BKE_view_layer_ensure_sync(scene, view_layer);
-  BKE_view_layer_ensure_sync(scene, view_layer);
   Object *obact = BKE_view_layer_active_object_get(view_layer);
 
   if (obact && (obact->mode != OB_MODE_OBJECT)) {
