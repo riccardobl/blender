@@ -1134,7 +1134,7 @@ static int pose_flip_quats_exec(bContext *C, wmOperator *UNUSED(op))
         /* quaternions have 720 degree range */
         negate_v4(pchan->quat);
 
-        ED_autokeyframe_pchan(C, ob_iter, pchan, ks);
+        ED_autokeyframe_pchan(C, scene, ob_iter, pchan, ks);
       }
     }
     FOREACH_PCHAN_SELECTED_IN_OBJECT_END;

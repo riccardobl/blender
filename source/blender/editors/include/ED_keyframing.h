@@ -654,6 +654,7 @@ bool ED_autokeyframe_object(struct bContext *C,
                             struct Object *ob,
                             struct KeyingSet *ks);
 bool ED_autokeyframe_pchan(struct bContext *C,
+                           struct Scene *scene,
                            struct Object *ob,
                            struct bPoseChannel *pchan,
                            struct KeyingSet *ks);

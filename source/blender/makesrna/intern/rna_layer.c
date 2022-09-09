@@ -348,10 +348,17 @@ static bool rna_LayerCollection_has_objects(LayerCollection *lc)
 }
 
 static bool rna_LayerCollection_has_selected_objects(LayerCollection *lc,
-                                                     const Scene *scene,
+                                                     Main *bmain,
                                                      ViewLayer *view_layer)
 {
-  return BKE_layer_collection_has_selected_objects(scene, view_layer, lc);
+  LISTBASE_FOREACH (Scene *, scene, &bmain->scenes) {
+    LISTBASE_FOREACH (ViewLayer *, scene_view_layer, &scene->view_layers) {
+      if (scene_view_layer == view_layer) {
+        return BKE_layer_collection_has_selected_objects(scene, view_layer, lc);
+      }
+    }
+  }
+  return false;
 }
 
 #else
@@ -444,6 +451,7 @@ static void rna_def_layer_collection(BlenderRNA *brna)
 
   func = RNA_def_function(
       srna, "has_selected_objects", "rna_LayerCollection_has_selected_objects");
+  RNA_def_function_flag(func, FUNC_USE_MAIN);
   RNA_def_function_ui_description(func, "");
   prop = RNA_def_pointer(
       func, "view_layer", "ViewLayer", "", "View layer the layer collection belongs to");

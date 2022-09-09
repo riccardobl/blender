@@ -2880,7 +2880,7 @@ bool BKE_scene_uses_cycles_experimental_features(Scene *scene)
   return RNA_enum_get(&cycles_ptr, "feature_set") == CYCLES_FEATURES_EXPERIMENTAL;
 }
 
-void BKE_scene_base_flag_to_objects(ViewLayer *view_layer)
+void BKE_scene_base_flag_to_objects(const Scene *UNUSED(scene), ViewLayer *view_layer)
 {
   Base *base = static_cast<Base *>(view_layer->object_bases.first);
 
