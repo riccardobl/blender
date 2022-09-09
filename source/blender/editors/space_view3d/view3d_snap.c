@@ -152,7 +152,7 @@ static int snap_sel_to_grid_exec(bContext *C, wmOperator *UNUSED(op))
               }
 
               /* auto-keyframing */
-              ED_autokeyframe_pchan(C, scene, ob, pchan, ks);
+              ED_autokeyframe_pchan(C, ob, pchan, ks);
             }
             /* if the bone has a parent and is connected to the parent,
              * don't do anything - will break chain unless we do auto-ik.
@@ -374,7 +374,6 @@ static bool snap_selected_to_location(bContext *C,
   }
   else if (OBPOSE_FROM_OBACT(obact)) {
     struct KeyingSet *ks = ANIM_get_keyingset_for_autokeying(scene, ANIM_KS_LOCATION_ID);
-    const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     uint objects_len = 0;
     Object **objects = BKE_object_pose_array_get(scene, view_layer, v3d, &objects_len);
@@ -433,7 +432,7 @@ static bool snap_selected_to_location(bContext *C,
             }
 
             /* auto-keyframing */
-            ED_autokeyframe_pchan(C, scene, ob, pchan, ks);
+            ED_autokeyframe_pchan(C, ob, pchan, ks);
           }
           else {
             copy_v3_v3(pchan->loc, cursor_pose);

@@ -315,7 +315,7 @@ static void rna_LayerCollection_exclude_update(Main *bmain, Scene *UNUSED(scene)
   if (!exclude) {
     /* We need to update animation of objects added back to the scene through enabling this view
      * layer. */
-    FOREACH_OBJECT_BEGIN (view_layer, ob) {
+    FOREACH_OBJECT_BEGIN (scene, view_layer, ob) {
       DEG_id_tag_update(&ob->id, ID_RECALC_ANIMATION);
     }
     FOREACH_OBJECT_END;

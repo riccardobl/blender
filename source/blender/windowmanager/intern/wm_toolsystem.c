@@ -270,6 +270,7 @@ void WM_toolsystem_refresh_all(struct bContext *C, struct WorkSpace *workspace)
 void WM_toolsystem_reinit_all(struct bContext *C, wmWindow *win)
 {
   bScreen *screen = WM_window_get_active_screen(win);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   LISTBASE_FOREACH (ScrArea *, area, &screen->areabase) {
     if (((1 << area->spacetype) & WM_TOOLSYSTEM_SPACE_MASK) == 0) {
@@ -279,7 +280,7 @@ void WM_toolsystem_reinit_all(struct bContext *C, wmWindow *win)
     WorkSpace *workspace = WM_window_get_active_workspace(win);
     const bToolKey tkey = {
         .space_type = area->spacetype,
-        .mode = WM_toolsystem_mode_from_spacetype(view_layer, area, area->spacetype),
+        .mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, area->spacetype),
     };
     bToolRef *tref = WM_toolsystem_ref_find(workspace, &tkey);
     if (tref) {
@@ -476,7 +477,7 @@ int WM_toolsystem_mode_from_spacetype(const Scene *UNUSED(scene),
   return mode;
 }
 
-bool WM_toolsystem_key_from_context(const Scene *UNUSED(scene),
+bool WM_toolsystem_key_from_context(const Scene *scene,
                                     ViewLayer *view_layer,
                                     ScrArea *area,
                                     bToolKey *tkey)
@@ -486,7 +487,7 @@ bool WM_toolsystem_key_from_context(const Scene *UNUSED(scene),
 
   if (area != NULL) {
     space_type = area->spacetype;
-    mode = WM_toolsystem_mode_from_spacetype(view_layer, area, space_type);
+    mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, space_type);
   }
 
   if (mode != -1) {
@@ -512,6 +513,7 @@ void WM_toolsystem_refresh_active(bContext *C)
     LISTBASE_FOREACH (wmWindow *, win, &wm->windows) {
       WorkSpace *workspace = WM_window_get_active_workspace(win);
       bScreen *screen = WM_window_get_active_screen(win);
+      const Scene *scene = WM_window_get_active_scene(win);
       ViewLayer *view_layer = WM_window_get_active_view_layer(win);
       /* Could skip loop for modes that don't depend on space type. */
       int space_type_mask_handled = 0;
@@ -523,7 +525,7 @@ void WM_toolsystem_refresh_active(bContext *C)
           space_type_mask_handled |= space_type_mask;
           const bToolKey tkey = {
               .space_type = area->spacetype,
-              .mode = WM_toolsystem_mode_from_spacetype(view_layer, area, area->spacetype),
+              .mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, area->spacetype),
           };
           bToolRef *tref = WM_toolsystem_ref_find(workspace, &tkey);
           if (tref != area->runtime.tool) {
@@ -566,13 +568,13 @@ void WM_toolsystem_refresh_active(bContext *C)
 }
 
 void WM_toolsystem_refresh_screen_area(WorkSpace *workspace,
-                                       const Scene *UNUSED(scene),
+                                       const Scene *scene,
                                        ViewLayer *view_layer,
                                        ScrArea *area)
 {
   area->runtime.tool = NULL;
   area->runtime.is_tool_set = true;
-  const int mode = WM_toolsystem_mode_from_spacetype(view_layer, area, area->spacetype);
+  const int mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, area->spacetype);
   LISTBASE_FOREACH (bToolRef *, tref, &workspace->tools) {
     if (tref->space_type == area->spacetype) {
       if (tref->mode == mode) {
@@ -621,10 +623,11 @@ static void toolsystem_refresh_screen_from_active_tool(Main *bmain,
     LISTBASE_FOREACH (wmWindow *, win, &wm->windows) {
       if (workspace == WM_window_get_active_workspace(win)) {
         bScreen *screen = WM_window_get_active_screen(win);
+        const Scene *scene = WM_window_get_active_scene(win);
         ViewLayer *view_layer = WM_window_get_active_view_layer(win);
         LISTBASE_FOREACH (ScrArea *, area, &screen->areabase) {
           if (area->spacetype == tref->space_type) {
-            int mode = WM_toolsystem_mode_from_spacetype(view_layer, area, area->spacetype);
+            int mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, area->spacetype);
             if (mode == tref->mode) {
               area->runtime.tool = tref;
               area->runtime.is_tool_set = true;
@@ -773,11 +776,12 @@ static bToolRef *toolsystem_reinit_ensure_toolref(bContext *C,
 
 static void wm_toolsystem_update_from_context_view3d_impl(bContext *C, WorkSpace *workspace)
 {
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int space_type = SPACE_VIEW3D;
   const bToolKey tkey = {
       .space_type = space_type,
-      .mode = WM_toolsystem_mode_from_spacetype(view_layer, NULL, space_type),
+      .mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, NULL, space_type),
   };
   toolsystem_reinit_ensure_toolref(C, workspace, &tkey, NULL);
 }
@@ -813,15 +817,12 @@ void WM_toolsystem_update_from_context_view3d(bContext *C)
   }
 }
 
-void WM_toolsystem_update_from_context(bContext *C,
-                                       WorkSpace *workspace,
-                                       const Scene *UNUSED(scene),
-                                       ViewLayer *view_layer,
-                                       ScrArea *area)
+void WM_toolsystem_update_from_context(
+    bContext *C, WorkSpace *workspace, const Scene *scene, ViewLayer *view_layer, ScrArea *area)
 {
   const bToolKey tkey = {
       .space_type = area->spacetype,
-      .mode = WM_toolsystem_mode_from_spacetype(view_layer, area, area->spacetype),
+      .mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, area->spacetype),
   };
   if (toolsystem_key_ensure_check(&tkey)) {
     toolsystem_reinit_ensure_toolref(C, workspace, &tkey, NULL);
@@ -856,7 +857,7 @@ void WM_toolsystem_do_msg_notify_tag_refresh(bContext *C,
 
   const bToolKey tkey = {
       .space_type = area->spacetype,
-      .mode = WM_toolsystem_mode_from_spacetype(view_layer, area, area->spacetype),
+      .mode = WM_toolsystem_mode_from_spacetype(scene, view_layer, area, area->spacetype),
   };
   WM_toolsystem_refresh(C, workspace, &tkey);
   WM_toolsystem_refresh_screen_area(workspace, scene, view_layer, area);

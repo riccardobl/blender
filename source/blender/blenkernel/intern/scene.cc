@@ -1056,7 +1056,7 @@ static void scene_blend_write(BlendWriter *writer, ID *id, const void *id_addres
   BKE_curvemapping_curves_blend_write(writer, &sce->r.mblur_shutter_curve);
 
   LISTBASE_FOREACH (ViewLayer *, view_layer, &sce->view_layers) {
-    BKE_view_layer_blend_write(writer, view_layer);
+    BKE_view_layer_blend_write(writer, sce, view_layer);
   }
 
   if (sce->master_collection) {
