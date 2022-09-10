@@ -1044,8 +1044,16 @@ static int localview_exec(bContext *C, wmOperator *op)
     changed = true;
   }
   else {
-    changed = view3d_localview_init(
-        depsgraph, wm, win, bmain, scene, view_layer, area, frame_selected, smooth_viewtx, op->reports);
+    changed = view3d_localview_init(depsgraph,
+                                    wm,
+                                    win,
+                                    bmain,
+                                    scene,
+                                    view_layer,
+                                    area,
+                                    frame_selected,
+                                    smooth_viewtx,
+                                    op->reports);
   }
 
   if (changed) {

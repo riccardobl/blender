@@ -438,7 +438,7 @@ void BKE_view_layer_visible_bases_iterator_end(BLI_Iterator *iter);
   { \
     Object *_instance; \
     Base *_base; \
-    UNUSED_VARS(scene);\
+    UNUSED_VARS(scene); \
     for (_base = (Base *)(view_layer)->object_bases.first; _base; _base = _base->next) { \
       _instance = _base->object;
 
