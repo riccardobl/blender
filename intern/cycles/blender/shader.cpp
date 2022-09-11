@@ -103,6 +103,7 @@ static ImageAlphaType get_image_alpha_type(BL::Image &b_image)
 
 static const string_view object_attr_prefix("\x01object:");
 static const string_view instancer_attr_prefix("\x01instancer:");
+static const string_view view_layer_attr_prefix("\x01layer:");
 
 static ustring blender_attribute_name_add_type(const string &name, BlenderAttributeType type)
 {
@@ -111,6 +112,8 @@ static ustring blender_attribute_name_add_type(const string &name, BlenderAttrib
       return ustring::concat(object_attr_prefix, name);
     case BL::ShaderNodeAttribute::attribute_type_INSTANCER:
       return ustring::concat(instancer_attr_prefix, name);
+    case BL::ShaderNodeAttribute::attribute_type_VIEW_LAYER:
+      return ustring::concat(view_layer_attr_prefix, name);
     default:
       return ustring(name);
   }
@@ -128,6 +131,11 @@ BlenderAttributeType blender_attribute_name_split_type(ustring name, string *r_r
   if (sname.substr(0, instancer_attr_prefix.size()) == instancer_attr_prefix) {
     *r_real_name = sname.substr(instancer_attr_prefix.size());
     return BL::ShaderNodeAttribute::attribute_type_INSTANCER;
+  }
+
+  if (sname.substr(0, view_layer_attr_prefix.size()) == view_layer_attr_prefix) {
+    *r_real_name = sname.substr(view_layer_attr_prefix.size());
+    return BL::ShaderNodeAttribute::attribute_type_VIEW_LAYER;
   }
 
   return BL::ShaderNodeAttribute::attribute_type_GEOMETRY;
@@ -1420,6 +1428,84 @@ static void add_nodes(Scene *scene,
             empty_proxy_map);
 }
 
+/* Look up and constant fold all references to View Layer attributes. */
+static bool resolve_view_layer_attributes(ShaderGraph *graph, BL::Depsgraph &b_depsgraph)
+{
+  bool updated = false;
+
+  foreach (ShaderNode *node, graph->nodes) {
+    if (node->is_a(AttributeNode::node_type)) {
+      AttributeNode *attr_node = static_cast<AttributeNode *>(node);
+
+      std::string real_name;
+      BlenderAttributeType type = blender_attribute_name_split_type(attr_node->get_attribute(),
+                                                                    &real_name);
+
+      if (type == BL::ShaderNodeAttribute::attribute_type_VIEW_LAYER) {
+        /* Look up the value. */
+        string idprop_name = string_printf("[\"%s\"]", real_name.c_str());
+        float4 value;
+
+        if (!(lookup_property(b_depsgraph.view_layer_eval(), idprop_name, &value) ||
+              lookup_property(b_depsgraph.view_layer_eval(), real_name, &value) ||
+              lookup_property(b_depsgraph.scene_eval(), idprop_name, &value) ||
+              lookup_property(b_depsgraph.scene_eval(), real_name, &value))) {
+          value = zero_float4();
+        }
+
+        /* Replace all outgoing links, using appropriate output types. */
+        float val_avg = (value.x + value.y + value.z) / 3.0f;
+
+        foreach (ShaderOutput *output, node->outputs) {
+          float val_float;
+          float3 val_float3;
+
+          if (output->type() == SocketType::FLOAT) {
+            val_float = (output->name() == "Alpha") ? value.w : val_avg;
+            val_float3 = make_float3(val_float);
+          }
+          else {
+            val_float = val_avg;
+            val_float3 = float4_to_float3(value);
+          }
+
+          foreach (ShaderInput *sock, output->links) {
+            if (sock->type() == SocketType::FLOAT) {
+              sock->set(val_float);
+            }
+            else if (SocketType::is_float3(sock->type())) {
+              sock->set(val_float3);
+            }
+
+            sock->constant_folded_in = true;
+          }
+
+          graph->disconnect(output);
+        }
+
+        attr_node->set_attribute(ustring(""));
+        updated = true;
+      }
+    }
+  }
+
+  return updated;
+}
+
+static bool scene_attr_needs_recalc(Shader *shader,
+                                    id_map<void *, Shader> &shader_map,
+                                    BL::Depsgraph &b_depsgraph)
+{
+  if (shader && shader->has_blender_scene_attrs) {
+    BL::Scene scene = b_depsgraph.scene_eval();
+
+    return shader_map.check_recalc(scene) || shader_map.check_recalc(scene.world()) ||
+           shader_map.check_recalc(scene.camera());
+  }
+
+  return false;
+}
+
 /* Sync Materials */
 
 void BlenderSync::sync_materials(BL::Depsgraph &b_depsgraph, bool update_all)
@@ -1438,17 +1524,22 @@ void BlenderSync::sync_materials(BL::Depsgraph &b_depsgraph, bool update_all)
     Shader *shader;
 
     /* test if we need to sync */
-    if (shader_map.add_or_update(&shader, b_mat) || update_all) {
+    if (shader_map.add_or_update(&shader, b_mat) || update_all ||
+        scene_attr_needs_recalc(shader, shader_map, b_depsgraph)) {
       ShaderGraph *graph = new ShaderGraph();
 
       shader->name = b_mat.name().c_str();
       shader->set_pass_id(b_mat.pass_index());
+
+      shader->has_blender_scene_attrs = false;
 
       /* create nodes */
       if (b_mat.use_nodes() && b_mat.node_tree()) {
         BL::ShaderNodeTree b_ntree(b_mat.node_tree());
 
         add_nodes(scene, b_engine, b_data, b_depsgraph, b_scene, graph, b_ntree);
+
+        shader->has_blender_scene_attrs = resolve_view_layer_attributes(graph, b_depsgraph);
       }
       else {
         DiffuseBsdfNode *diffuse = graph->create_node<DiffuseBsdfNode>();
@@ -1515,10 +1606,14 @@ void BlenderSync::sync_world(BL::Depsgraph &b_depsgraph, BL::SpaceView3D &b_v3d,
 
   BlenderViewportParameters new_viewport_parameters(b_v3d, use_developer_ui);
 
+  Shader *shader = scene->default_background;
+
   if (world_recalc || update_all || b_world.ptr.data != world_map ||
-      viewport_parameters.shader_modified(new_viewport_parameters)) {
-    Shader *shader = scene->default_background;
+      viewport_parameters.shader_modified(new_viewport_parameters) ||
+      scene_attr_needs_recalc(shader, shader_map, b_depsgraph)) {
     ShaderGraph *graph = new ShaderGraph();
+
+    shader->has_blender_scene_attrs = false;
 
     /* create nodes */
     if (new_viewport_parameters.use_scene_world && b_world && b_world.use_nodes() &&
@@ -1526,6 +1621,8 @@ void BlenderSync::sync_world(BL::Depsgraph &b_depsgraph, BL::SpaceView3D &b_v3d,
       BL::ShaderNodeTree b_ntree(b_world.node_tree());
 
       add_nodes(scene, b_engine, b_data, b_depsgraph, b_scene, graph, b_ntree);
+
+      shader->has_blender_scene_attrs = resolve_view_layer_attributes(graph, b_depsgraph);
 
       /* volume */
       PointerRNA cworld = RNA_pointer_get(&b_world.ptr, "cycles");
@@ -1681,8 +1778,11 @@ void BlenderSync::sync_lights(BL::Depsgraph &b_depsgraph, bool update_all)
     Shader *shader;
 
     /* test if we need to sync */
-    if (shader_map.add_or_update(&shader, b_light) || update_all) {
+    if (shader_map.add_or_update(&shader, b_light) || update_all ||
+        scene_attr_needs_recalc(shader, shader_map, b_depsgraph)) {
       ShaderGraph *graph = new ShaderGraph();
+
+      shader->has_blender_scene_attrs = false;
 
       /* create nodes */
       if (b_light.use_nodes() && b_light.node_tree()) {
@@ -1691,6 +1791,8 @@ void BlenderSync::sync_lights(BL::Depsgraph &b_depsgraph, bool update_all)
         BL::ShaderNodeTree b_ntree(b_light.node_tree());
 
         add_nodes(scene, b_engine, b_data, b_depsgraph, b_scene, graph, b_ntree);
+
+        shader->has_blender_scene_attrs = resolve_view_layer_attributes(graph, b_depsgraph);
       }
       else {
         EmissionNode *emission = graph->create_node<EmissionNode>();

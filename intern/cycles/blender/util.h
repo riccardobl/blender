@@ -54,6 +54,8 @@ struct BObjectInfo {
 typedef BL::ShaderNodeAttribute::attribute_type_enum BlenderAttributeType;
 BlenderAttributeType blender_attribute_name_split_type(ustring name, string *r_real_name);
 
+bool lookup_property(BL::Pointer b_id, const string &name, float4 *r_value);
+
 void python_thread_state_save(void **python_thread_state);
 void python_thread_state_restore(void **python_thread_state);
 

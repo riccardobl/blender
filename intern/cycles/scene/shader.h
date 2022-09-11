@@ -90,6 +90,8 @@ class Shader : public Node {
   bool need_update_attribute;
   bool need_update_displacement;
 
+  bool has_blender_scene_attrs;
+
   /* If the shader has only volume components, the surface is assumed to
    * be transparent.
    * However, graph optimization might remove the volume subgraph, but

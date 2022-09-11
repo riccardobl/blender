@@ -210,6 +210,8 @@ Shader::Shader() : Node(get_node_type())
   need_update_uvs = true;
   need_update_attribute = true;
   need_update_displacement = true;
+
+  has_blender_scene_attrs = false;
 }
 
 Shader::~Shader()

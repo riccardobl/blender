@@ -207,6 +207,7 @@ class BlenderSync {
   bool object_is_geometry(BObjectInfo &b_ob_info);
   bool object_can_have_geometry(BL::Object &b_ob);
   bool object_is_light(BL::Object &b_ob);
+  bool object_is_camera(BL::Object &b_ob);
 
   /* variables */
   BL::RenderEngine b_engine;
