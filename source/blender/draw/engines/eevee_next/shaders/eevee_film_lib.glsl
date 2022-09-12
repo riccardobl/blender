@@ -740,7 +740,7 @@ void film_process_data(ivec2 texel_film, out vec4 out_color, out float out_depth
   }
 
   if (film_buf.cryptomatte_samples_len != 0) {
-    /* Cryptomatte passess cannot be cleared by a weighted store like other passes. */
+    /* Cryptomatte passes cannot be cleared by a weighted store like other passes. */
     if (!film_buf.use_history || film_buf.use_reprojection) {
       cryptomatte_clear_samples(dst);
     }
