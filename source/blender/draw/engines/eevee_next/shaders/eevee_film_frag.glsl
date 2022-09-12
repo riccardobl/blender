@@ -13,11 +13,11 @@ void main()
     if (film_buf.display_id == -1) {
       out_color = texelFetch(in_combined_tx, texel_film, 0);
     }
-    else if (film_buf.storage_type == PASS_STORAGE_VALUE) {
+    else if (film_buf.display_storage_type == PASS_STORAGE_VALUE) {
       out_color.rgb = imageLoad(value_accum_img, ivec3(texel_film, film_buf.display_id)).rrr;
       out_color.a = 1.0;
     }
-    else if (film_buf.storage_type == PASS_STORAGE_COLOR) {
+    else if (film_buf.display_storage_type == PASS_STORAGE_COLOR) {
       out_color = imageLoad(color_accum_img, ivec3(texel_film, film_buf.display_id));
     }
     else /* PASS_STORAGE_CRYPTOMATTE */ {

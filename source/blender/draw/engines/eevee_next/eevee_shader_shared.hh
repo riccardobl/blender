@@ -261,8 +261,8 @@ struct FilmData {
   int combined_id;
   /** Id of the render-pass to be displayed. -1 for combined. */
   int display_id;
-  /** Storage type of the render-pass to be displayed (ePassStorageType). */
-  int storage_type;
+  /** Storage type of the render-pass to be displayed. */
+  ePassStorageType display_storage_type;
   /** True if we bypass the accumulation and directly output the accumulation buffer. */
   bool1 display_only;
   /** Start of AOVs and number of aov. */

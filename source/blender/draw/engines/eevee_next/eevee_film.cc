@@ -291,7 +291,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
     /* Set pass offsets.  */
 
     data_.display_id = aovs_info.display_id;
-    data_.storage_type = aovs_info.display_is_value ? PASS_STORAGE_VALUE : PASS_STORAGE_COLOR;
+    data_.display_storage_type = aovs_info.display_is_value ? PASS_STORAGE_VALUE : PASS_STORAGE_COLOR;
 
     /* Combined is in a separate buffer. */
     data_.combined_id = (enabled_passes_ & EEVEE_RENDER_PASS_COMBINED) ? 0 : -1;
@@ -308,7 +308,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
                       -1;
       if (inst_.is_viewport() && inst_.v3d->shading.render_pass == pass_type) {
         data_.display_id = index;
-        data_.storage_type = storage_type;
+        data_.display_storage_type = storage_type;
       }
       return index;
     };
@@ -344,7 +344,7 @@ void Film::init(const int2 &extent, const rcti *output_rect)
 
         if (inst_.is_viewport() && inst_.v3d->shading.render_pass == pass_type) {
           data_.display_id = index;
-          data_.storage_type = PASS_STORAGE_CRYPTOMATTE;
+          data_.display_storage_type = PASS_STORAGE_CRYPTOMATTE;
         }
       }
       return index;
