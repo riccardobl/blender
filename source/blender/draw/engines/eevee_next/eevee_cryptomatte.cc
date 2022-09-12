@@ -112,11 +112,6 @@ float Cryptomatte::register_id(const eViewLayerEEVEEPassType layer, const ID &id
   return BKE_cryptomatte_hash_to_float(cryptomatte_hash);
 }
 
-void Cryptomatte::bind_resources(DRWShadingGroup *grp)
-{
-  DRW_shgroup_storage_block_ref(grp, "cryptomatte_object_buf", &cryptomatte_object_buf);
-}
-
 void Cryptomatte::store_metadata(RenderResult *render_result)
 {
   if (session_) {

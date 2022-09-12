@@ -55,7 +55,10 @@ class Cryptomatte {
 
   void store_metadata(RenderResult *render_result);
 
-  void bind_resources(DRWShadingGroup *grp);
+  template<typename T> void bind_resources(draw::detail::PassBase<T> *pass)
+  {
+    pass->bind_ssbo(CRYPTOMATTE_BUF_SLOT, &cryptomatte_object_buf);
+  }
 
   /* Register ID to use inside cryptomatte layer and returns associated hash as float. */
   float register_id(const eViewLayerEEVEEPassType layer, const ID &id) const;

@@ -60,8 +60,8 @@ class Film {
   /** User setting to disable reprojection. Useful for debugging or have a more precise render. */
   bool force_disable_reprojection_ = false;
 
-  DRWPass *accumulate_ps_ = nullptr;
-  DRWPass *cryptomatte_post_ps_ = nullptr;
+  PassSimple accumulate_ps_ = {"Film.Accumulate"};
+  PassSimple cryptomatte_post_ps_ = {"Film.Cryptomatte.Post"};
 
   FilmDataBuf data_;
 

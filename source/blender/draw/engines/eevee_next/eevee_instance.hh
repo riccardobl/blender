@@ -61,6 +61,7 @@ class Instance {
 
   /** Input data. */
   Depsgraph *depsgraph;
+  Manager *manager;
   /** Evaluated IDs. */
   Scene *scene;
   ViewLayer *view_layer;

@@ -3650,7 +3650,7 @@ static int gpencil_stroke_join_exec(bContext *C, wmOperator *op)
     }
     elem = &strokes_list[i];
     /* Join new_stroke and stroke B. */
-    BKE_gpencil_stroke_join(gps_new, elem->gps, leave_gaps, true, false);
+    BKE_gpencil_stroke_join(gps_new, elem->gps, leave_gaps, true, false, true);
     elem->used = true;
   }
 
@@ -3782,6 +3782,101 @@ void GPENCIL_OT_stroke_flip(wmOperatorType *ot)
 
   /* api callbacks */
   ot->exec = gpencil_stroke_flip_exec;
+  ot->poll = gpencil_active_layer_poll;
+
+  /* flags */
+  ot->flag = OPTYPE_REGISTER | OPTYPE_UNDO;
+}
+
+/** \} */
+
+/* -------------------------------------------------------------------- */
+/** \name Stroke Start Set Operator
+ * \{ */
+
+static int gpencil_stroke_start_set_exec(bContext *C, wmOperator *op)
+{
+  Object *ob = CTX_data_active_object(C);
+  bGPdata *gpd = ob->data;
+
+  /* sanity checks */
+  if (ELEM(NULL, ob, gpd)) {
+    return OPERATOR_CANCELLED;
+  }
+
+  const bool is_multiedit = (bool)GPENCIL_MULTIEDIT_SESSIONS_ON(gpd);
+  const bool is_curve_edit = (bool)GPENCIL_CURVE_EDIT_SESSIONS_ON(gpd);
+  if (is_curve_edit) {
+    BKE_report(op->reports, RPT_ERROR, "Curve Edit mode not supported");
+    return OPERATOR_CANCELLED;
+  }
+
+  bool changed = false;
+  /* Read all selected strokes. */
+  CTX_DATA_BEGIN (C, bGPDlayer *, gpl, editable_gpencil_layers) {
+    bGPDframe *init_gpf = (is_multiedit) ? gpl->frames.first : gpl->actframe;
+
+    for (bGPDframe *gpf = init_gpf; gpf; gpf = gpf->next) {
+      if ((gpf == gpl->actframe) || ((gpf->flag & GP_FRAME_SELECT) && (is_multiedit))) {
+        if (gpf == NULL) {
+          continue;
+        }
+        LISTBASE_FOREACH (bGPDstroke *, gps, &gpf->strokes) {
+          if (gps->flag & GP_STROKE_SELECT) {
+            /* skip strokes that are invalid for current view */
+            if (ED_gpencil_stroke_can_use(C, gps) == false) {
+              continue;
+            }
+            /* check if the color is editable */
+            if (ED_gpencil_stroke_material_editable(ob, gpl, gps) == false) {
+              continue;
+            }
+
+            /* Only cyclic strokes. */
+            if ((gps->flag & GP_STROKE_CYCLIC) == 0) {
+              continue;
+            }
+
+            /* Find first selected point and set start. */
+            bGPDspoint *pt;
+            for (int i = 0; i < gps->totpoints; i++) {
+              pt = &gps->points[i];
+              if (pt->flag & GP_SPOINT_SELECT) {
+                BKE_gpencil_stroke_start_set(gps, i);
+                BKE_gpencil_stroke_geometry_update(gpd, gps);
+                changed = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+      /* If not multi-edit, exit loop. */
+      if (!is_multiedit) {
+        break;
+      }
+    }
+  }
+  CTX_DATA_END;
+
+  if (changed) {
+    /* notifiers */
+    DEG_id_tag_update(&gpd->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY);
+    WM_event_add_notifier(C, NC_GPENCIL | ND_DATA | NA_EDITED, NULL);
+  }
+
+  return OPERATOR_FINISHED;
+}
+
+void GPENCIL_OT_stroke_start_set(wmOperatorType *ot)
+{
+  /* identifiers */
+  ot->name = "Set Start Point";
+  ot->idname = "GPENCIL_OT_stroke_start_set";
+  ot->description = "Set start point for cyclic strokes";
+
+  /* api callbacks */
+  ot->exec = gpencil_stroke_start_set_exec;
   ot->poll = gpencil_active_layer_poll;
 
   /* flags */
@@ -4001,40 +4096,35 @@ static int gpencil_stroke_outline_exec(bContext *C, wmOperator *op)
 
   bool changed = false;
 
-  float viewmat[4][4], viewinv[4][4];
+  float viewmat[4][4];
   copy_m4_m4(viewmat, rv3d->viewmat);
-  copy_m4_m4(viewinv, rv3d->viewinv);
 
   switch (view_mode) {
     case GP_PERIMETER_FRONT:
       unit_m4(rv3d->viewmat);
-      rv3d->viewmat[1][1] = 0.0f;
-      rv3d->viewmat[1][2] = -1.0f;
+      viewmat[1][1] = 0.0f;
+      viewmat[1][2] = -1.0f;
 
-      rv3d->viewmat[2][1] = 1.0f;
-      rv3d->viewmat[2][2] = 0.0f;
+      viewmat[2][1] = 1.0f;
+      viewmat[2][2] = 0.0f;
 
-      rv3d->viewmat[3][2] = -10.0f;
-      invert_m4_m4(rv3d->viewinv, rv3d->viewmat);
+      viewmat[3][2] = -10.0f;
       break;
     case GP_PERIMETER_SIDE:
-      zero_m4(rv3d->viewmat);
-      rv3d->viewmat[0][2] = 1.0f;
-      rv3d->viewmat[1][0] = 1.0f;
-      rv3d->viewmat[2][1] = 1.0f;
-      rv3d->viewmat[3][3] = 1.0f;
-      invert_m4_m4(rv3d->viewinv, rv3d->viewmat);
+      zero_m4(viewmat);
+      viewmat[0][2] = 1.0f;
+      viewmat[1][0] = 1.0f;
+      viewmat[2][1] = 1.0f;
+      viewmat[3][3] = 1.0f;
       break;
     case GP_PERIMETER_TOP:
-      unit_m4(rv3d->viewmat);
-      unit_m4(rv3d->viewinv);
+      unit_m4(viewmat);
       break;
     case GP_PERIMETER_CAMERA: {
       Scene *scene = CTX_data_scene(C);
       Object *cam_ob = scene->camera;
       if (cam_ob != NULL) {
-        invert_m4_m4(rv3d->viewmat, cam_ob->obmat);
-        copy_m4_m4(rv3d->viewinv, cam_ob->obmat);
+        invert_m4_m4(viewmat, cam_ob->obmat);
       }
       break;
     }
@@ -4107,7 +4197,7 @@ static int gpencil_stroke_outline_exec(bContext *C, wmOperator *op)
           /* Stroke. */
           const float ovr_thickness = keep ? thickness : 0.0f;
           bGPDstroke *gps_perimeter = BKE_gpencil_stroke_perimeter_from_view(
-              rv3d, gpd, gpl, gps_duplicate, subdivisions, diff_mat, ovr_thickness);
+              viewmat, gpd, gpl, gps_duplicate, subdivisions, diff_mat, ovr_thickness);
           gps_perimeter->flag &= ~GP_STROKE_SELECT;
           /* Assign material. */
           switch (material_mode) {
@@ -4173,10 +4263,6 @@ static int gpencil_stroke_outline_exec(bContext *C, wmOperator *op)
       }
     }
   }
-
-  /* Back to view matrix. */
-  copy_m4_m4(rv3d->viewmat, viewmat);
-  copy_m4_m4(rv3d->viewinv, viewinv);
 
   if (changed) {
     /* notifiers */

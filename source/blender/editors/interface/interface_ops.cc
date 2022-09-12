@@ -133,10 +133,10 @@ static int copy_data_path_button_exec(bContext *C, wmOperator *op)
   if (ptr.owner_id != nullptr) {
     if (full_path) {
       if (prop) {
-        path = RNA_path_full_property_py_ex(bmain, &ptr, prop, index, true);
+        path = RNA_path_full_property_py_ex(&ptr, prop, index, true);
       }
       else {
-        path = RNA_path_full_struct_py(bmain, &ptr);
+        path = RNA_path_full_struct_py(&ptr);
       }
     }
     else {
@@ -1015,7 +1015,7 @@ static void override_idtemplate_menu_draw(const bContext *UNUSED(C), Menu *menu)
   uiItemO(layout, IFACE_("Clear"), ICON_NONE, "UI_OT_override_idtemplate_clear");
 }
 
-static void override_idtemplate_menu(void)
+static void override_idtemplate_menu()
 {
   MenuType *mt;
 
@@ -1574,8 +1574,13 @@ static bool jump_to_target_button(bContext *C, bool poll)
         char *str_ptr = RNA_property_string_get_alloc(
             &ptr, prop, str_buf, sizeof(str_buf), nullptr);
 
-        int found = RNA_property_collection_lookup_string(
-            &coll_search->search_ptr, coll_search->search_prop, str_ptr, &target_ptr);
+        int found = 0;
+        /* Jump to target only works with search properties currently, not search callbacks yet.
+         * See ui_but_add_search. */
+        if (coll_search->search_prop != NULL) {
+          found = RNA_property_collection_lookup_string(
+              &coll_search->search_ptr, coll_search->search_prop, str_ptr, &target_ptr);
+        }
 
         if (str_ptr != str_buf) {
           MEM_freeN(str_ptr);

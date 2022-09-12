@@ -4954,7 +4954,7 @@ static void def_sh_mix(StructRNA *srna)
 
   prop = RNA_def_property(srna, "factor_mode", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, rna_enum_mix_mode_items);
-  RNA_def_property_enum_default(prop, SOCK_FLOAT);
+  RNA_def_property_enum_default(prop, NODE_MIX_MODE_UNIFORM);
   RNA_def_property_ui_text(prop, "Factor Mode", "");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_socket_update");
 
@@ -7108,10 +7108,10 @@ static void def_cmp_dilate_erode(StructRNA *srna)
   PropertyRNA *prop;
 
   static const EnumPropertyItem mode_items[] = {
-      {CMP_NODE_DILATEERODE_STEP, "STEP", 0, "Step", ""},
-      {CMP_NODE_DILATEERODE_DISTANCE_THRESH, "THRESHOLD", 0, "Threshold", ""},
-      {CMP_NODE_DILATEERODE_DISTANCE, "DISTANCE", 0, "Distance", ""},
-      {CMP_NODE_DILATEERODE_DISTANCE_FEATHER, "FEATHER", 0, "Feather", ""},
+      {CMP_NODE_DILATE_ERODE_STEP, "STEP", 0, "Step", ""},
+      {CMP_NODE_DILATE_ERODE_DISTANCE_THRESHOLD, "THRESHOLD", 0, "Threshold", ""},
+      {CMP_NODE_DILATE_ERODE_DISTANCE, "DISTANCE", 0, "Distance", ""},
+      {CMP_NODE_DILATE_ERODE_DISTANCE_FEATHER, "FEATHER", 0, "Feather", ""},
       {0, NULL, 0, NULL, NULL},
   };
 
@@ -7128,7 +7128,7 @@ static void def_cmp_dilate_erode(StructRNA *srna)
   RNA_def_property_ui_text(prop, "Distance", "Distance to grow/shrink (number of iterations)");
   RNA_def_property_update(prop, NC_NODE | NA_EDITED, "rna_Node_update");
 
-  /* CMP_NODE_DILATEERODE_DISTANCE_THRESH only */
+  /* CMP_NODE_DILATE_ERODE_DISTANCE_THRESH only */
   prop = RNA_def_property(srna, "edge", PROP_FLOAT, PROP_NONE);
   RNA_def_property_float_sdna(prop, NULL, "custom3");
   RNA_def_property_range(prop, -100, 100);
@@ -7137,7 +7137,7 @@ static void def_cmp_dilate_erode(StructRNA *srna)
 
   RNA_def_struct_sdna_from(srna, "NodeDilateErode", "storage");
 
-  /* CMP_NODE_DILATEERODE_DISTANCE_FEATHER only */
+  /* CMP_NODE_DILATE_ERODE_DISTANCE_FEATHER only */
   prop = RNA_def_property(srna, "falloff", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_sdna(prop, NULL, "falloff");
   RNA_def_property_enum_items(prop, rna_enum_proportional_falloff_curve_only_items);
@@ -7190,18 +7190,18 @@ static void def_cmp_scale(StructRNA *srna)
   PropertyRNA *prop;
 
   static const EnumPropertyItem space_items[] = {
-      {CMP_SCALE_RELATIVE, "RELATIVE", 0, "Relative", ""},
-      {CMP_SCALE_ABSOLUTE, "ABSOLUTE", 0, "Absolute", ""},
-      {CMP_SCALE_SCENEPERCENT, "SCENE_SIZE", 0, "Scene Size", ""},
-      {CMP_SCALE_RENDERPERCENT, "RENDER_SIZE", 0, "Render Size", ""},
+      {CMP_NODE_SCALE_RELATIVE, "RELATIVE", 0, "Relative", ""},
+      {CMP_NODE_SCALE_ABSOLUTE, "ABSOLUTE", 0, "Absolute", ""},
+      {CMP_NODE_SCALE_RENDER_PERCENT, "SCENE_SIZE", 0, "Scene Size", ""},
+      {CMP_NODE_SCALE_RENDER_SIZE, "RENDER_SIZE", 0, "Render Size", ""},
       {0, NULL, 0, NULL, NULL},
   };
 
   /* matching bgpic_camera_frame_items[] */
   static const EnumPropertyItem space_frame_items[] = {
-      {0, "STRETCH", 0, "Stretch", ""},
-      {CMP_SCALE_RENDERSIZE_FRAME_ASPECT, "FIT", 0, "Fit", ""},
-      {CMP_SCALE_RENDERSIZE_FRAME_ASPECT | CMP_SCALE_RENDERSIZE_FRAME_CROP, "CROP", 0, "Crop", ""},
+      {CMP_NODE_SCALE_RENDER_SIZE_STRETCH, "STRETCH", 0, "Stretch", ""},
+      {CMP_NODE_SCALE_RENDER_SIZE_FIT, "FIT", 0, "Fit", ""},
+      {CMP_NODE_SCALE_RENDER_SIZE_CROP, "CROP", 0, "Crop", ""},
       {0, NULL, 0, NULL, NULL},
   };
 

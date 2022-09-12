@@ -12,16 +12,16 @@
 #  include "BLI_memory_utils.hh"
 #  include "DRW_gpu_wrapper.hh"
 
+#  include "draw_manager.hh"
+#  include "draw_pass.hh"
+
 #  include "eevee_defines.hh"
 
 #  include "GPU_shader_shared.h"
 
 namespace blender::eevee {
 
-using draw::Framebuffer;
-using draw::SwapChain;
-using draw::Texture;
-using draw::TextureFromPool;
+using namespace draw;
 
 constexpr eGPUSamplerState no_filter = GPU_SAMPLER_DEFAULT;
 constexpr eGPUSamplerState with_filter = GPU_SAMPLER_FILTER;
@@ -194,15 +194,15 @@ BLI_STATIC_ASSERT_ALIGN(CameraData, 16)
 
 #define FILM_PRECOMP_SAMPLE_MAX 16
 
+enum eFilmWeightLayerIndex : uint32_t {
+  FILM_WEIGHT_LAYER_ACCUMULATION = 0u,
+  FILM_WEIGHT_LAYER_DISTANCE = 1u,
+};
+
 enum ePassStorageType : uint32_t {
   PASS_STORAGE_COLOR = 0u,
   PASS_STORAGE_VALUE = 1u,
   PASS_STORAGE_CRYPTOMATTE = 2u,
-};
-
-enum eFilmWeightLayerIndex : uint32_t {
-  FILM_WEIGHT_LAYER_ACCUMULATION = 0u,
-  FILM_WEIGHT_LAYER_DISTANCE = 1u,
 };
 
 struct FilmSample {
