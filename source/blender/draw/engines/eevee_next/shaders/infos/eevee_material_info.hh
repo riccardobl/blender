@@ -93,7 +93,6 @@ GPU_SHADER_CREATE_INFO(eevee_render_pass_out)
     .image_out(RBUFS_EMISSION_SLOT, Qualifier::READ_WRITE, GPU_RGBA16F, "rp_emission_img");
 
 GPU_SHADER_CREATE_INFO(eevee_cryptomatte_out)
-    .push_constant(Type::FLOAT, "cryptomatte_material_hash")
     .storage_buf(7, Qualifier::READ, "vec2", "cryptomatte_object_buf[]", Frequency::PASS)
     .image_out(7, Qualifier::WRITE, GPU_RGBA32F, "rp_cryptomatte_img");
 

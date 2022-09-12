@@ -109,7 +109,7 @@ void main()
   imageStore(rp_emission_img, out_texel, vec4(g_emission, 1.0));
   imageStore(rp_cryptomatte_img,
              out_texel,
-             vec4(cryptomatte_object_buf[resource_id], cryptomatte_material_hash, 0.0));
+             vec4(cryptomatte_object_buf[resource_id], node_tree.crypto_hash, 0.0));
 #endif
 
   out_radiance.rgb *= 1.0 - g_holdout;
