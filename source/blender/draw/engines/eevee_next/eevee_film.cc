@@ -454,6 +454,7 @@ void Film::sync()
   accumulate_ps_.bind_image("depth_img", &depth_tx_);
   accumulate_ps_.bind_image("color_accum_img", &color_accum_tx_);
   accumulate_ps_.bind_image("value_accum_img", &value_accum_tx_);
+  accumulate_ps_.bind_image("cryptomatte_img", &cryptomatte_tx_);
   /* Sync with rendering passes. */
   accumulate_ps_.barrier(GPU_BARRIER_TEXTURE_FETCH | GPU_BARRIER_SHADER_IMAGE_ACCESS);
   if (use_compute) {

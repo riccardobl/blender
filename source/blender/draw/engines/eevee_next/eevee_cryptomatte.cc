@@ -98,7 +98,7 @@ float Cryptomatte::register_id(const eViewLayerEEVEEPassType layer, const ID &id
       BLI_assert(asset_layer_);
       cryptomatte_hash = asset_layer_->add_ID(id);
     }
-    else if (layer == EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) {
+    else if (layer == EEVEE_RENDER_PASS_CRYPTOMATTE_MATERIAL) {
       BLI_assert(material_layer_);
       cryptomatte_hash = material_layer_->add_ID(id);
     }
