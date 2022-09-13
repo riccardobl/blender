@@ -64,7 +64,6 @@ void cryptomatte_store_film_sample(FilmSample dst,
     else {
       continue;
     }
-    // sample_pair = vec4(1.0, 2.0, 3.0, 4.0);
     imageStore(cryptomatte_img, img_co, sample_pair);
     break;
   }
