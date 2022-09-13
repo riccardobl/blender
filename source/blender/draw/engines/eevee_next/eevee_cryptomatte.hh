@@ -51,9 +51,8 @@ class Cryptomatte {
 
   void begin_sync();
   void sync_object(Object *ob);
+  void sync_material(const ::Material *material);
   void end_sync();
-
-  void store_metadata(RenderResult *render_result);
 
   template<typename T> void bind_resources(draw::detail::PassBase<T> *pass)
   {
@@ -62,6 +61,7 @@ class Cryptomatte {
 
   /* Register ID to use inside cryptomatte layer and returns associated hash as float. */
   float register_id(const eViewLayerEEVEEPassType layer, const ID &id) const;
+  void store_metadata(RenderResult *render_result);
 };
 
 /** \} */
