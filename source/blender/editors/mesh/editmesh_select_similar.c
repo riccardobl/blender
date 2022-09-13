@@ -147,7 +147,7 @@ static void face_to_plane(const Object *ob, BMFace *face, float r_plane[4])
  */
 static int similar_face_select_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   const int type = RNA_enum_get(op->ptr, "type");
@@ -621,7 +621,7 @@ static bool edge_data_value_set(BMEdge *edge, const int hflag, int *r_value)
  */
 static int similar_edge_select_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   const int type = RNA_enum_get(op->ptr, "type");
@@ -972,7 +972,7 @@ static int similar_edge_select_exec(bContext *C, wmOperator *op)
 
 static int similar_vert_select_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   /* get the type from RNA */

@@ -152,7 +152,7 @@ static bool mball_undosys_step_encode(struct bContext *C, struct Main *bmain, Un
 
   /* Important not to use the 3D view when getting objects because all objects
    * outside of this list will be moved out of edit-mode when reading back undo steps. */
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = ED_undo_editmode_objects_from_view_layer(scene, view_layer, &objects_len);

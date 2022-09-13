@@ -499,7 +499,7 @@ void POSE_OT_paths_range_update(wmOperatorType *ot)
 static int pose_flip_names_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   const bool do_strip_numbers = RNA_boolean_get(op->ptr, "do_strip_numbers");
@@ -857,7 +857,7 @@ static int pose_bone_layers_exec(bContext *C, wmOperator *op)
   struct Main *bmain = CTX_data_main(C);
   wmWindow *win = CTX_wm_window(C);
   View3D *v3d = CTX_wm_view3d(C); /* This may be NULL in a lot of cases. */
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
 
   FOREACH_OBJECT_IN_MODE_BEGIN (scene, view_layer, v3d, OB_ARMATURE, OB_MODE_POSE, ob_iter) {
@@ -1003,7 +1003,7 @@ static int hide_pose_bone_fn(Object *ob, Bone *bone, void *ptr)
 /* active object is armature in posemode, poll checked */
 static int pose_hide_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_object_pose_array_get_unique(
@@ -1070,7 +1070,7 @@ static int show_pose_bone_cb(Object *ob, Bone *bone, void *data)
 /* active object is armature in posemode, poll checked */
 static int pose_reveal_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_object_pose_array_get_unique(

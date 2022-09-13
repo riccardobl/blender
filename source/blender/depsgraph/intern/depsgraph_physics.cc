@@ -195,7 +195,7 @@ ListBase *build_collision_relations(Depsgraph *graph,
   ID *collection_id = object_id_safe(collection);
   return hash->lookup_or_add_cb(collection_id, [&]() {
     ::Depsgraph *depsgraph = reinterpret_cast<::Depsgraph *>(graph);
-    return BKE_collision_relations_create(depsgraph, graph->scene, collection, modifier_type);
+    return BKE_collision_relations_create(depsgraph, collection, modifier_type);
   });
 }
 

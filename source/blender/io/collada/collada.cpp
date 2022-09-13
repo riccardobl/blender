@@ -57,7 +57,7 @@ int collada_import(bContext *C, ImportSettings *import_settings)
 int collada_export(bContext *C, ExportSettings *export_settings)
 {
   BlenderContext blender_context(C);
-  Scene *scene = blender_context.get_scene();
+  const Scene *scene = blender_context.get_scene();
   ViewLayer *view_layer = blender_context.get_view_layer();
 
   int includeFilter = OB_REL_NONE;

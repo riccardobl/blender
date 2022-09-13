@@ -5929,7 +5929,7 @@ void WM_window_cursor_keymap_status_refresh(bContext *C, wmWindow *win)
     bToolRef *tref = nullptr;
     if ((region->regiontype == RGN_TYPE_WINDOW) &&
         ((1 << area->spacetype) & WM_TOOLSYSTEM_SPACE_MASK)) {
-        const Scene*scene = WM_window_get_active_scene(win);
+      const Scene *scene = WM_window_get_active_scene(win);
       ViewLayer *view_layer = WM_window_get_active_view_layer(win);
       WorkSpace *workspace = WM_window_get_active_workspace(win);
       bToolKey tkey{};

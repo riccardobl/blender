@@ -96,7 +96,7 @@ static int lattice_select_random_exec(bContext *C, wmOperator *op)
   const float randfac = RNA_float_get(op->ptr, "ratio");
   const int seed = WM_operator_properties_select_random_seed_increment_get(op);
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -206,7 +206,7 @@ static int lattice_select_mirror_exec(bContext *C, wmOperator *op)
   const int axis_flag = RNA_enum_get(op->ptr, "axis");
   const bool extend = RNA_boolean_get(op->ptr, "extend");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -273,7 +273,7 @@ static bool lattice_test_bitmap_uvw(
 
 static int lattice_select_more_less(bContext *C, const bool select)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   bool changed = false;
@@ -399,7 +399,7 @@ bool ED_lattice_flags_set(Object *obedit, int flag)
 
 static int lattice_select_all_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int action = RNA_enum_get(op->ptr, "action");
 
@@ -488,7 +488,7 @@ void LATTICE_OT_select_all(wmOperatorType *ot)
 
 static int lattice_select_ungrouped_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   const bool is_extend = RNA_boolean_get(op->ptr, "extend");

@@ -1439,7 +1439,7 @@ static bool check_valid_compositing_camera(Scene *scene, Object *camera_override
       if (node->type == CMP_NODE_R_LAYERS && (node->flag & NODE_MUTED) == 0) {
         Scene *sce = node->id ? (Scene *)node->id : scene;
         if (sce->camera == nullptr) {
-          sce->camera = BKE_view_layer_camera_find(scene, BKE_view_layer_default_render(sce));
+          sce->camera = BKE_view_layer_camera_find(sce, BKE_view_layer_default_render(sce));
         }
         if (sce->camera == nullptr) {
           /* all render layers nodes need camera */

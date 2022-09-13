@@ -429,7 +429,7 @@ void ED_armature_bones_flip_names(Main *bmain,
 static int armature_flip_names_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob_active = CTX_data_edit_object(C);
 
@@ -517,7 +517,7 @@ void ARMATURE_OT_flip_names(wmOperatorType *ot)
 
 static int armature_autoside_names_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Main *bmain = CTX_data_main(C);
   char newname[MAXBONENAME];

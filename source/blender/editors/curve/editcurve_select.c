@@ -30,7 +30,6 @@
 #include "ED_object.h"
 #include "ED_screen.h"
 #include "ED_select_utils.h"
-#include "ED_types.h"
 #include "ED_view3d.h"
 
 #include "curve_intern.h"
@@ -47,7 +46,7 @@
 bool select_beztriple(BezTriple *bezt, bool selstatus, uint8_t flag, eVisible_Types hidden)
 {
   if ((bezt->hide == 0) || (hidden == HIDDEN)) {
-    if (selstatus == SELECT) { /* selects */
+    if (selstatus) { /* selects */
       bezt->f1 |= flag;
       bezt->f2 |= flag;
       bezt->f3 |= flag;
@@ -66,7 +65,7 @@ bool select_beztriple(BezTriple *bezt, bool selstatus, uint8_t flag, eVisible_Ty
 bool select_bpoint(BPoint *bp, bool selstatus, uint8_t flag, bool hidden)
 {
   if ((bp->hide == 0) || (hidden == 1)) {
-    if (selstatus == SELECT) {
+    if (selstatus) {
       bp->f1 |= flag;
       return true;
     }
@@ -80,17 +79,17 @@ bool select_bpoint(BPoint *bp, bool selstatus, uint8_t flag, bool hidden)
 static bool swap_selection_beztriple(BezTriple *bezt)
 {
   if (bezt->f2 & SELECT) {
-    return select_beztriple(bezt, DESELECT, SELECT, VISIBLE);
+    return select_beztriple(bezt, false, SELECT, VISIBLE);
   }
-  return select_beztriple(bezt, SELECT, SELECT, VISIBLE);
+  return select_beztriple(bezt, true, SELECT, VISIBLE);
 }
 
 static bool swap_selection_bpoint(BPoint *bp)
 {
   if (bp->f1 & SELECT) {
-    return select_bpoint(bp, DESELECT, SELECT, VISIBLE);
+    return select_bpoint(bp, false, SELECT, VISIBLE);
   }
-  return select_bpoint(bp, SELECT, SELECT, VISIBLE);
+  return select_bpoint(bp, true, SELECT, VISIBLE);
 }
 
 bool ED_curve_nurb_select_check(const View3D *v3d, const Nurb *nu)
@@ -336,9 +335,9 @@ static void select_adjacent_cp(ListBase *editnurb,
           break;
         }
         if ((lastsel == false) && (bezt->hide == 0) &&
-            ((bezt->f2 & SELECT) || (selstatus == DESELECT))) {
+            ((bezt->f2 & SELECT) || (selstatus == false))) {
           bezt += next;
-          if (!(bezt->f2 & SELECT) || (selstatus == DESELECT)) {
+          if (!(bezt->f2 & SELECT) || (selstatus == false)) {
             bool sel = select_beztriple(bezt, selstatus, SELECT, VISIBLE);
             if (sel && !cont) {
               lastsel = true;
@@ -363,10 +362,9 @@ static void select_adjacent_cp(ListBase *editnurb,
         if (a - abs(next) < 0) {
           break;
         }
-        if ((lastsel == false) && (bp->hide == 0) &&
-            ((bp->f1 & SELECT) || (selstatus == DESELECT))) {
+        if ((lastsel == false) && (bp->hide == 0) && ((bp->f1 & SELECT) || (selstatus == false))) {
           bp += next;
-          if (!(bp->f1 & SELECT) || (selstatus == DESELECT)) {
+          if (!(bp->f1 & SELECT) || (selstatus == false)) {
             bool sel = select_bpoint(bp, selstatus, SELECT, VISIBLE);
             if (sel && !cont) {
               lastsel = true;
@@ -470,7 +468,7 @@ static void selectend_nurb(Object *obedit, eEndPoint_Types selfirst, bool doswap
 
 static int de_select_first_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -478,7 +476,7 @@ static int de_select_first_exec(bContext *C, wmOperator *UNUSED(op))
 
   for (uint ob_index = 0; ob_index < objects_len; ob_index++) {
     Object *obedit = objects[ob_index];
-    selectend_nurb(obedit, FIRST, true, DESELECT);
+    selectend_nurb(obedit, FIRST, true, false);
     DEG_id_tag_update(obedit->data, ID_RECALC_SELECT);
     WM_event_add_notifier(C, NC_GEOM | ND_SELECT, obedit->data);
     BKE_curve_nurb_vert_active_validate(obedit->data);
@@ -512,7 +510,7 @@ static int de_select_last_exec(bContext *C, wmOperator *UNUSED(op))
 
   for (uint ob_index = 0; ob_index < objects_len; ob_index++) {
     Object *obedit = objects[ob_index];
-    selectend_nurb(obedit, LAST, true, DESELECT);
+    selectend_nurb(obedit, LAST, true, false);
     DEG_id_tag_update(obedit->data, ID_RECALC_SELECT);
     WM_event_add_notifier(C, NC_GEOM | ND_SELECT, obedit->data);
     BKE_curve_nurb_vert_active_validate(obedit->data);
@@ -546,6 +544,7 @@ void CURVE_OT_de_select_last(wmOperatorType *ot)
 static int de_select_all_exec(bContext *C, wmOperator *op)
 {
   int action = RNA_enum_get(op->ptr, "action");
+
   Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
@@ -783,12 +782,12 @@ static int select_row_exec(bContext *C, wmOperator *UNUSED(op))
     for (b = 0; b < nu->pntsu; b++, bp++) {
       if (direction) {
         if (a == v) {
-          select_bpoint(bp, SELECT, SELECT, VISIBLE);
+          select_bpoint(bp, true, SELECT, VISIBLE);
         }
       }
       else {
         if (b == u) {
-          select_bpoint(bp, SELECT, SELECT, VISIBLE);
+          select_bpoint(bp, true, SELECT, VISIBLE);
         }
       }
     }
@@ -928,7 +927,7 @@ static void curve_select_more(Object *obedit)
           if (a % nu->pntsu != 0) {
             tempbp = bp - 1;
             if (!(tempbp->f1 & SELECT)) {
-              select_bpoint(tempbp, SELECT, SELECT, VISIBLE);
+              select_bpoint(tempbp, true, SELECT, VISIBLE);
             }
           }
 
@@ -937,7 +936,7 @@ static void curve_select_more(Object *obedit)
             sel = 0;
             tempbp = bp + nu->pntsu;
             if (!(tempbp->f1 & SELECT)) {
-              sel = select_bpoint(tempbp, SELECT, SELECT, VISIBLE);
+              sel = select_bpoint(tempbp, true, SELECT, VISIBLE);
             }
             /* make sure selected bpoint is discarded */
             if (sel == 1) {
@@ -949,7 +948,7 @@ static void curve_select_more(Object *obedit)
           if (a + nu->pntsu < nu->pntsu * nu->pntsv) {
             tempbp = bp - nu->pntsu;
             if (!(tempbp->f1 & SELECT)) {
-              select_bpoint(tempbp, SELECT, SELECT, VISIBLE);
+              select_bpoint(tempbp, true, SELECT, VISIBLE);
             }
           }
 
@@ -958,7 +957,7 @@ static void curve_select_more(Object *obedit)
             sel = 0;
             tempbp = bp + 1;
             if (!(tempbp->f1 & SELECT)) {
-              sel = select_bpoint(tempbp, SELECT, SELECT, VISIBLE);
+              sel = select_bpoint(tempbp, true, SELECT, VISIBLE);
             }
             if (sel) {
               bp++;
@@ -1086,7 +1085,7 @@ static void curve_select_less(Object *obedit)
           }
 
           if (sel != 4) {
-            select_bpoint(bp, DESELECT, SELECT, VISIBLE);
+            select_bpoint(bp, false, SELECT, VISIBLE);
             BLI_BITMAP_ENABLE(selbpoints, a);
           }
         }
@@ -1136,7 +1135,7 @@ static void curve_select_less(Object *obedit)
             }
 
             if (sel != 2) {
-              select_beztriple(bezt, DESELECT, SELECT, VISIBLE);
+              select_beztriple(bezt, false, SELECT, VISIBLE);
               lastsel = true;
             }
             else {
@@ -1181,7 +1180,7 @@ static void curve_select_less(Object *obedit)
             }
 
             if (sel != 2) {
-              select_bpoint(bp, DESELECT, SELECT, VISIBLE);
+              select_bpoint(bp, false, SELECT, VISIBLE);
               lastsel = true;
             }
             else {
@@ -1201,7 +1200,7 @@ static void curve_select_less(Object *obedit)
 
 static int curve_select_less_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1243,7 +1242,7 @@ static int curve_select_random_exec(bContext *C, wmOperator *op)
   const float randfac = RNA_float_get(op->ptr, "ratio");
   const int seed = WM_operator_properties_select_random_seed_increment_get(op);
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1367,7 +1366,7 @@ static void select_nth_bezt(Nurb *nu, BezTriple *bezt, const struct CheckerInter
   while (a--) {
     const int depth = abs(start - a);
     if (!WM_operator_properties_checker_interval_test(params, depth)) {
-      select_beztriple(bezt, DESELECT, SELECT, HIDDEN);
+      select_beztriple(bezt, false, SELECT, HIDDEN);
     }
 
     bezt--;
@@ -1390,7 +1389,7 @@ static void select_nth_bp(Nurb *nu, BPoint *bp, const struct CheckerIntervalPara
   while (a--) {
     const int depth = abs(pnt - startpnt) + abs(row - startrow);
     if (!WM_operator_properties_checker_interval_test(params, depth)) {
-      select_bpoint(bp, DESELECT, SELECT, HIDDEN);
+      select_bpoint(bp, false, SELECT, HIDDEN);
     }
 
     pnt--;
@@ -1424,7 +1423,7 @@ static bool ed_curve_select_nth(Curve *cu, const struct CheckerIntervalParams *p
 
 static int select_nth_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *obact = CTX_data_edit_object(C);
   View3D *v3d = CTX_wm_view3d(C);
@@ -1654,7 +1653,7 @@ static bool curve_nurb_select_similar_type(Object *ob,
         }
 
         if (select) {
-          select_beztriple(bezt, SELECT, SELECT, VISIBLE);
+          select_beztriple(bezt, true, SELECT, VISIBLE);
           changed = true;
         }
       }
@@ -1699,7 +1698,7 @@ static bool curve_nurb_select_similar_type(Object *ob,
         }
 
         if (select) {
-          select_bpoint(bp, SELECT, SELECT, VISIBLE);
+          select_bpoint(bp, true, SELECT, VISIBLE);
           changed = true;
         }
       }
@@ -1715,7 +1714,7 @@ static int curve_select_similar_exec(bContext *C, wmOperator *op)
   const float thresh = RNA_float_get(op->ptr, "threshold");
   const int compare = RNA_enum_get(op->ptr, "compare");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   int tot_nurbs_selected_all = 0;
@@ -1908,10 +1907,10 @@ static void curve_select_shortest_path_curve(Nurb *nu, int vert_src, int vert_ds
   i = vert_src;
   while (true) {
     if (nu->type & CU_BEZIER) {
-      select_beztriple(&nu->bezt[i], SELECT, SELECT, HIDDEN);
+      select_beztriple(&nu->bezt[i], true, SELECT, HIDDEN);
     }
     else {
-      select_bpoint(&nu->bp[i], SELECT, SELECT, HIDDEN);
+      select_bpoint(&nu->bp[i], true, SELECT, HIDDEN);
     }
 
     if (i == vert_dst) {
@@ -1989,10 +1988,10 @@ static void curve_select_shortest_path_surf(Nurb *nu, int vert_src, int vert_dst
     int i = 0;
     while (vert_curr != vert_src && i++ < vert_num) {
       if (nu->type == CU_BEZIER) {
-        select_beztriple(&nu->bezt[vert_curr], SELECT, SELECT, HIDDEN);
+        select_beztriple(&nu->bezt[vert_curr], true, SELECT, HIDDEN);
       }
       else {
-        select_bpoint(&nu->bp[vert_curr], SELECT, SELECT, HIDDEN);
+        select_bpoint(&nu->bp[vert_curr], true, SELECT, HIDDEN);
       }
       vert_curr = data[vert_curr].vert_prev;
     }

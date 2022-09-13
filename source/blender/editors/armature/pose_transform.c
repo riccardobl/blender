@@ -491,7 +491,7 @@ void POSE_OT_armature_apply(wmOperatorType *ot)
 /* set the current pose as the restpose */
 static int pose_visual_transform_apply_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 

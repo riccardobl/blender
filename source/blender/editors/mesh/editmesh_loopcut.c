@@ -376,7 +376,7 @@ static int loopcut_init(bContext *C, wmOperator *op, const wmEvent *event)
       .e_index = (uint)RNA_int_get(op->ptr, "edge_index"),
   };
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint bases_len;

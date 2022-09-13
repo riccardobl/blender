@@ -82,7 +82,7 @@ void SceneExporter::writeNodeList(std::vector<Object *> &child_objects, Object *
 
 void SceneExporter::writeNode(Object *ob)
 {
-  Scene *scene = blender_context.get_scene();
+  const Scene *scene = blender_context.get_scene();
   ViewLayer *view_layer = blender_context.get_view_layer();
 
   std::vector<Object *> child_objects;

@@ -99,7 +99,7 @@ static void mesh_bisect_interactive_calc(bContext *C,
 
 static int mesh_bisect_invoke(bContext *C, wmOperator *op, const wmEvent *event)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int valid_objects = 0;
 

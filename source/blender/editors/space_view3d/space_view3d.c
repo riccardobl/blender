@@ -1899,7 +1899,8 @@ static int view3d_context(const bContext *C, const char *member, bContextDataRes
     if (base) {
       Object *ob = base->object;
       /* if hidden but in edit mode, we still display, can happen with animation */
-      if ((base->flag & BASE_VISIBLE_DEPSGRAPH) != 0 || (ob->mode != OB_MODE_OBJECT)) {
+      if ((base->flag & BASE_ENABLED_AND_MAYBE_VISIBLE_IN_VIEWPORT) != 0 ||
+          (ob->mode != OB_MODE_OBJECT)) {
         CTX_data_id_pointer_set(result, &ob->id);
       }
     }
@@ -1978,7 +1979,7 @@ void ED_spacetype_view3d(void)
   ARegionType *art;
 
   st->spaceid = SPACE_VIEW3D;
-  strncpy(st->name, "View3D", BKE_ST_MAXNAME);
+  STRNCPY(st->name, "View3D");
 
   st->create = view3d_create;
   st->free = view3d_free;

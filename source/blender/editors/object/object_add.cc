@@ -3157,14 +3157,14 @@ static int object_convert_exec(bContext *C, wmOperator *op)
       BKE_mesh_edges_set_draw_render(me_eval);
       BKE_object_material_from_eval_data(bmain, newob, &me_eval->id);
       Mesh *new_mesh = (Mesh *)newob->data;
-      BKE_mesh_nomain_to_mesh(me_eval, new_mesh, newob, &CD_MASK_MESH, true);
+      BKE_mesh_nomain_to_mesh(me_eval, new_mesh, newob);
 
       if (do_merge_customdata) {
         BKE_mesh_merge_customdata_for_apply_modifier(new_mesh);
       }
 
       /* Anonymous attributes shouldn't be available on the applied geometry. */
-      blender::bke::mesh_attributes_for_write(*new_mesh).remove_anonymous();
+      new_mesh->attributes_for_write().remove_anonymous();
 
       BKE_object_free_modifiers(newob, 0); /* after derivedmesh calls! */
     }
@@ -3583,7 +3583,7 @@ static Base *object_add_duplicate_internal(Main *bmain,
     DEG_id_tag_update(&obn->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY);
     BKE_view_layer_synced_ensure(scene, view_layer);
     base = BKE_view_layer_base_find(view_layer, ob);
-    if ((base != nullptr) && (base->flag & BASE_VISIBLE_DEPSGRAPH)) {
+    if ((base != nullptr) && (base->flag & BASE_ENABLED_AND_MAYBE_VISIBLE_IN_VIEWPORT)) {
       BKE_collection_object_add_from(bmain, scene, ob, obn);
     }
     else {
@@ -3822,8 +3822,8 @@ static int object_add_named_exec(bContext *C, wmOperator *op)
   /* Do immediately, as #copy_object_set_idnew() below operates on visible objects. */
   BKE_base_eval_flags(basen);
 
-  /* object_add_duplicate_internal() doesn't deselect other objects, unlike object_add_common()
-   * or BKE_view_layer_base_deselect_all(). */
+  /* object_add_duplicate_internal() doesn't deselect other objects, unlike object_add_common() or
+   * BKE_view_layer_base_deselect_all(). */
   ED_object_base_deselect_all(scene, view_layer, nullptr, SEL_DESELECT);
   ED_object_base_select(basen, BA_SELECT);
   ED_object_base_activate(C, basen);

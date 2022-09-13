@@ -193,7 +193,8 @@ void outliner_item_mode_toggle(bContext *C,
     Base *base = BKE_view_layer_base_find(tvc->view_layer, ob);
 
     /* Hidden objects can be removed from the mode. */
-    if (!base || (!(base->flag & BASE_VISIBLE_DEPSGRAPH) && (ob->mode != tvc->obact->mode))) {
+    if (!base || (!(base->flag & BASE_ENABLED_AND_MAYBE_VISIBLE_IN_VIEWPORT) &&
+                  (ob->mode != tvc->obact->mode))) {
       return;
     }
 
@@ -243,7 +244,7 @@ static void do_outliner_object_select_recursive(const Scene *scene,
   BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
     Object *ob = base->object;
-    if ((((base->flag & BASE_VISIBLE_DEPSGRAPH) != 0) &&
+    if ((((base->flag & BASE_ENABLED_AND_MAYBE_VISIBLE_IN_VIEWPORT) != 0) &&
          BKE_object_is_child_recursive(ob_parent, ob))) {
       ED_object_base_select(base, select ? BA_SELECT : BA_DESELECT);
     }
@@ -489,13 +490,13 @@ static void tree_element_posegroup_activate(bContext *C, TreeElement *te, TreeSt
 }
 
 static void tree_element_posechannel_activate(bContext *C,
+                                              const Scene *scene,
                                               ViewLayer *view_layer,
                                               TreeElement *te,
                                               TreeStoreElem *tselem,
                                               const eOLSetState set,
                                               bool recursive)
 {
-  Scene *scene = CTX_data_scene(C);
   Object *ob = (Object *)tselem->id;
   bArmature *arm = static_cast<bArmature *>(ob->data);
   bPoseChannel *pchan = static_cast<bPoseChannel *>(te->directdata);
@@ -597,13 +598,13 @@ static void tree_element_active_ebone__sel(bContext *C, bArmature *arm, EditBone
   WM_event_add_notifier(C, NC_OBJECT | ND_BONE_ACTIVE, CTX_data_edit_object(C));
 }
 static void tree_element_ebone_activate(bContext *C,
+                                        const Scene *scene,
                                         ViewLayer *view_layer,
                                         TreeElement *te,
                                         TreeStoreElem *tselem,
                                         const eOLSetState set,
                                         bool recursive)
 {
-  Scene *scene = CTX_data_scene(C);
   bArmature *arm = (bArmature *)tselem->id;
   EditBone *ebone = static_cast<EditBone *>(te->directdata);
 
@@ -663,6 +664,7 @@ static void tree_element_psys_activate(bContext *C, TreeStoreElem *tselem)
 }
 
 static void tree_element_constraint_activate(bContext *C,
+                                             const Scene *scene,
                                              ViewLayer *view_layer,
                                              TreeElement *te,
                                              TreeStoreElem *tselem,
@@ -675,7 +677,7 @@ static void tree_element_constraint_activate(bContext *C,
   while (te) {
     tselem = TREESTORE(te);
     if (tselem->type == TSE_POSE_CHANNEL) {
-      tree_element_posechannel_activate(C, view_layer, te, tselem, set, false);
+      tree_element_posechannel_activate(C, scene, view_layer, te, tselem, set, false);
       return;
     }
     te = te->parent;
@@ -810,7 +812,7 @@ void tree_element_type_active_set(bContext *C,
       tree_element_bone_activate(C, tvc->scene, tvc->view_layer, te, tselem, set, recursive);
       break;
     case TSE_EBONE:
-      tree_element_ebone_activate(C, tvc->view_layer, te, tselem, set, recursive);
+      tree_element_ebone_activate(C, tvc->scene, tvc->view_layer, te, tselem, set, recursive);
       break;
     case TSE_MODIFIER:
       tree_element_modifier_activate(C, te, tselem, set);
@@ -824,11 +826,12 @@ void tree_element_type_active_set(bContext *C,
     case TSE_POSE_BASE:
       return;
     case TSE_POSE_CHANNEL:
-      tree_element_posechannel_activate(C, tvc->view_layer, te, tselem, set, recursive);
+      tree_element_posechannel_activate(
+          C, tvc->scene, tvc->view_layer, te, tselem, set, recursive);
       break;
     case TSE_CONSTRAINT_BASE:
     case TSE_CONSTRAINT:
-      tree_element_constraint_activate(C, tvc->view_layer, te, tselem, set);
+      tree_element_constraint_activate(C, tvc->scene, tvc->view_layer, te, tselem, set);
       break;
     case TSE_R_LAYER:
       tree_element_viewlayer_activate(C, te);

@@ -524,8 +524,8 @@ void ED_object_modifier_copy_to_object(bContext *C,
 
 bool ED_object_modifier_convert_psys_to_mesh(ReportList *UNUSED(reports),
                                              Main *bmain,
-                                             Scene *scene,
                                              Depsgraph *depsgraph,
+                                             Scene *scene,
                                              ViewLayer *view_layer,
                                              Object *ob,
                                              ModifierData *md)
@@ -764,10 +764,10 @@ static bool modifier_apply_obdata(
 
       Main *bmain = DEG_get_bmain(depsgraph);
       BKE_object_material_from_eval_data(bmain, ob, &mesh_applied->id);
-      BKE_mesh_nomain_to_mesh(mesh_applied, me, ob, &CD_MASK_MESH, true);
+      BKE_mesh_nomain_to_mesh(mesh_applied, me, ob);
 
       /* Anonymous attributes shouldn't be available on the applied geometry. */
-      blender::bke::mesh_attributes_for_write(*me).remove_anonymous();
+      me->attributes_for_write().remove_anonymous();
 
       if (md_eval->type == eModifierType_Multires) {
         multires_customdata_delete(me);
@@ -1629,7 +1629,7 @@ static int modifier_convert_exec(bContext *C, wmOperator *op)
   ModifierData *md = edit_modifier_property_get(op, ob, 0);
 
   if (!md || !ED_object_modifier_convert_psys_to_mesh(
-                 op->reports, bmain, scene, depsgraph, view_layer, ob, md)) {
+                 op->reports, bmain, depsgraph, scene, view_layer, ob, md)) {
     return OPERATOR_CANCELLED;
   }
 
@@ -2639,10 +2639,7 @@ static void skin_armature_bone_create(Object *skin_ob,
   }
 }
 
-static Object *modifier_skin_armature_create(Depsgraph *depsgraph,
-                                             Main *bmain,
-                                             Scene *scene,
-                                             Object *skin_ob)
+static Object *modifier_skin_armature_create(Depsgraph *depsgraph, Main *bmain, Object *skin_ob)
 {
   Mesh *me = static_cast<Mesh *>(skin_ob->data);
   const Span<MVert> me_verts = me->verts();
@@ -2658,6 +2655,7 @@ static Object *modifier_skin_armature_create(Depsgraph *depsgraph,
   /* add vertex weights to original mesh */
   CustomData_add_layer(&me->vdata, CD_MDEFORMVERT, CD_SET_DEFAULT, nullptr, me->totvert);
 
+  Scene *scene = DEG_get_input_scene(depsgraph);
   ViewLayer *view_layer = DEG_get_input_view_layer(depsgraph);
   Object *arm_ob = BKE_object_add(bmain, scene, view_layer, OB_ARMATURE, nullptr);
   BKE_object_transform_copy(arm_ob, skin_ob);
@@ -2714,7 +2712,6 @@ static Object *modifier_skin_armature_create(Depsgraph *depsgraph,
 static int skin_armature_create_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
   Depsgraph *depsgraph = CTX_data_ensure_evaluated_depsgraph(C);
   Object *ob = CTX_data_active_object(C);
   Mesh *me = static_cast<Mesh *>(ob->data);
@@ -2726,7 +2723,7 @@ static int skin_armature_create_exec(bContext *C, wmOperator *op)
   }
 
   /* create new armature */
-  Object *arm_ob = modifier_skin_armature_create(depsgraph, bmain, scene, ob);
+  Object *arm_ob = modifier_skin_armature_create(depsgraph, bmain, ob);
 
   /* add a modifier to connect the new armature to the mesh */
   ArmatureModifierData *arm_md = (ArmatureModifierData *)BKE_modifier_new(eModifierType_Armature);
@@ -3404,6 +3401,7 @@ static int geometry_node_tree_copy_assign_exec(bContext *C, wmOperator *UNUSED(o
   nmd->node_group = new_tree;
   id_us_min(&tree->id);
 
+  DEG_id_tag_update(&ob->id, ID_RECALC_GEOMETRY);
   DEG_relations_tag_update(bmain);
   WM_event_add_notifier(C, NC_OBJECT | ND_MODIFIER, ob);
   return OPERATOR_FINISHED;

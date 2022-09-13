@@ -125,7 +125,7 @@ static int gizmo_preselect_elem_test_select(bContext *C, wmGizmo *gz, const int 
   };
 
   {
-    Scene *scene = CTX_data_scene(C);
+    const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     View3D *v3d = CTX_wm_view3d(C);
     BKE_view_layer_synced_ensure(scene, view_layer);
@@ -354,7 +354,7 @@ static int gizmo_preselect_edgering_test_select(bContext *C, wmGizmo *gz, const 
   };
 
   {
-    Scene *scene = CTX_data_scene(C);
+    const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     View3D *v3d = CTX_wm_view3d(C);
     BKE_view_layer_synced_ensure(scene, view_layer);
@@ -494,7 +494,7 @@ void ED_view3d_gizmo_mesh_preselect_get_active(bContext *C,
                                                Base **r_base,
                                                BMElem **r_ele)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   const int object_index = RNA_int_get(gz->ptr, "object_index");

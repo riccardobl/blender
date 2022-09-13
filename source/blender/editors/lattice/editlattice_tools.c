@@ -49,7 +49,7 @@ static bool make_regular_poll(bContext *C)
 
 static int make_regular_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   const bool is_editmode = CTX_data_edit_object(C) != NULL;
@@ -196,7 +196,7 @@ static void lattice_swap_point_pairs(
 
 static int lattice_flip_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   bool changed = false;

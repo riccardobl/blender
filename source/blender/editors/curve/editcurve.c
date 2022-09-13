@@ -47,7 +47,6 @@
 #include "ED_select_utils.h"
 #include "ED_transform.h"
 #include "ED_transform_snap_object_context.h"
-#include "ED_types.h"
 #include "ED_view3d.h"
 
 #include "curve_intern.h"
@@ -1469,7 +1468,7 @@ void CURVE_OT_separate(wmOperatorType *ot)
 static int curve_split_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   bool changed = false;
@@ -2089,7 +2088,7 @@ bool ed_editnurb_extrude_flag(EditNurb *editnurb, const uint8_t flag)
           const int copy_from = intvls_u[i - 1];
           const int copy_to = intvls_u[i];
           const int copy_count = copy_to - copy_from + 1;
-          const bool sel_status = selected_u || selected_v ? SELECT : DESELECT;
+          const bool sel_status = selected_u || selected_v ? true : false;
           ED_curve_bpcpy(editnurb, new_bp_u_v, old_bp_v + copy_from, copy_count);
           select_bpoints(new_bp_u_v, 1, copy_count, sel_status, flag, HIDDEN);
           new_bp_u_v += copy_count;
@@ -2155,7 +2154,7 @@ static void adduplicateflagNurb(
         starta = a;
         while ((bezt->f1 & flag) || (bezt->f2 & flag) || (bezt->f3 & flag)) {
           if (!split) {
-            select_beztriple(bezt, DESELECT, flag, HIDDEN);
+            select_beztriple(bezt, false, flag, HIDDEN);
           }
           enda = a;
           if (a >= nu->pntsu - 1) {
@@ -2195,7 +2194,7 @@ static void adduplicateflagNurb(
             }
 
             for (b = 0, bezt1 = newnu->bezt; b < newnu->pntsu; b++, bezt1++) {
-              select_beztriple(bezt1, SELECT, flag, HIDDEN);
+              select_beztriple(bezt1, true, flag, HIDDEN);
             }
 
             BLI_addtail(newnurb, newnu);
@@ -2213,7 +2212,7 @@ static void adduplicateflagNurb(
         newnu->flagu &= ~CU_NURB_CYCLIC;
 
         for (b = 0, bezt1 = newnu->bezt; b < newnu->pntsu; b++, bezt1++) {
-          select_beztriple(bezt1, SELECT, flag, HIDDEN);
+          select_beztriple(bezt1, true, flag, HIDDEN);
         }
 
         BLI_addtail(newnurb, newnu);
@@ -2225,7 +2224,7 @@ static void adduplicateflagNurb(
         starta = a;
         while (bp->f1 & flag) {
           if (!split) {
-            select_bpoint(bp, DESELECT, flag, HIDDEN);
+            select_bpoint(bp, false, flag, HIDDEN);
           }
           enda = a;
           if (a >= nu->pntsu - 1) {
@@ -2265,7 +2264,7 @@ static void adduplicateflagNurb(
             }
 
             for (b = 0, bp1 = newnu->bp; b < newnu->pntsu; b++, bp1++) {
-              select_bpoint(bp1, SELECT, flag, HIDDEN);
+              select_bpoint(bp1, true, flag, HIDDEN);
             }
 
             BLI_addtail(newnurb, newnu);
@@ -2283,7 +2282,7 @@ static void adduplicateflagNurb(
         newnu->flagu &= ~CU_NURB_CYCLIC;
 
         for (b = 0, bp1 = newnu->bp; b < newnu->pntsu; b++, bp1++) {
-          select_bpoint(bp1, SELECT, flag, HIDDEN);
+          select_bpoint(bp1, true, flag, HIDDEN);
         }
 
         BLI_addtail(newnurb, newnu);
@@ -2503,7 +2502,7 @@ static void adduplicateflagNurb(
           for (b = 0, bp1 = nu->bp; b < nu->pntsu * nu->pntsv; b++, bp1++) {
             bp1->f1 &= ~SURF_SEEN;
             if (!split) {
-              select_bpoint(bp1, DESELECT, flag, HIDDEN);
+              select_bpoint(bp1, false, flag, HIDDEN);
             }
           }
         }
@@ -2547,7 +2546,7 @@ static void adduplicateflagNurb(
 static int switch_direction_exec(bContext *C, wmOperator *UNUSED(op))
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -2609,7 +2608,7 @@ void CURVE_OT_switch_direction(wmOperatorType *ot)
 
 static int set_goal_weight_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2676,7 +2675,7 @@ void CURVE_OT_spline_weight_set(wmOperatorType *ot)
 
 static int set_radius_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2788,7 +2787,7 @@ static void smooth_single_bp(BPoint *bp,
 static int smooth_exec(bContext *C, wmOperator *UNUSED(op))
 {
   const float factor = 1.0f / 6.0f;
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3085,7 +3084,7 @@ static void curve_smooth_value(ListBase *editnurb, const int bezt_offsetof, cons
 
 static int curve_smooth_weight_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3129,7 +3128,7 @@ void CURVE_OT_smooth_weight(wmOperatorType *ot)
 
 static int curve_smooth_radius_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3173,7 +3172,7 @@ void CURVE_OT_smooth_radius(wmOperatorType *ot)
 
 static int curve_smooth_tilt_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3217,7 +3216,7 @@ void CURVE_OT_smooth_tilt(wmOperatorType *ot)
 
 static int hide_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -3246,11 +3245,11 @@ static int hide_exec(bContext *C, wmOperator *op)
         sel = 0;
         while (a--) {
           if (invert == 0 && BEZT_ISSEL_ANY_HIDDENHANDLES(v3d, bezt)) {
-            select_beztriple(bezt, DESELECT, SELECT, HIDDEN);
+            select_beztriple(bezt, false, SELECT, HIDDEN);
             bezt->hide = 1;
           }
           else if (invert && !BEZT_ISSEL_ANY_HIDDENHANDLES(v3d, bezt)) {
-            select_beztriple(bezt, DESELECT, SELECT, HIDDEN);
+            select_beztriple(bezt, false, SELECT, HIDDEN);
             bezt->hide = 1;
           }
           if (bezt->hide) {
@@ -3268,11 +3267,11 @@ static int hide_exec(bContext *C, wmOperator *op)
         sel = 0;
         while (a--) {
           if (invert == 0 && (bp->f1 & SELECT)) {
-            select_bpoint(bp, DESELECT, SELECT, HIDDEN);
+            select_bpoint(bp, false, SELECT, HIDDEN);
             bp->hide = 1;
           }
           else if (invert && (bp->f1 & SELECT) == 0) {
-            select_bpoint(bp, DESELECT, SELECT, HIDDEN);
+            select_bpoint(bp, false, SELECT, HIDDEN);
             bp->hide = 1;
           }
           if (bp->hide) {
@@ -3320,7 +3319,7 @@ void CURVE_OT_hide(wmOperatorType *ot)
 
 static int reveal_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool select = RNA_boolean_get(op->ptr, "select");
   bool changed_multi = false;
@@ -3800,7 +3799,7 @@ static int subdivide_exec(bContext *C, wmOperator *op)
   const int number_cuts = RNA_int_get(op->ptr, "number_cuts");
 
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -3859,7 +3858,7 @@ void CURVE_OT_subdivide(wmOperatorType *ot)
 
 static int set_spline_type_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3953,7 +3952,7 @@ void CURVE_OT_spline_type_set(wmOperatorType *ot)
 
 static int set_handle_type_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   const int handle_type = RNA_enum_get(op->ptr, "type");
@@ -4016,7 +4015,7 @@ void CURVE_OT_handle_type_set(wmOperatorType *ot)
 
 static int curve_normals_make_consistent_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -4367,7 +4366,7 @@ static bool merge_2_nurb(Curve *cu, ListBase *editnurb, Nurb *nu1, Nurb *nu2)
         keyIndex_updateBP(cu->editnurb, bp1, bp, 1);
         *bp = *bp1;
         bp1++;
-        select_bpoint(bp, SELECT, SELECT, HIDDEN);
+        select_bpoint(bp, true, SELECT, HIDDEN);
       }
       else {
         keyIndex_updateBP(cu->editnurb, bp2, bp, 1);
@@ -4457,7 +4456,7 @@ static int merge_nurb(View3D *v3d, Object *obedit)
 static int make_segment_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -4823,7 +4822,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
               bezt->f2 |= SELECT;
             }
             else {
-              select_beztriple(bezt, SELECT, SELECT, HIDDEN);
+              select_beztriple(bezt, true, SELECT, HIDDEN);
             }
           }
           else {
@@ -4837,7 +4836,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
           BKE_curve_nurb_vert_active_set(cu, nu, bezt);
         }
         else {
-          select_bpoint(bp, SELECT, SELECT, HIDDEN);
+          select_bpoint(bp, true, SELECT, HIDDEN);
           BKE_curve_nurb_vert_active_set(cu, nu, bp);
         }
         break;
@@ -4849,7 +4848,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
               bezt->f2 &= ~SELECT;
             }
             else {
-              select_beztriple(bezt, DESELECT, SELECT, HIDDEN);
+              select_beztriple(bezt, false, SELECT, HIDDEN);
             }
             if (bezt == vert) {
               cu->actvert = CU_ACT_NONE;
@@ -4863,7 +4862,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
           }
         }
         else {
-          select_bpoint(bp, DESELECT, SELECT, HIDDEN);
+          select_bpoint(bp, false, SELECT, HIDDEN);
           if (bp == vert) {
             cu->actvert = CU_ACT_NONE;
           }
@@ -4878,7 +4877,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
                 bezt->f2 &= ~SELECT;
               }
               else {
-                select_beztriple(bezt, DESELECT, SELECT, HIDDEN);
+                select_beztriple(bezt, false, SELECT, HIDDEN);
               }
               if (bezt == vert) {
                 cu->actvert = CU_ACT_NONE;
@@ -4889,7 +4888,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
                 bezt->f2 |= SELECT;
               }
               else {
-                select_beztriple(bezt, SELECT, SELECT, HIDDEN);
+                select_beztriple(bezt, true, SELECT, HIDDEN);
               }
               BKE_curve_nurb_vert_active_set(cu, nu, bezt);
             }
@@ -4903,13 +4902,13 @@ bool ED_curve_editnurb_select_pick(bContext *C,
         }
         else {
           if (bp->f1 & SELECT) {
-            select_bpoint(bp, DESELECT, SELECT, HIDDEN);
+            select_bpoint(bp, false, SELECT, HIDDEN);
             if (bp == vert) {
               cu->actvert = CU_ACT_NONE;
             }
           }
           else {
-            select_bpoint(bp, SELECT, SELECT, HIDDEN);
+            select_bpoint(bp, true, SELECT, HIDDEN);
             BKE_curve_nurb_vert_active_set(cu, nu, bp);
           }
         }
@@ -4925,7 +4924,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
               bezt->f2 |= SELECT;
             }
             else {
-              select_beztriple(bezt, SELECT, SELECT, HIDDEN);
+              select_beztriple(bezt, true, SELECT, HIDDEN);
             }
           }
           else {
@@ -4939,7 +4938,7 @@ bool ED_curve_editnurb_select_pick(bContext *C,
           BKE_curve_nurb_vert_active_set(cu, nu, bezt);
         }
         else {
-          select_bpoint(bp, SELECT, SELECT, HIDDEN);
+          select_bpoint(bp, true, SELECT, HIDDEN);
           BKE_curve_nurb_vert_active_set(cu, nu, bp);
         }
         break;
@@ -5063,7 +5062,7 @@ bool ed_editnurb_spin(
 static int spin_exec(bContext *C, wmOperator *op)
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   RegionView3D *rv3d = ED_view3d_context_rv3d(C);
@@ -5722,7 +5721,7 @@ void CURVE_OT_vertex_add(wmOperatorType *ot)
 static int curve_extrude_exec(bContext *C, wmOperator *UNUSED(op))
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -5865,7 +5864,7 @@ static int toggle_cyclic_exec(bContext *C, wmOperator *op)
 {
   const int direction = RNA_enum_get(op->ptr, "direction");
   View3D *v3d = CTX_wm_view3d(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   bool changed_multi = false;
 
@@ -5954,7 +5953,7 @@ void CURVE_OT_cyclic_toggle(wmOperatorType *ot)
 
 static int duplicate_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -6427,7 +6426,7 @@ static bool curve_delete_segments(Object *obedit, View3D *v3d, const bool split)
       if (split) {
         /* deselect for split operator */
         for (b = 0, bezt1 = nu->bezt; b < nu->pntsu; b++, bezt1++) {
-          select_beztriple(bezt1, DESELECT, SELECT, true);
+          select_beztriple(bezt1, false, SELECT, true);
         }
       }
 
@@ -6437,7 +6436,7 @@ static bool curve_delete_segments(Object *obedit, View3D *v3d, const bool split)
       if (split) {
         /* deselect for split operator */
         for (b = 0, bp1 = nu->bp; b < nu->pntsu * nu->pntsv; b++, bp1++) {
-          select_bpoint(bp1, DESELECT, SELECT, HIDDEN);
+          select_bpoint(bp1, false, SELECT, HIDDEN);
         }
       }
 
@@ -6463,7 +6462,7 @@ static int curve_delete_exec(bContext *C, wmOperator *op)
   Main *bmain = CTX_data_main(C);
   View3D *v3d = CTX_wm_view3d(C);
   eCurveElem_Types type = RNA_enum_get(op->ptr, "type");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -6640,7 +6639,7 @@ void ed_dissolve_bez_segment(BezTriple *bezt_prev,
 static int curve_dissolve_exec(bContext *C, wmOperator *UNUSED(op))
 {
   Main *bmain = CTX_data_main(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 
@@ -6735,7 +6734,7 @@ static int curve_decimate_exec(bContext *C, wmOperator *op)
   float ratio = RNA_float_get(op->ptr, "ratio");
   bool all_supported_multi = true;
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -6816,7 +6815,7 @@ void CURVE_OT_decimate(wmOperatorType *ot)
 static int shade_smooth_exec(bContext *C, wmOperator *op)
 {
   View3D *v3d = CTX_wm_view3d(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int clear = (STREQ(op->idname, "CURVE_OT_shade_flat"));
   uint objects_len;
@@ -7011,7 +7010,7 @@ int ED_curve_join_objects_exec(bContext *C, wmOperator *op)
 
 static int clear_tilt_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
 

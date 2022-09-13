@@ -180,7 +180,7 @@ static int edbm_intersect_exec(bContext *C, wmOperator *op)
     default: /* ISECT_SEPARATE_NONE */
       break;
   }
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   uint isect_len = 0;
@@ -351,7 +351,7 @@ static int edbm_intersect_boolean_exec(bContext *C, wmOperator *op)
   bool has_isect;
 
   test_fn = use_swap ? bm_face_isect_pair_swap : bm_face_isect_pair;
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   uint isect_len = 0;
@@ -817,7 +817,7 @@ static int edbm_face_split_by_edges_exec(bContext *C, wmOperator *UNUSED(op))
 
   BLI_SMALLSTACK_DECLARE(loop_stack, BMLoop *);
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(

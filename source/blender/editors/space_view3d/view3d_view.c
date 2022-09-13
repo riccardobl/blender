@@ -825,7 +825,7 @@ static bool view3d_localview_init(const Depsgraph *depsgraph,
                                   wmWindowManager *wm,
                                   wmWindow *win,
                                   Main *bmain,
-                                  Scene *scene,
+                                  const Scene *scene,
                                   ViewLayer *view_layer,
                                   ScrArea *area,
                                   const bool frame_selected,
@@ -1280,9 +1280,8 @@ void ED_view3d_local_collections_reset(struct bContext *C, const bool reset_all)
   else if (reset_all && (do_reset || (local_view_bit != ~(0)))) {
     view3d_local_collections_reset(bmain, ~(0));
     View3D v3d = {.local_collections_uuid = ~(0)};
-    Scene *scene = CTX_data_scene(C);
-    BKE_layer_collection_local_sync(scene, CTX_data_view_layer(C), &v3d);
-    DEG_id_tag_update(&scene->id, ID_RECALC_BASE_FLAGS);
+    BKE_layer_collection_local_sync(CTX_data_scene(C), CTX_data_view_layer(C), &v3d);
+    DEG_id_tag_update(&CTX_data_scene(C)->id, ID_RECALC_BASE_FLAGS);
   }
 }
 

@@ -601,7 +601,7 @@ static void import_endjob(void *user_data)
   else {
     Base *base;
     LayerCollection *lc;
-    Scene *scene = data->scene;
+    const Scene *scene = data->scene;
     ViewLayer *view_layer = data->view_layer;
 
     BKE_view_layer_base_deselect_all(scene, view_layer);

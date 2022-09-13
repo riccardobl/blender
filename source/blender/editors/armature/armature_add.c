@@ -920,7 +920,7 @@ EditBone *duplicateEditBone(EditBone *cur_bone, const char *name, ListBase *edit
 
 static int armature_duplicate_selected_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool do_flip_names = RNA_boolean_get(op->ptr, "do_flip_names");
 
@@ -1095,7 +1095,7 @@ static EditBone *get_symmetrized_bone(bArmature *arm, EditBone *bone)
  */
 static int armature_symmetrize_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const int direction = RNA_enum_get(op->ptr, "direction");
   const int axis = 0;
@@ -1351,7 +1351,7 @@ void ARMATURE_OT_symmetrize(wmOperatorType *ot)
 /* if forked && mirror-edit: makes two bones with flipped names */
 static int armature_extrude_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool forked = RNA_boolean_get(op->ptr, "forked");
   bool changed_multi = false;

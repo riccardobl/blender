@@ -281,7 +281,7 @@ static int edbm_extrude_repeat_exec(bContext *C, wmOperator *op)
 
   mul_v3_fl(offset, scale_offset);
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -419,7 +419,7 @@ static bool edbm_extrude_mesh(Object *obedit, BMEditMesh *em, wmOperator *op)
 /* extrude without transform */
 static int edbm_extrude_region_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -479,7 +479,7 @@ void MESH_OT_extrude_region(wmOperatorType *ot)
 /* extrude without transform */
 static int edbm_extrude_context_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -534,7 +534,7 @@ void MESH_OT_extrude_context(wmOperatorType *ot)
 
 static int edbm_extrude_verts_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -588,7 +588,7 @@ void MESH_OT_extrude_verts_indiv(wmOperatorType *ot)
 static int edbm_extrude_edges_exec(bContext *C, wmOperator *op)
 {
   const bool use_normal_flip = RNA_boolean_get(op->ptr, "use_normal_flip");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -642,7 +642,7 @@ void MESH_OT_extrude_edges_indiv(wmOperatorType *ot)
 
 static int edbm_extrude_faces_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(

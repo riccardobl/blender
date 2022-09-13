@@ -205,7 +205,7 @@ bool ED_object_base_deselect_all(const Scene *scene,
 
 static int get_base_select_priority(Base *base)
 {
-  if (base->flag & BASE_VISIBLE_DEPSGRAPH) {
+  if (base->flag & BASE_ENABLED_AND_MAYBE_VISIBLE_IN_VIEWPORT) {
     if (base->flag & BASE_SELECTABLE) {
       return 3;
     }
@@ -250,7 +250,7 @@ Base *ED_object_find_first_by_data_id(const Scene *scene, ViewLayer *view_layer,
 
 bool ED_object_jump_to_object(bContext *C, Object *ob, const bool UNUSED(reveal_hidden))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   BKE_view_layer_synced_ensure(scene, view_layer);

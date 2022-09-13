@@ -1503,7 +1503,7 @@ static bool jump_to_target_ptr(bContext *C, PointerRNA ptr, const bool poll)
   }
 
   /* Find the containing Object. */
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Base *base = nullptr;
   const short id_type = GS(ptr.owner_id->name);

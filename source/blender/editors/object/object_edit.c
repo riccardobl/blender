@@ -140,7 +140,7 @@ Object **ED_object_array_in_mode_or_selected(bContext *C,
                                              uint *r_objects_len)
 {
   ScrArea *area = CTX_wm_area(C);
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob_active = BKE_view_layer_active_object_get(view_layer);
@@ -291,7 +291,7 @@ static int object_hide_view_set_exec(bContext *C, wmOperator *op)
   /* Hide selected or unselected objects. */
   BKE_view_layer_synced_ensure(scene, view_layer);
   LISTBASE_FOREACH (Base *, base, BKE_view_layer_object_bases_get(view_layer)) {
-    if (!(base->flag & BASE_VISIBLE_VIEWLAYER)) {
+    if (!(base->flag & BASE_ENABLED_AND_VISIBLE_IN_DEFAULT_VIEWPORT)) {
       continue;
     }
 

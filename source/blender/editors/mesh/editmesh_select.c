@@ -1515,7 +1515,7 @@ static void walker_select(BMEditMesh *em, int walkercode, void *start, const boo
 static int edbm_loop_multiselect_exec(bContext *C, wmOperator *op)
 {
   const bool is_ring = RNA_boolean_get(op->ptr, "ring");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1908,7 +1908,7 @@ void MESH_OT_edgering_select(wmOperatorType *ot)
 
 static int edbm_select_all_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int action = RNA_enum_get(op->ptr, "action");
 
@@ -1977,7 +1977,7 @@ void MESH_OT_select_all(wmOperatorType *ot)
 
 static int edbm_faces_select_interior_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3692,7 +3692,7 @@ static int edbm_select_linked_pick_exec(bContext *C, wmOperator *op)
   BMElem *ele;
 
   {
-    Scene *scene = CTX_data_scene(C);
+    const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     /* Intentionally wrap negative values so the lookup fails. */
     const uint object_index = (uint)RNA_int_get(op->ptr, "object_index");
@@ -3764,7 +3764,7 @@ void MESH_OT_select_linked_pick(wmOperatorType *ot)
 
 static int edbm_select_face_by_sides_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   const bool extend = RNA_boolean_get(op->ptr, "extend");
@@ -3856,7 +3856,7 @@ void MESH_OT_select_face_by_sides(wmOperatorType *ot)
 
 static int edbm_select_loose_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool extend = RNA_boolean_get(op->ptr, "extend");
 
@@ -3947,7 +3947,7 @@ void MESH_OT_select_loose(wmOperatorType *ot)
 
 static int edbm_select_mirror_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const int axis_flag = RNA_enum_get(op->ptr, "axis");
   const bool extend = RNA_boolean_get(op->ptr, "extend");
@@ -4022,7 +4022,7 @@ void MESH_OT_select_mirror(wmOperatorType *ot)
 
 static int edbm_select_more_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool use_face_step = RNA_boolean_get(op->ptr, "use_face_step");
 
@@ -4073,7 +4073,7 @@ void MESH_OT_select_more(wmOperatorType *ot)
 
 static int edbm_select_less_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool use_face_step = RNA_boolean_get(op->ptr, "use_face_step");
 
@@ -4312,7 +4312,7 @@ static bool edbm_deselect_nth(BMEditMesh *em, const struct CheckerIntervalParams
 
 static int edbm_select_nth_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   struct CheckerIntervalParams op_params;
   WM_operator_properties_checker_interval_from_op(op, &op_params);
@@ -4391,7 +4391,7 @@ static int edbm_select_sharp_edges_exec(bContext *C, wmOperator *op)
    */
   const float angle_limit_cos = cosf(RNA_float_get(op->ptr, "sharpness"));
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -4468,7 +4468,7 @@ void MESH_OT_edges_select_sharp(wmOperatorType *ot)
 
 static int edbm_select_linked_flat_faces_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -4582,7 +4582,7 @@ static int edbm_select_non_manifold_exec(bContext *C, wmOperator *op)
   const bool use_non_contiguous = RNA_boolean_get(op->ptr, "use_non_contiguous");
   const bool use_verts = RNA_boolean_get(op->ptr, "use_verts");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -4687,7 +4687,7 @@ static int edbm_select_random_exec(bContext *C, wmOperator *op)
   const float randfac = RNA_float_get(op->ptr, "ratio");
   const int seed = WM_operator_properties_select_random_seed_increment_get(op);
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -4818,7 +4818,7 @@ static bool edbm_select_ungrouped_poll(bContext *C)
 static int edbm_select_ungrouped_exec(bContext *C, wmOperator *op)
 {
   const bool extend = RNA_boolean_get(op->ptr, "extend");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -5045,7 +5045,7 @@ void MESH_OT_select_axis(wmOperatorType *ot)
 
 static int edbm_region_to_loop_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5278,7 +5278,7 @@ static int edbm_loop_to_region_exec(bContext *C, wmOperator *op)
 {
   const bool select_bigger = RNA_boolean_get(op->ptr, "select_bigger");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(

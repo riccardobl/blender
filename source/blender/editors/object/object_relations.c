@@ -2155,7 +2155,7 @@ static int make_local_exec(bContext *C, wmOperator *op)
 
   /* NOTE: we (ab)use LIB_TAG_PRE_EXISTING to cherry pick which ID to make local... */
   if (mode == MAKE_LOCAL_ALL) {
-    Scene *scene = CTX_data_scene(C);
+    const Scene *scene = CTX_data_scene(C);
     ViewLayer *view_layer = CTX_data_view_layer(C);
     Collection *collection = CTX_data_collection(C);
 

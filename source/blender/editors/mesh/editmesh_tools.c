@@ -93,7 +93,7 @@ static int edbm_subdivide_exec(bContext *C, wmOperator *op)
   const int quad_corner_type = RNA_enum_get(op->ptr, "quadcorner");
   const int seed = RNA_int_get(op->ptr, "seed");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -290,7 +290,7 @@ static void mesh_operator_edgering_props_get(wmOperator *op, struct EdgeRingOpSu
 
 static int edbm_subdivide_edge_ring_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -358,8 +358,8 @@ void MESH_OT_subdivide_edgering(wmOperatorType *ot)
 
 static int edbm_unsubdivide_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
   const int iterations = RNA_int_get(op->ptr, "iterations");
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode(
@@ -446,7 +446,7 @@ static void edbm_report_delete_info(ReportList *reports,
 
 static int edbm_delete_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -590,7 +590,7 @@ static bool bm_face_is_loose(BMFace *f)
 
 static int edbm_delete_loose_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int totelem_old_sel[3];
   int totelem_old[3];
@@ -699,7 +699,7 @@ void MESH_OT_delete_loose(wmOperatorType *ot)
 
 static int edbm_collapse_edge_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -933,7 +933,7 @@ static int edbm_add_edge_face_exec(bContext *C, wmOperator *op)
 {
   /* When this is used to dissolve we could avoid this, but checking isn't too slow. */
   bool changed_multi = false;
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1135,7 +1135,7 @@ static int edbm_mark_sharp_exec(bContext *C, wmOperator *op)
   BMIter iter;
   const bool clear = RNA_boolean_get(op->ptr, "clear");
   const bool use_verts = RNA_boolean_get(op->ptr, "use_verts");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -1319,7 +1319,7 @@ static bool edbm_connect_vert_pair(BMEditMesh *em, struct Mesh *me, wmOperator *
 
 static int edbm_vert_connect_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   uint failed_objects_len = 0;
@@ -1567,7 +1567,7 @@ static bool bm_vert_connect_select_history_edge_to_vert_path(BMesh *bm, ListBase
 
 static int edbm_vert_connect_path_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   uint failed_selection_order_len = 0;
@@ -1664,7 +1664,7 @@ void MESH_OT_vert_connect_path(wmOperatorType *ot)
 
 static int edbm_vert_connect_concave_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1716,7 +1716,7 @@ void MESH_OT_vert_connect_concave(wmOperatorType *ot)
 
 static int edbm_vert_connect_nonplaner_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const float angle_limit = RNA_float_get(op->ptr, "angle_limit");
   uint objects_len = 0;
@@ -1791,7 +1791,7 @@ void MESH_OT_vert_connect_nonplanar(wmOperatorType *ot)
 
 static int edbm_face_make_planar_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1959,7 +1959,7 @@ static int edbm_edge_split_exec(bContext *C, wmOperator *op)
 {
   const int type = RNA_enum_get(op->ptr, "type");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2025,7 +2025,7 @@ void MESH_OT_edge_split(wmOperatorType *ot)
 
 static int edbm_duplicate_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2257,7 +2257,7 @@ static int edbm_flip_normals_exec(bContext *C, wmOperator *op)
 {
   const bool only_clnors = RNA_boolean_get(op->ptr, "only_clnors");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2324,7 +2324,7 @@ static int edbm_edge_rotate_selected_exec(bContext *C, wmOperator *op)
   int tot_failed_all = 0;
   bool no_selected_edges = true, invalid_selected_edges = true;
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2451,7 +2451,7 @@ void MESH_OT_edge_rotate(wmOperatorType *ot)
 static int edbm_hide_exec(bContext *C, wmOperator *op)
 {
   const bool unselected = RNA_boolean_get(op->ptr, "unselected");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   bool changed = false;
 
@@ -2533,7 +2533,7 @@ void MESH_OT_hide(wmOperatorType *ot)
 static int edbm_reveal_exec(bContext *C, wmOperator *op)
 {
   const bool select = RNA_boolean_get(op->ptr, "select");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -2582,7 +2582,7 @@ void MESH_OT_reveal(wmOperatorType *ot)
 
 static int edbm_normals_make_consistent_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool inside = RNA_boolean_get(op->ptr, "inside");
 
@@ -2664,7 +2664,7 @@ static int edbm_do_smooth_vertex_exec(bContext *C, wmOperator *op)
     repeat = 1;
   }
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2784,7 +2784,7 @@ void MESH_OT_vertices_smooth(wmOperatorType *ot)
 static int edbm_do_smooth_laplacian_vertex_exec(bContext *C, wmOperator *op)
 {
   int tot_unselected = 0;
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   const float lambda_factor = RNA_float_get(op->ptr, "lambda_factor");
@@ -2926,7 +2926,7 @@ static void mesh_set_smooth_faces(BMEditMesh *em, short smooth)
 
 static int edbm_faces_shade_smooth_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -2975,7 +2975,7 @@ void MESH_OT_faces_shade_smooth(wmOperatorType *ot)
 
 static int edbm_faces_shade_flat_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3027,7 +3027,7 @@ static int edbm_rotate_uvs_exec(bContext *C, wmOperator *op)
   /* get the direction from RNA */
   const bool use_ccw = RNA_boolean_get(op->ptr, "use_ccw");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3064,7 +3064,7 @@ static int edbm_rotate_uvs_exec(bContext *C, wmOperator *op)
 
 static int edbm_reverse_uvs_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3103,7 +3103,7 @@ static int edbm_rotate_colors_exec(bContext *C, wmOperator *op)
   /* get the direction from RNA */
   const bool use_ccw = RNA_boolean_get(op->ptr, "use_ccw");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3157,7 +3157,7 @@ static int edbm_rotate_colors_exec(bContext *C, wmOperator *op)
 
 static int edbm_reverse_colors_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3567,7 +3567,7 @@ static int edbm_remove_doubles_exec(bContext *C, wmOperator *op)
 
   int count_multi = 0;
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -3714,7 +3714,7 @@ static bool shape_propagate(BMEditMesh *em)
 
 static int edbm_shape_propagate_to_all_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int tot_shapekeys = 0;
   int tot_selected_verts_objects = 0;
@@ -3788,7 +3788,7 @@ static int edbm_blend_from_shape_exec(bContext *C, wmOperator *op)
   BMEditMesh *em_ref = me_ref->edit_mesh;
   BMVert *eve;
   BMIter iter;
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   float co[3], *sco;
   int totshape_ref = 0;
@@ -3968,7 +3968,7 @@ static int edbm_solidify_exec(bContext *C, wmOperator *op)
 {
   const float thickness = RNA_float_get(op->ptr, "thickness");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -4866,7 +4866,7 @@ static int edbm_fill_exec(bContext *C, wmOperator *op)
 
   bool has_selected_edges = false, has_faces_filled = false;
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5122,7 +5122,7 @@ static int edbm_fill_grid_exec(bContext *C, wmOperator *op)
 {
   const bool use_interp_simple = RNA_boolean_get(op->ptr, "use_interp_simple");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5264,7 +5264,7 @@ static int edbm_fill_holes_exec(bContext *C, wmOperator *op)
 {
   const int sides = RNA_int_get(op->ptr, "sides");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5328,7 +5328,7 @@ void MESH_OT_fill_holes(wmOperatorType *ot)
 
 static int edbm_beautify_fill_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5427,7 +5427,7 @@ static int edbm_poke_face_exec(bContext *C, wmOperator *op)
   const bool use_relative_offset = RNA_boolean_get(op->ptr, "use_relative_offset");
   const int center_mode = RNA_enum_get(op->ptr, "center_mode");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5524,7 +5524,7 @@ static int edbm_quads_convert_to_tris_exec(bContext *C, wmOperator *op)
 {
   const int quad_method = RNA_enum_get(op->ptr, "quad_method");
   const int ngon_method = RNA_enum_get(op->ptr, "ngon_method");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -5619,7 +5619,7 @@ void MESH_OT_quads_convert_to_tris(wmOperatorType *ot)
 
 static int edbm_tris_convert_to_quads_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -5781,7 +5781,7 @@ static int edbm_decimate_exec(bContext *C, wmOperator *op)
     return OPERATOR_FINISHED;
   }
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -5999,7 +5999,7 @@ static int edbm_dissolve_verts_exec(bContext *C, wmOperator *op)
   const bool use_face_split = RNA_boolean_get(op->ptr, "use_face_split");
   const bool use_boundary_tear = RNA_boolean_get(op->ptr, "use_boundary_tear");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -6067,7 +6067,7 @@ static int edbm_dissolve_edges_exec(bContext *C, wmOperator *op)
   const bool use_verts = RNA_boolean_get(op->ptr, "use_verts");
   const bool use_face_split = RNA_boolean_get(op->ptr, "use_face_split");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -6133,7 +6133,7 @@ void MESH_OT_dissolve_edges(wmOperatorType *ot)
 static int edbm_dissolve_faces_exec(bContext *C, wmOperator *op)
 {
   const bool use_verts = RNA_boolean_get(op->ptr, "use_verts");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -6250,7 +6250,7 @@ static int edbm_dissolve_limited_exec(bContext *C, wmOperator *op)
   const int delimit = RNA_enum_get(op->ptr, "delimit");
   char dissolve_flag;
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -6372,7 +6372,7 @@ void MESH_OT_dissolve_limited(wmOperatorType *ot)
 
 static int edbm_dissolve_degenerate_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   int totelem_old[3] = {0, 0, 0};
   int totelem_new[3] = {0, 0, 0};
@@ -6457,7 +6457,7 @@ void MESH_OT_dissolve_degenerate(wmOperatorType *ot)
 static int edbm_delete_edgeloop_exec(bContext *C, wmOperator *op)
 {
   const bool use_face_split = RNA_boolean_get(op->ptr, "use_face_split");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -6542,7 +6542,7 @@ void MESH_OT_delete_edgeloop(wmOperatorType *ot)
 
 static int edbm_split_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -7442,7 +7442,7 @@ static int edbm_bridge_edge_loops_exec(bContext *C, wmOperator *op)
   const bool use_merge = RNA_boolean_get(op->ptr, "use_merge");
   const float merge_factor = RNA_float_get(op->ptr, "merge_factor");
   const int twist_offset = RNA_int_get(op->ptr, "twist_offset");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -7523,7 +7523,7 @@ static int edbm_wireframe_exec(bContext *C, wmOperator *op)
   const float thickness = RNA_float_get(op->ptr, "thickness");
   const float offset = RNA_float_get(op->ptr, "offset");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -7724,7 +7724,7 @@ static int edbm_convex_hull_exec(bContext *C, wmOperator *op)
   float angle_face_threshold = RNA_float_get(op->ptr, "face_threshold");
   float angle_shape_threshold = RNA_float_get(op->ptr, "shape_threshold");
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -7858,7 +7858,7 @@ void MESH_OT_convex_hull(wmOperatorType *ot)
 static int mesh_symmetrize_exec(bContext *C, wmOperator *op)
 {
   const float thresh = RNA_float_get(op->ptr, "threshold");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -7958,7 +7958,7 @@ static int mesh_symmetry_snap_exec(bContext *C, wmOperator *op)
   int axis = axis_dir % 3;
   bool axis_sign = axis != axis_dir;
 
-Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -8125,7 +8125,7 @@ static int edbm_mark_freestyle_edge_exec(bContext *C, wmOperator *op)
   BMIter iter;
   FreestyleEdge *fed;
   const bool clear = RNA_boolean_get(op->ptr, "clear");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -8206,7 +8206,7 @@ static int edbm_mark_freestyle_face_exec(bContext *C, wmOperator *op)
   BMIter iter;
   FreestyleFace *ffa;
   const bool clear = RNA_boolean_get(op->ptr, "clear");
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
 
   uint objects_len = 0;
@@ -9005,7 +9005,7 @@ static void normals_split(BMesh *bm)
 
 static int normals_split_merge(bContext *C, const bool do_merge)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -9135,7 +9135,7 @@ static EnumPropertyItem average_method_items[] = {
 
 static int edbm_average_normals_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -9602,7 +9602,7 @@ void MESH_OT_normals_tools(struct wmOperatorType *ot)
 
 static int edbm_set_normals_from_faces_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -9718,7 +9718,7 @@ void MESH_OT_set_normals_from_faces(struct wmOperatorType *ot)
 
 static int edbm_smooth_normals_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -9840,7 +9840,7 @@ void MESH_OT_smooth_normals(struct wmOperatorType *ot)
 
 static int edbm_mod_weighted_strength_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(

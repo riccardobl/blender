@@ -209,7 +209,7 @@ static int op_generic_value_invoke(bContext *C, wmOperator *op, const wmEvent *e
     return WM_operator_call_notest(C, op);
   }
 
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(

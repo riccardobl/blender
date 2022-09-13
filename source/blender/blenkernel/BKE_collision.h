@@ -129,7 +129,6 @@ typedef struct CollisionRelation {
  * lookup of colliders during evaluation.
  */
 struct ListBase *BKE_collision_relations_create(struct Depsgraph *depsgraph,
-                                                const struct Scene *scene,
                                                 struct Collection *collection,
                                                 unsigned int modifier_type);
 void BKE_collision_relations_free(struct ListBase *relations);

@@ -36,7 +36,7 @@
 
 static int edbm_spin_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   float cent[3], axis[3];
   const float d[3] = {0.0f, 0.0f, 0.0f};

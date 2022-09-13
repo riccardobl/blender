@@ -495,7 +495,7 @@ static int armature_select_linked_exec(bContext *C, wmOperator *op)
   const bool all_forks = RNA_boolean_get(op->ptr, "all_forks");
 
   bool changed_multi = false;
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -950,7 +950,7 @@ bool ED_armature_edit_select_pick_bone(bContext *C,
                                        const int selmask,
                                        const struct SelectPick_Params *params)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   View3D *v3d = CTX_wm_view3d(C);
   bool changed = false;
@@ -1493,7 +1493,7 @@ static void armature_select_more_less(Object *ob, bool more)
 
 static int armature_de_select_more_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1533,7 +1533,7 @@ void ARMATURE_OT_select_more(wmOperatorType *ot)
 
 static int armature_de_select_less_exec(bContext *C, wmOperator *UNUSED(op))
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data(
@@ -1608,7 +1608,7 @@ static float bone_length_squared_worldspace_get(Object *ob, EditBone *ebone)
 
 static void select_similar_length(bContext *C, const float thresh)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob_act = CTX_data_edit_object(C);
   EditBone *ebone_act = CTX_data_active_bone(C);
@@ -1659,7 +1659,7 @@ static void bone_direction_worldspace_get(Object *ob, EditBone *ebone, float *r_
 
 static void select_similar_direction(bContext *C, const float thresh)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob_act = CTX_data_edit_object(C);
   EditBone *ebone_act = CTX_data_active_bone(C);
@@ -1698,7 +1698,7 @@ static void select_similar_direction(bContext *C, const float thresh)
 
 static void select_similar_layer(bContext *C)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   EditBone *ebone_act = CTX_data_active_bone(C);
 
@@ -1729,7 +1729,7 @@ static void select_similar_layer(bContext *C)
 
 static void select_similar_prefix(bContext *C)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   EditBone *ebone_act = CTX_data_active_bone(C);
 
@@ -1772,7 +1772,7 @@ static void select_similar_prefix(bContext *C)
 
 static void select_similar_suffix(bContext *C)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   EditBone *ebone_act = CTX_data_active_bone(C);
 
@@ -2112,7 +2112,7 @@ void ARMATURE_OT_select_hierarchy(wmOperatorType *ot)
  */
 static int armature_select_mirror_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const bool active_only = RNA_boolean_get(op->ptr, "only_active");
   const bool extend = RNA_boolean_get(op->ptr, "extend");

@@ -2665,7 +2665,7 @@ static bool uv_mouse_select_multi(bContext *C,
 }
 static bool uv_mouse_select(bContext *C, const float co[2], const struct SelectPick_Params *params)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data_with_uvs(
@@ -2818,7 +2818,7 @@ static int uv_mouse_select_loop_generic(bContext *C,
                                         const bool extend,
                                         enum eUVLoopGenericType loop_type)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   uint objects_len = 0;
   Object **objects = BKE_view_layer_array_from_objects_in_edit_mode_unique_data_with_uvs(
@@ -5386,7 +5386,7 @@ static void uv_isolate_selected_islands(const Scene *scene,
   BLI_assert((scene->toolsettings->uv_flag & UV_SYNC_SELECTION) == 0);
   BMFace *efa;
   BMIter iter, liter;
-  UvElementMap *elementmap = BM_uv_element_map_create(em->bm, scene, false, false, true);
+  UvElementMap *elementmap = BM_uv_element_map_create(em->bm, scene, false, false, true, true);
   if (elementmap == NULL) {
     return;
   }

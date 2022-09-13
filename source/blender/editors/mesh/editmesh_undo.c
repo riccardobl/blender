@@ -773,7 +773,7 @@ static bool mesh_undosys_step_encode(struct bContext *C, struct Main *bmain, Und
 
   /* Important not to use the 3D view when getting objects because all objects
    * outside of this list will be moved out of edit-mode when reading back undo steps. */
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   ToolSettings *ts = CTX_data_tool_settings(C);
   uint objects_len = 0;

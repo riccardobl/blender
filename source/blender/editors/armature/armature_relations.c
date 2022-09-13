@@ -974,7 +974,7 @@ static void editbone_clear_parent(EditBone *ebone, int mode)
 
 static int armature_parent_clear_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   const int val = RNA_enum_get(op->ptr, "type");
 

@@ -78,7 +78,7 @@ static bool object_rand_transverts(TransVertStore *tvs,
 
 static int object_rand_verts_exec(bContext *C, wmOperator *op)
 {
-  Scene *scene = CTX_data_scene(C);
+  const Scene *scene = CTX_data_scene(C);
   ViewLayer *view_layer = CTX_data_view_layer(C);
   Object *ob_active = CTX_data_edit_object(C);
   const int ob_mode = ob_active->mode;
