@@ -751,6 +751,7 @@ static void view3d_ob_drop_copy_external_asset(bContext *UNUSED(C), wmDrag *drag
   WM_event_add_notifier(C, NC_SCENE | ND_LAYER_CONTENT, scene);
 
   RNA_int_set(drop->ptr, "session_uuid", id->session_uuid);
+
   BKE_view_layer_synced_ensure(scene, view_layer);
   Base *base = BKE_view_layer_base_find(view_layer, (Object *)id);
   if (base != NULL) {
@@ -1441,6 +1442,7 @@ static void view3d_main_region_cursor(wmWindow *win, ScrArea *area, ARegion *reg
   if (WM_cursor_set_from_tool(win, area, region)) {
     return;
   }
+
   Scene *scene = WM_window_get_active_scene(win);
   ViewLayer *view_layer = WM_window_get_active_view_layer(win);
   BKE_view_layer_synced_ensure(scene, view_layer);

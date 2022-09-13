@@ -3581,6 +3581,7 @@ static Base *object_add_duplicate_internal(Main *bmain,
       *r_ob_new = obn;
     }
     DEG_id_tag_update(&obn->id, ID_RECALC_TRANSFORM | ID_RECALC_GEOMETRY);
+
     BKE_view_layer_synced_ensure(scene, view_layer);
     base = BKE_view_layer_base_find(view_layer, ob);
     if ((base != nullptr) && (base->flag & BASE_ENABLED_AND_MAYBE_VISIBLE_IN_VIEWPORT)) {
@@ -3659,8 +3660,8 @@ static int duplicate_exec(bContext *C, wmOperator *op)
   const bool linked = RNA_boolean_get(op->ptr, "linked");
   const eDupli_ID_Flags dupflag = (linked) ? (eDupli_ID_Flags)0 : (eDupli_ID_Flags)U.dupflag;
 
-  /* We need to handle that here ourselves, because we may duplicate several objects, in which
-   * case we also want to remap pointers between those... */
+  /* We need to handle that here ourselves, because we may duplicate several objects, in which case
+   * we also want to remap pointers between those... */
   BKE_main_id_newptr_and_tag_clear(bmain);
 
   /* Do not do collection re-syncs for each object; will do it once afterwards.
@@ -4088,8 +4089,8 @@ static int object_join_exec(bContext *C, wmOperator *op)
      * Internally the join functions use #invert_m4_m4_safe_ortho which creates
      * an inevitable matrix from one that has one or more degenerate axes.
      *
-     * In most cases we don't worry about special handling for non-inevitable matrices however
-     * for joining objects there may be flat 2D objects where it's not obvious the scale is zero.
+     * In most cases we don't worry about special handling for non-inevitable matrices however for
+     * joining objects there may be flat 2D objects where it's not obvious the scale is zero.
      * In this case, using #invert_m4_m4_safe_ortho works as well as we can expect,
      * joining the contents, flattening on the axis that's zero scaled.
      * If the zero scale is removed, the data on this axis remains un-scaled

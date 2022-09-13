@@ -506,7 +506,7 @@ void BKE_view_layer_copy_data(Scene *scene_dst,
   /* Inline 'BLI_duplicatelist' and update the active base. */
   BLI_listbase_clear(&view_layer_dst->object_bases);
   BLI_assert_msg((view_layer_src->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
-                 "View Layer Object Base out of sync.");
+                 "View Layer Object Base out of sync, invoke BKE_view_layer_synced_ensure.");
   LISTBASE_FOREACH (const Base *, base_src, &view_layer_src->object_bases) {
     Base *base_dst = MEM_dupallocN(base_src);
     BLI_addtail(&view_layer_dst->object_bases, base_dst);

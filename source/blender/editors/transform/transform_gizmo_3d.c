@@ -638,6 +638,7 @@ int ED_transform_calc_gizmo_stats(const bContext *C,
   const short orient_index = params->orientation_index ?
                                  (params->orientation_index - 1) :
                                  BKE_scene_orientation_get_index(scene, SCE_ORIENT_DEFAULT);
+
   BKE_view_layer_synced_ensure(scene, view_layer);
   Object *ob = BKE_view_layer_active_object_get(view_layer);
   Object *obedit = OBEDIT_FROM_OBACT(ob);

@@ -217,20 +217,22 @@ struct Object **BKE_view_layer_array_from_objects_in_mode_unique_data(const Scen
 
 ListBase *BKE_view_layer_object_bases_get(ViewLayer *view_layer)
 {
-  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, "Object Bases out of sync.");
+  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
+                 "Object Bases out of sync, invoke BKE_view_layer_synced_ensure.");
   return &view_layer->object_bases;
 }
 
 Base *BKE_view_layer_active_base_get(ViewLayer *view_layer)
 {
-  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0, "Active Base out of sync.");
+  BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
+                 "Active Base out of sync, invoke BKE_view_layer_synced_ensure.");
   return view_layer->basact;
 }
 
 LayerCollection *BKE_view_layer_active_collection_get(ViewLayer *view_layer)
 {
   BLI_assert_msg((view_layer->flag & VIEW_LAYER_OUT_OF_SYNC) == 0,
-                 "Active Collection out of sync.");
+                 "Active Collection out of sync, invoke BKE_view_layer_synced_ensure.");
   return view_layer->active_collection;
 }
 
