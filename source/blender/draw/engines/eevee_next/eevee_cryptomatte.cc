@@ -46,7 +46,7 @@ void Cryptomatte::begin_sync()
   }
 }
 
-void Cryptomatte::sync_object(Object *ob)
+void Cryptomatte::sync_object(Object *ob, ResourceHandle res_handle)
 {
   const eViewLayerEEVEEPassType enabled_passes = inst_.film.enabled_passes_get();
   if (!(enabled_passes &
@@ -54,7 +54,7 @@ void Cryptomatte::sync_object(Object *ob)
     return;
   }
 
-  uint32_t resource_id = DRW_object_resource_id_get(ob);
+  uint32_t resource_id = res_handle.resource_index();
   float2 object_hashes(0.0f, 0.0f);
 
   if (enabled_passes & EEVEE_RENDER_PASS_CRYPTOMATTE_OBJECT) {
@@ -68,7 +68,6 @@ void Cryptomatte::sync_object(Object *ob)
     }
     object_hashes[1] = register_id(EEVEE_RENDER_PASS_CRYPTOMATTE_ASSET, asset->id);
   }
-
   cryptomatte_object_buf.get_or_resize(resource_id) = object_hashes;
 }
 
@@ -76,7 +75,7 @@ void Cryptomatte::sync_material(const ::Material *material)
 {
   /* Material crypto hashes are generated during shader codegen stage. We only need to register
    * them to store inside the metadata. */
-  if (material_layer_) {
+  if (material_layer_ && material) {
     material_layer_->add_ID(material->id);
   }
 }

@@ -127,7 +127,7 @@ void SyncModule::sync_mesh(Object *ob,
   }
 
   inst_.manager->extract_object_attributes(res_handle, ob_ref, material_array.gpu_materials);
-  inst_.cryptomatte.sync_object(ob);
+  inst_.cryptomatte.sync_object(ob, res_handle);
   // shadows.sync_object(ob, ob_handle, is_shadow_caster, is_alpha_blend);
 }
 
@@ -324,7 +324,12 @@ void SyncModule::sync_curves(Object *ob,
   shgroup_curves_call(material.prepass, ob, part_sys, modifier_data);
   shgroup_curves_call(material.shadow, ob, part_sys, modifier_data);
 
-  inst_.cryptomatte.sync_object(ob);
+  inst_.cryptomatte.sync_object(ob, res_handle);
+  GPUMaterial *gpu_material =
+      inst_.materials.material_array_get(ob, has_motion).gpu_materials[mat_nr - 1];
+  ::Material *mat = GPU_material_get_material(gpu_material);
+  inst_.cryptomatte.sync_material(mat);
+
   /* TODO(fclem) Hair velocity. */
   // shading_passes.velocity.gpencil_add(ob, ob_handle);
 
