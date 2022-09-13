@@ -964,7 +964,6 @@ static void layer_collection_resync_unused_layers_free(ViewLayer *view_layer,
 
 void BKE_view_layer_need_resync_tag(struct ViewLayer *view_layer)
 {
-  printf("%s: %s\n", __func__, view_layer->name);
   view_layer->flag |= VIEW_LAYER_OUT_OF_SYNC;
 }
 
