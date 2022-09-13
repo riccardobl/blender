@@ -50,7 +50,7 @@ void cryptomatte_store_film_sample(FilmSample dst,
       /* TODO(jbakker):  we are displaying the first sample, but we should display the highest
        * weighted one. */
       if (cryptomatte_layer_id + i == 0) {
-        out_color = cryptomatte_false_color(crypto_sample.x);
+        out_color = cryptomatte_false_color(sample_pair.x);
       }
     }
     else if (cryptomatte_can_merge_sample(sample_pair.zw, crypto_sample)) {
@@ -64,6 +64,7 @@ void cryptomatte_store_film_sample(FilmSample dst,
     else {
       continue;
     }
+    // sample_pair = vec4(1.0, 2.0, 3.0, 4.0);
     imageStore(cryptomatte_img, img_co, sample_pair);
     break;
   }
