@@ -505,11 +505,6 @@ CryptomatteHash::CryptomatteHash(uint32_t hash) : hash(hash)
 {
 }
 
-CryptomatteHash::CryptomatteHash(const char *name, const int name_len)
-{
-  hash = BLI_hash_mm3((const unsigned char *)name, name_len, 0);
-}
-
 CryptomatteHash CryptomatteHash::from_hex_encoded(blender::StringRef hex_encoded)
 {
   CryptomatteHash result(0);
@@ -522,21 +517,6 @@ std::string CryptomatteHash::hex_encoded() const
   std::stringstream encoded;
   encoded << std::setfill('0') << std::setw(sizeof(uint32_t) * 2) << std::hex << hash;
   return encoded.str();
-}
-
-float CryptomatteHash::float_encoded() const
-{
-  uint32_t mantissa = hash & ((1 << 23) - 1);
-  uint32_t exponent = (hash >> 23) & ((1 << 8) - 1);
-  exponent = MAX2(exponent, (uint32_t)1);
-  exponent = MIN2(exponent, (uint32_t)254);
-  exponent = exponent << 23;
-  uint32_t sign = (hash >> 31);
-  sign = sign << 31;
-  uint32_t float_bits = sign | exponent | mantissa;
-  float f;
-  memcpy(&f, &float_bits, sizeof(uint32_t));
-  return f;
 }
 
 std::unique_ptr<CryptomatteLayer> CryptomatteLayer::read_from_manifest(

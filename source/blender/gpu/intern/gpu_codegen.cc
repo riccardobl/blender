@@ -11,6 +11,7 @@
 
 #include "DNA_customdata_types.h"
 #include "DNA_image_types.h"
+#include "DNA_material_types.h"
 
 #include "BLI_ghash.h"
 #include "BLI_hash_mm2a.h"
@@ -20,6 +21,7 @@
 
 #include "PIL_time.h"
 
+#include "BKE_cryptomatte.hh"
 #include "BKE_material.h"
 
 #include "GPU_capabilities.h"
@@ -548,7 +550,16 @@ void GPUCodegen::generate_cryptomatte()
   cryptomatte_input_ = static_cast<GPUInput *>(MEM_callocN(sizeof(GPUInput), __func__));
   cryptomatte_input_->type = GPU_FLOAT;
   cryptomatte_input_->source = GPU_SOURCE_CRYPTOMATTE;
-  cryptomatte_input_->vec[0] = -10.0f;
+
+  float material_hash = 0.0f;
+  Material *material = GPU_material_get_material(&mat);
+  if (material) {
+    blender::bke::cryptomatte::CryptomatteHash hash(material->id.name,
+                                                    BLI_strnlen(material->id.name, MAX_NAME - 2));
+    material_hash = hash.float_encoded();
+  }
+  cryptomatte_input_->vec[0] = material_hash;
+
   BLI_addtail(&ubo_inputs_, BLI_genericNodeN(cryptomatte_input_));
 }
 
