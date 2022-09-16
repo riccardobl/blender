@@ -45,6 +45,8 @@ static PyStructSequence_Field app_cb_info_fields[] = {
      "for the new frame."},
     {"render_pre", "on render (before)"},
     {"render_post", "on render (after)"},
+    {"render_pipeline_post", "on render after pipeline"},
+    {"render_pipeline_pre", "on render before pipeline"},
     {"render_write", "on writing a render frame (directly after the frame is written)"},
     {"render_stats", "on printing render statistics"},
     {"render_init", "on initialization of a render job"},

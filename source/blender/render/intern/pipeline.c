@@ -1026,6 +1026,7 @@ static void do_render_engine(Render *re)
 
   re->current_scene_update(re->suh, re->scene);
   RE_engine_render(re, false);
+  render_callback_exec_id(re, re->main, &re->scene->id, BKE_CB_EVT_RENDER_PIPELINE_POST);
 
   /* when border render, check if we have to insert it in black */
   render_result_uncrop(re);
@@ -1420,7 +1421,6 @@ static void do_render_full_pipeline(Render *re)
       do_render_sequencer(re);
       render_seq = true;
     }
-
     re->stats_draw(re->sdh, &re->i);
     re->display_update(re->duh, re->result, NULL);
   }
@@ -1446,6 +1446,8 @@ static void do_render_full_pipeline(Render *re)
       re->display_update(re->duh, re->result, NULL);
     }
   }
+
+
 }
 
 static bool check_valid_compositing_camera(Scene *scene, Object *camera_override)
@@ -1827,6 +1829,8 @@ void RE_RenderFrame(Render *re,
     render_callback_exec_id(re, re->main, &scene->id, BKE_CB_EVT_RENDER_PRE);
 
     render_init_depsgraph(re);
+    
+    render_callback_exec_id(re, re->main, &scene->id, BKE_CB_EVT_RENDER_PIPELINE_PRE);
 
     do_render_full_pipeline(re);
 
